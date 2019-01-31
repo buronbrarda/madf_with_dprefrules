@@ -12,8 +12,12 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.GridLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class CPrefRulesLoadingPanel extends JPanel {
 
@@ -37,6 +41,11 @@ public class CPrefRulesLoadingPanel extends JPanel {
 		add(intructionLabel, gbc_intructionLabel);
 		
 		JButton btnNewButton = new JButton("Define CPref-Rules");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new CPrefRulesEditorDialog();
+			}
+		});
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.insets = new Insets(0, 0, 0, 5);
 		gbc_btnNewButton.gridx = 1;
