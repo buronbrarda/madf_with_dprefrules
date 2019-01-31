@@ -2,19 +2,25 @@ package java_ui;
 
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+
+import java_ui.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
+
 import javax.swing.JScrollPane;
 import javax.swing.JButton;
 import java.awt.GridBagLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class CPrefRulesEditorPanel extends JPanel {
 	private JTable table;
-	private JTable table_1;
-	private JTable table_2;
-
 	/**
 	 * Create the panel.
 	 */
@@ -25,14 +31,6 @@ public class CPrefRulesEditorPanel extends JPanel {
 		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 0;
-		add(scrollPane, gbc_scrollPane);
 		
 		table = new JTable();
 		table.setFillsViewportHeight(true);
@@ -61,10 +59,19 @@ public class CPrefRulesEditorPanel extends JPanel {
 				return columnEditables[column];
 			}
 		});
-		table.getColumnModel().getColumn(0).setPreferredWidth(24);
-		table.getColumnModel().getColumn(1).setPreferredWidth(497);
 		
-		scrollPane.setViewportView(table);
+		table.getColumnModel().getColumn(0).setPreferredWidth(24);
+		table.getColumnModel().getColumn(0).setCellRenderer(new NoTextWrappingRenderer());
+		table.getColumnModel().getColumn(1).setPreferredWidth(497);
+		table.getColumnModel().getColumn(1).setCellRenderer(new NoTextWrappingRenderer());
+		
+		JScrollPane scrollPane = new JScrollPane(table);
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 0;
+		add(scrollPane, gbc_scrollPane);
 		
 		JPanel panel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
@@ -73,15 +80,49 @@ public class CPrefRulesEditorPanel extends JPanel {
 		add(panel, gbc_panel);
 		
 		JButton btnNewButton_1 = new JButton("Add");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				new DefineCPrefRuleDialog(DefineCprefRuleEditingMode.NEW,"r0");
+			}
+		});
 		panel.add(btnNewButton_1);
 		
 		JButton btnNewButton_2 = new JButton("Edit");
+		btnNewButton_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				String selectedRule = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
+				new DefineCPrefRuleDialog(DefineCprefRuleEditingMode.EDIT,selectedRule);
+			}
+		});
 		panel.add(btnNewButton_2);
 		
 		JButton btnNewButton = new JButton("Remove");
 		panel.add(btnNewButton);
-		
 
+	}
+	
+	
+	//This custom renderer is needed to avoid text wrapping on rules table.
+	private class NoTextWrappingRenderer extends JTextArea implements TableCellRenderer{
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			
+			String text = (String) value;
+			this.setText(text);
+            this.setLineWrap(false);
+            
+            if (isSelected){
+            	this.setBackground(new Color(188, 203, 226));
+            }
+            else{
+            	this.setBackground(Color.WHITE);	
+            }
+            
+            return this;
+		}	
 	}
 
 }

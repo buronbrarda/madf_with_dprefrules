@@ -26,7 +26,7 @@ public class CPrefRulesEditorDialog extends JDialog {
 	public CPrefRulesEditorDialog() {
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 		
-		setBounds(100, 100, 450, 267);
+		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		CPrefRulesEditorPanel prefRulesEditorPanel = new CPrefRulesEditorPanel();
 		getContentPane().add(prefRulesEditorPanel, BorderLayout.CENTER);
