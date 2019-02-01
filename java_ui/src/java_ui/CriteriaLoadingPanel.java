@@ -7,25 +7,31 @@ import javax.swing.JLabel;
 import javax.swing.BoxLayout;
 import java.awt.Component;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 
 import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
 
-public class CPrefRulesLoadingPanel extends JPanel {
+public class CriteriaLoadingPanel extends JPanel {
 	private JTextField filePathText;
+	private File selectedFile;
 
 	/**
 	 * Create the panel.
 	 */
-	public CPrefRulesLoadingPanel() {
+	public CriteriaLoadingPanel() {
 		setLayout(new BorderLayout(0, 0));
 		
 		JPanel panel = new JPanel();
@@ -37,7 +43,7 @@ public class CPrefRulesLoadingPanel extends JPanel {
 		gbl_panel.rowWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
-		JLabel intructionLabel = new JLabel("3. Define the set of CPref-Rules.");
+		JLabel intructionLabel = new JLabel("1. Define the set of criteria and their assessments values.");
 		GridBagConstraints gbc_intructionLabel = new GridBagConstraints();
 		gbc_intructionLabel.gridwidth = 2;
 		gbc_intructionLabel.anchor = GridBagConstraints.WEST;
@@ -46,7 +52,7 @@ public class CPrefRulesLoadingPanel extends JPanel {
 		gbc_intructionLabel.gridy = 0;
 		panel.add(intructionLabel, gbc_intructionLabel);
 		
-		JButton defineButton = new JButton("Define");
+		JButton defineButton = new JButton("Define\r\n");
 		GridBagConstraints gbc_defineButton = new GridBagConstraints();
 		gbc_defineButton.insets = new Insets(5, 0, 5, 5);
 		gbc_defineButton.gridx = 2;
@@ -72,6 +78,16 @@ public class CPrefRulesLoadingPanel extends JPanel {
 		filePathText.setColumns(10);
 		
 		JButton loadFileButton = new JButton("Load File");
+		loadFileButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				File f = loadCSVFile();
+				
+				if(f != null){
+					filePathText.setText(f.getAbsolutePath());
+					selectedFile = f;
+				}
+			}
+		});
 		GridBagConstraints gbc_loadFileButton = new GridBagConstraints();
 		gbc_loadFileButton.insets = new Insets(0, 0, 5, 5);
 		gbc_loadFileButton.gridx = 2;
@@ -79,10 +95,30 @@ public class CPrefRulesLoadingPanel extends JPanel {
 		panel.add(loadFileButton, gbc_loadFileButton);
 		defineButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				new CPrefRulesEditorDialog();
+				new CriteriaEditorDialog();
 			}
 		});
 
+	}
+	
+	
+	private File loadCSVFile(){
+		
+		JFileChooser fc = new JFileChooser("./");
+		fc.setDialogTitle("Select the file to load");
+		
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setFileFilter(new FileNameExtensionFilter("CSV File", "csv"));
+		fc.setMultiSelectionEnabled(false);
+		
+		File toReturn = null;
+		
+		if(fc.showDialog(null, "Load") == JFileChooser.APPROVE_OPTION){
+			toReturn = fc.getSelectedFile();
+		}
+		
+		
+		return toReturn;
 	}
 
 }

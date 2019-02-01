@@ -32,7 +32,7 @@ public class DSJavaUI{
 	public DSJavaUI() {
 		initialize();
 		
-		JPanel stepsView = new StepsView();
+		JPanel stepsView = new StepsPanel();
 		frame.getContentPane().add(stepsView, BorderLayout.CENTER);
 	}
 

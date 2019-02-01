@@ -29,7 +29,7 @@ public class KnowledgeLoadingPanel extends JPanel {
 		fl_instructionPanel.setAlignment(FlowLayout.LEFT);
 		add(instructionPanel);
 		
-		JLabel intructionLabel = new JLabel("1. Load the knowledge base file.  The file must be on CSV format.");
+		JLabel intructionLabel = new JLabel("2. Load the knowledge base file.  The file must be on CSV format.");
 		instructionPanel.add(intructionLabel);
 		
 		JPanel fileUploadPanel = new JPanel();
