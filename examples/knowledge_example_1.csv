@@ -1,4 +1,4 @@
-id;price;distance;noise;area;rooms
+apartment;price;distance;noise;area;rooms
 a1;500;20;low;60;2
 a2;400;10;high;70;2
 a3;300;60;low;30;1
