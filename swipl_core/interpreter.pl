@@ -1,12 +1,14 @@
 :- module(interpreter,[
-		consult_grule/2
+		consult_cpref_rule/2
 	]).
 	
 	:-use_module(utils).
-	:-use_module(translator).
+	:-use_module(knowledge_manager).
+	
+	:-op(1101, xfx, ==>).
 	
 	% ============================================================================================
-	% 		These predicates define how each g-rule premise must be interpreted.
+	% 		These predicates define how each cpref-rule premises must be interpreted.
 	% ============================================================================================
 	better(X,Y,C,[FactX, FactY]):- 
 		FactX =..[C,X,Vx], FactY =..[C,Y,Vy], call(FactX), call(FactY),
@@ -26,16 +28,6 @@
 	worse(X,Y,C,[FactX, FactY]):- 
 		FactX =..[C,X,Vx], FactY =..[C,Y,Vy], call(FactX), call(FactY),
 		values(C,Values), greater_value(Vy,Vx,Values).
-		
-	not_better(X,Y,C,[FactX, FactY]):- equal(X,Y,C,[FactX, FactY]),!.
-	not_better(X,Y,C,[FactX, FactY]):- worse(X,Y,C,[FactX, FactY]).
-	
-	not_worse(X,Y,C,[FactX, FactY]):- equal(X,Y,C,[FactX, FactY]),!.
-	not_worse(X,Y,C,[FactX, FactY]):- better(X,Y,C,[FactX, FactY]).
-	
-	dont_care(X,Y,C,[FactX, FactY]):- equal(X,Y,C,[FactX, FactY]),!.
-	dont_care(X,Y,C,[FactX, FactY]):- better(X,Y,C,[FactX, FactY]),!.
-	dont_care(X,Y,C,[FactX, FactY]):- worse(X,Y,C,[FactX, FactY]).
 	
 	% ============================================================================================
 	% ============================================================================================
@@ -69,17 +61,17 @@
 	/**********************************************************************************/
 	
 
-	% ============================================================================================
-	% 		These predicates define an interpreter for the g-rules
-	% ============================================================================================
+	% =================================================================================
+	% 		These predicates define an interpreter of cpref-rules
+	% =================================================================================
 	
 	/***********************************************************************************
-		consult_grule(+GRule, -Facts).
+		consult_cpref_rule(+CPrefRule, -Facts).
 		
-		Let GRule = (Premise1, .., PremiseN) ==> Claim. This predicate returns in Facts
-		a set of necesary facts to hold with all premises of GRule.
+		Let CPrefRule = (Premise1, .., PremiseN) ==> Claim. This predicate returns in Facts
+		a set of necesary facts to hold with all premises of CPrefRule.
 	************************************************************************************/
-	consult_grule(Premises ==> _Claim, Facts):-
+	consult_cpref_rule(Premises ==> _Claim, Facts):-
 		consult_premises(Premises, Facts).
 	
 	
