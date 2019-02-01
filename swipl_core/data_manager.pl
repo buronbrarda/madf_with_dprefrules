@@ -104,6 +104,8 @@ remove_alternatives:-
 
 add_pair(Criterion, Domain):-
 	not(criterion(Criterion)),
+	is_list(Domain),
+	
 	assert(criterion(Criterion)),
 	assert(values(Criterion,Domain)).
 
