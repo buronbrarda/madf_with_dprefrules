@@ -1,0 +1,4 @@
+criteria;domain
+cost;[vbad, bad, reg, good, vgood]
+location;[vbad, bad, reg, good, vgood]
+size;[vbad, bad, reg, good, vgood]

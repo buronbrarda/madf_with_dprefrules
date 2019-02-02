@@ -1,0 +1,6 @@
+id;rule
+r1;better(X,Y,cost) ==> preferred(X,Y)
+r2;better(X,Y,location), equal(X,Y,cost) ==> preferred(X,Y)
+r3;better(X,Y,size), equal(X,Y,location), equal(X,Y,cost) ==> preferred(X,Y)
+r4;better(X,Y,location), min(X,location,good), worse(X,Y,cost) ==> preferred(X,Y)
+r5;better(X,Y,location), min(X,location,reg), worse(X,Y,cost), min(X,cost,bad) ==> preferred(X,Y)

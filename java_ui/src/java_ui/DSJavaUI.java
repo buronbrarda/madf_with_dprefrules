@@ -1,6 +1,7 @@
 package java_ui;
 
 import java.awt.EventQueue;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -32,8 +33,16 @@ public class DSJavaUI{
 	public DSJavaUI() {
 		initialize();
 		
-		JPanel stepsView = new StepsPanel();
+		JPanel stepsView;
+		try {
+			stepsView = new AllStepsPanel();
+		
 		frame.getContentPane().add(stepsView, BorderLayout.CENTER);
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

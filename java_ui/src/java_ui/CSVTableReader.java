@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class CSVReader implements Iterator<String[]>{
+public class CSVTableReader implements Iterator<String[]>{
 	
 	private BufferedReader reader = null;
 	private String line = null;
@@ -14,11 +14,11 @@ public class CSVReader implements Iterator<String[]>{
 	private String splitter = ";";
 	
 	
-    public CSVReader(File file) throws IOException {    		
+    public CSVTableReader(File file) throws IOException {    		
     	this.readFile(file);
 	}
     
-    public CSVReader(File file, String splitter) throws IOException {    		
+    public CSVTableReader(File file, String splitter) throws IOException {    		
     	this.splitter = splitter;
     	
     	this.readFile(file);
