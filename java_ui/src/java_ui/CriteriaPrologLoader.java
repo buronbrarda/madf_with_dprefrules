@@ -1,12 +1,13 @@
 package java_ui;
 
+import java.util.Map;
+
 import javax.swing.table.TableModel;
 
 import org.jpl7.Atom;
 import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
-import org.jpl7.Variable;
 
 public class CriteriaPrologLoader implements PrologLoader{
 
@@ -28,6 +29,7 @@ public class CriteriaPrologLoader implements PrologLoader{
 		
 		Query q = new Query("add_pair", new Term [] {new Atom(criterion), Util.textToTerm(values)});
 		
+		
 		if(!q.hasSolution()) {
 			
 			this.err_msg = "There was a problem while loading criterion '"+criterion+"'."
@@ -39,6 +41,7 @@ public class CriteriaPrologLoader implements PrologLoader{
 			
 			throw new PrologLoadException(getErrorMessage());
 		};
+		
 	}
 	
 	@Override
@@ -55,6 +58,15 @@ public class CriteriaPrologLoader implements PrologLoader{
 			values = getValues(i);
 			
 			loadCriterion(criterion, values);
+		}
+		
+		
+		Query test = new Query("values(C,V)");
+		Map<String, Term> solution;
+		
+		while(test.hasNext()){
+			solution = test.next();
+			System.out.println("C = "+solution.get("C")+"; V = "+solution.get("V"));
 		}
 	}
 
