@@ -1,6 +1,11 @@
-package java_ui;
+package java_ui.knowledge_edition;
+
+import java.io.IOException;
 
 import javax.swing.table.DefaultTableModel;
+
+import java_ui.CSVTableReader;
+import java_ui.TableModelBuilder;
 
 public class EvidenceTableModelBuilder implements TableModelBuilder{
 	
@@ -17,6 +22,13 @@ public class EvidenceTableModelBuilder implements TableModelBuilder{
 		
 		while(this.reader.hasNext()){
 			toReturn.addRow(reader.next());
+		}
+		
+		try {
+			this.reader.closeFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		return toReturn;

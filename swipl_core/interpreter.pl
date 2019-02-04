@@ -1,9 +1,13 @@
 :- module(interpreter,[
+		op(1101, xfx, ==>),
+		
+		coherent_cpref_rule/1,
+		
 		consult_cpref_rule/2
 	]).
 	
 	:-use_module(utils).
-	:-use_module(knowledge_manager).
+	:-use_module(data_manager).
 	
 	:-op(1101, xfx, ==>).
 	
@@ -64,6 +68,105 @@
 	% =================================================================================
 	% 		These predicates define an interpreter of cpref-rules
 	% =================================================================================
+	
+	premise(better).
+	premise(worse).
+	premise(equal).
+	
+	
+	/***********************************************************************************
+		coherent_cpref_rule(+CPrefRule).
+		
+		Checks whther CPrefRule is a coherent CPref-Rule.
+		Checks criteria existence and criteria domain that are evaluated in CPrefRule.
+		Also, check CPrefRule syntax errors.
+	************************************************************************************/
+	coherent_cpref_rule(Body ==> pref(X,Y)):-
+		coherent_body(Body, [], [X,Y], Criteria_Output),
+		member([_Criterion, better], Criteria_Output),!,	%Check whether it has a b_premise.
+		X \== Y.											%Check X and Y are different variables.
+	
+	%Check better, worse and equal clauses.	
+	coherent_body((Premise, Body), Criteria, [X,Y], [[C,PType]|Criteria_Output]):-
+		premise(PType),
+		Premise =.. [PType,X,Y,C],!,
+		
+		criterion(C),								%Check criterion existence.
+		not(member([C,_PType],Criteria)),			%Check non-duplicate criterion.
+		
+		coherent_body(Body, [[C,PType]|Criteria], [X,Y], Criteria_Output).
+		
+	
+	%Check min(X,C,V) clauses.
+	coherent_body((Premise, Body), Criteria, [X,Y], Criteria_Output):-
+		Premise =.. [min,X,C,V],!,
+		
+		criterion(C),								%Check criterion existence.
+		values(C,Domain), member(V,Domain),			%Check criterion domain.
+		member([C,_PType],Criteria),				%Check previous b_premise, w_premise or e_premise.
+		
+		not(member([C,min,_Value],Criteria)),		%Check non-duplicate min.
+		
+		coherent_body(Body, [[C,min,V]|Criteria], [X,Y], Criteria_Output).
+	
+	
+	
+	%Check max(Y,C,V) clauses.
+	coherent_body((Premise, Body), Criteria, [X,Y], Criteria_Output):-
+		Premise =.. [max,Y,C,Max_V],!,
+		
+		criterion(C),								%Check criterion existence.
+		values(C,Domain), member(Max_V,Domain),		%Check criterion domain.
+		member([C,worse],Criteria),					%Check previous w_premise.
+		
+		
+		(%Check that Min_V < Max_V when there exists a previous min clause.
+			(member([C,min,Min_V],Criteria), greater_value(Max_V,Min_V,Domain));
+			(not(member([C,min,_],Criteria)))
+		),!,
+		
+		not(member([C,max,_Value],Criteria)),		%Check non-duplicate max.
+		
+		coherent_body(Body, [[C,max,Max_V]|Criteria], [X,Y], Criteria_Output).
+		
+	
+	%Check better, worse and equal clauses.	
+	coherent_body(Premise, Criteria, [X,Y], [[C,PType]]):-
+		premise(PType),
+		Premise =.. [PType,X,Y,C],!,
+		
+		criterion(C),								%Check criterion existence.
+		not(member([C,_PremiseType],Criteria)).		%Check non-duplicate criterion.
+		
+		
+	%Check min(X,C,V) clauses.
+	coherent_body(Premise, Criteria, [X,_Y], []):-
+		Premise =.. [min,X,C,V],!,
+		
+		criterion(C),								%Check criterion existence.
+		values(C,Domain), member(V,Domain),			%Check criterion domain.
+		member([C,_PType],Criteria),				%Check previous b_premise, w_premise or e_premise.
+		
+		not(member([C,min,_Value],Criteria)).		%Check non-duplicate min.
+	
+	
+	
+	%Check max(Y,C,V) clauses.
+	coherent_body(Premise, Criteria, [_X,Y], []):-
+		Premise =.. [max,Y,C,Max_V],!,
+		
+		criterion(C),								%Check criterion existence.
+		values(C,Domain), member(Max_V,Domain),		%Check criterion domain.
+		member([C,worse],Criteria),					%Check previous w_premise.
+		
+		
+		(%Check that Min_V < Max_V when there exists a previous min clause.
+			(member([C,min,Min_V],Criteria), greater_value(Max_V,Min_V,Domain));
+			(not(member([C,min,_],Criteria)))
+		),!,
+		
+		not(member([C,max,_Value],Criteria)).		%Check non-duplicate max.
+
 	
 	/***********************************************************************************
 		consult_cpref_rule(+CPrefRule, -Facts).

@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.cpref_rules_edition;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;

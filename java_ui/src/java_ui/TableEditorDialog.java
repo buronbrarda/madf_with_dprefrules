@@ -7,14 +7,18 @@ import javax.swing.JPanel;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
-import javax.swing.JSeparator;
+import javax.swing.table.TableModel;
+
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 
 public class TableEditorDialog extends JDialog {
-
+	
+	private TableModel response;
+	
+	
 	/**
 	 * Create the dialog.
 	 * @throws IOException 
@@ -37,14 +41,8 @@ public class TableEditorDialog extends JDialog {
 				gbl_buttonPane.rowWeights = new double[]{0.0, Double.MIN_VALUE};
 				buttonPane.setLayout(gbl_buttonPane);
 			}
-			JButton okButton = new JButton("OK");
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					setVisible(false);
-					dispose();
-				}
-			});
 			
+			JButton okButton = new JButton("OK");
 			okButton.setActionCommand("OK");
 			GridBagConstraints gbc_okButton = new GridBagConstraints();
 			gbc_okButton.insets = new Insets(5, 0, 5, 5);
@@ -52,7 +50,15 @@ public class TableEditorDialog extends JDialog {
 			gbc_okButton.gridx = 1;
 			gbc_okButton.gridy = 0;
 			buttonPane.add(okButton, gbc_okButton);
-			getRootPane().setDefaultButton(okButton);
+			
+			
+			okButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					response = tep.getTableModel();
+					setVisible(false);
+					dispose();
+				}
+			});
 			
 			JButton cancelButton = new JButton("Cancel");
 			cancelButton.setActionCommand("Cancel");
@@ -62,12 +68,27 @@ public class TableEditorDialog extends JDialog {
 			gbc_cancelButton.gridx = 2;
 			gbc_cancelButton.gridy = 0;
 			buttonPane.add(cancelButton, gbc_cancelButton);
+			
+			cancelButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					response = null;
+					setVisible(false);
+					dispose();
+				}
+			});
+			
+			getRootPane().setDefaultButton(cancelButton);
 		}
 		
 		
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		this.setVisible(true);
 		
+	}
+	
+	
+	public TableModel getResponse() {
+		return response;
 	}
 
 }

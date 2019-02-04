@@ -3,6 +3,8 @@ package java_ui;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import java.awt.Insets;
@@ -12,7 +14,7 @@ import java.awt.event.ActionEvent;
 
 public class StepPanel extends JPanel{
 	
-	public StepPanel(String instruction, TableEditorPanel tep) {
+	public StepPanel(String instruction, TableEditorPanel tep, PrologLoader loader) {
 		super();
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -35,8 +37,14 @@ public class StepPanel extends JPanel{
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					new TableEditorDialog(tep);
-				} catch (IOException e1) {
+					TableEditorDialog dialog = new TableEditorDialog(tep);
+					loader.loadData(dialog.getResponse());
+				} 
+				catch (PrologLoadException e1) {
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+				}
+				catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			}

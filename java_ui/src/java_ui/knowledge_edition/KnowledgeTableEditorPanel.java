@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.knowledge_edition;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,7 +6,11 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java_ui.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
+import java_ui.CSVTableReader;
+import java_ui.TableEditorPanel;
+import java_ui.TableModelBuilder;
+import java_ui.cpref_rules_edition.DefineCPrefRuleDialog;
+import java_ui.cpref_rules_edition.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
 
 import java.awt.event.ActionEvent;
 

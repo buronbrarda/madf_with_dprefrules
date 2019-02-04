@@ -152,6 +152,10 @@ public abstract class TableEditorPanel extends JPanel {
 		
 	}
 	
+	public TableModel getTableModel() {
+		return this.table.getModel();
+	}
+	
 	protected abstract void addButtonAction(ActionEvent event);
 	
 	protected abstract void editButtonAction(ActionEvent event);

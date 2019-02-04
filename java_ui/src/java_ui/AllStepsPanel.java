@@ -2,8 +2,12 @@ package java_ui;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import javax.swing.JSeparator;
+
+import java_ui.cpref_rules_edition.CPrefRulesTableEditorPanel;
+import java_ui.criteria_edition.CriteriaTableEditorPanel;
+import java_ui.knowledge_edition.KnowledgeTableEditorPanel;
+
 import javax.swing.JButton;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -29,15 +33,18 @@ public class AllStepsPanel extends JPanel{
 		StepPanel [] stepsPanels = {
 				new StepPanel(
 						"1. Define the set of criteria and their assessment values.",
-						new CriteriaTableEditorPanel()
+						new CriteriaTableEditorPanel(),
+						new CriteriaPrologLoader()
 					),
 				new StepPanel(
 						"2. Define the assessments knowledge base.",
-						new KnowledgeTableEditorPanel()
+						new KnowledgeTableEditorPanel(),
+						new KnowledgePrologLoader()
 					),
 				new StepPanel(
 						"3. Define the set of CPref-Rules.",
-						new CPrefRulesTableEditorPanel()
+						new CPrefRulesTableEditorPanel(),
+						new CPrefRulesPrologLoader()
 					)
 		};
 		

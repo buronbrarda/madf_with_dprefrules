@@ -21,7 +21,7 @@
 		
 		add_cpref_rule/2,
 		remove_cpref_rule/1,
-		remove_cpref_rules/0	
+		remove_cpref_rules/0
 	]).
 
 
@@ -31,6 +31,8 @@
 :- dynamic alternative/1.
 :- dynamic profile_rule/2.
 :- dynamic cpref_rule/2.
+
+:-use_module(interpreter, [coherent_cpref_rule/1]).
 
 
 add_assessed_alternative(Id,Knowledge):-
@@ -131,6 +133,7 @@ remove_profile_rules:-
 
 
 add_cpref_rule(Id, Rule):-
+	coherent_cpref_rule(Rule),
 	assert(cpref_rule(Id, Rule)).
 
 remove_cpref_rule(Id):-

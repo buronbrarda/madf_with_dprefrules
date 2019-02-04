@@ -44,13 +44,7 @@ public class CSVTableReader implements Iterator<String[]>{
     public String[] getHeaders(){
     	return this.headers;
     }
-    
-    
-    @Override
-    protected void finalize() throws Throwable {
-    	this.closeFile();
-    	super.finalize();
-    }
+ 
     
 	@Override
 	public boolean hasNext() {
