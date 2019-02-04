@@ -5,6 +5,8 @@
 		alternative/1,
 		profile_rule/2,
 		cpref_rule/2,
+		fact/3,
+		assessment/3,
 		
 		add_assessed_alternative/2,
 		add_alternative/2,
@@ -31,6 +33,8 @@
 :- dynamic alternative/1.
 :- dynamic profile_rule/2.
 :- dynamic cpref_rule/2.
+:- dynamic fact/3.
+:- dynamic assessment/3.
 
 :-use_module(interpreter, [coherent_cpref_rule/1]).
 
@@ -43,10 +47,9 @@ add_assessed_alternative(Id,Knowledge):-
 	forall(member([Criterion,Value],Knowledge),(
 		%Verify criterion-value domain.
 		values(Criterion,Domain),
-		member(Value,Domain),
+		member(Value,Domain),!,
 		
-		Assessment =.. [Criterion, Id, Value],
-		assert(Assessment)
+		assert(assessment(Criterion, Id, Value))
 	)),!.
 
 % If fails, execute contingency plan and fail.
@@ -60,8 +63,8 @@ add_alternative(Id,Evidence):-
 	not(alternative(Id)),!,
 	assert(alternative(Id)),
 	forall(member([Feature,Value], Evidence),(
-		Fact =.. [Feature, Id, Value],
-		assert(Fact)
+		feature(Feature),
+		assert(fact(Feature, Id, Value))
 	)).
 
 % If fails, execute contingency plan and fail.	
@@ -76,31 +79,23 @@ remove_alternative(Id):-
 	
 	%Remove related evidence.
 	forall(feature(Feature),(
-		Fact =.. [Feature, Id, _],
-		retract(Fact)
+		retract(fact(Feature,Id,_))
 	)),
 	
 	%Remove related assessments.
 	forall(criterion(Criterion),(
-		Assessment =.. [Criterion, Id, _],
-		retract(Assessment)
+		retract(assessment(Criterion,Id,_))
 	)).
 	
 
 remove_alternatives:-
 	retractall(alternative(_)),
 	
-	%Remove evidence.
-	forall(feature(Feature), (
-		Fact =.. [Feature, _, _],
-		retractall(Fact)
-	)),
+	%Remove related evidence.
+	retractall(fact(_,_,_)),
 	
 	%Remove assessments.
-	forall(criterion(Criterion), (
-		Assessment =.. [Criterion, _, _],
-		retractall(Assessment)
-	)).
+	retractall(assessment(_,_,_)).
 	
 
 

@@ -1,10 +1,14 @@
 package java_ui;
 
+import java.util.Map;
+
 import javax.swing.table.TableModel;
 
 import org.jpl7.Atom;
+import org.jpl7.Compound;
 import org.jpl7.Query;
 import org.jpl7.Term;
+import org.jpl7.Util;
 
 public class CPrefRulesPrologLoader implements PrologLoader{
 
@@ -24,17 +28,30 @@ public class CPrefRulesPrologLoader implements PrologLoader{
 	
 	
 	private void loadRule(String id, String rule) throws PrologLoadException {
-		Query q = new Query("add_cpref_rule", new Term [] {new Atom(id), new Atom(rule)});
+		
+		String[] splittedRule = rule.split("==>");
+		
+		Query q = new Query("add_cpref_rule", new Term [] {new Atom(id), new Compound("==>", new Term [] {Util.textToTerm(splittedRule[0]), Util.textToTerm(splittedRule[1])})});
 		
 		if(!q.hasSolution()) {
 			
-			this.err_message = "There was a problem while loading rule '"+id+"'."
+			this.err_message = "There was a problem while loading rule '"+id+"'."+"\n"
 					+ "Please, check if its syntax is correct and if it is a coherent CPref-Rule.";
 			
 			this.status = PrologLoader.StatusCode.Error;
 			
 			throw new PrologLoadException(getErrorMessage());
-		};
+		}else{
+			
+			Query test_3 = new Query("cpref_rule(Id,Rule)");
+			
+			while(test_3.hasNext()){
+				Map<String, Term> s = test_3.next();
+				System.out.println(s.get("Id")+" - "+s.get("Rule"));
+			}
+			
+			this.status = PrologLoader.StatusCode.Ok;
+		}
 	}
 	
 	@Override
@@ -43,8 +60,9 @@ public class CPrefRulesPrologLoader implements PrologLoader{
 		
 		String id, rule;
 		
-		//row(0) = headers
-		for(int i = 1; i < tm.getRowCount(); i++) {
+		cleanCPrefRules();
+		
+		for(int i = 0; i < tm.getRowCount(); i++) {
 			
 			id = getId(i);
 			rule = getRule(i);
@@ -55,7 +73,12 @@ public class CPrefRulesPrologLoader implements PrologLoader{
 		this.status = PrologLoader.StatusCode.Ok;
 	}
 
-
+	
+	private void cleanCPrefRules(){
+		Query q = new Query("remove_cpref_rules");
+		q.hasSolution();
+	}
+	
 	@Override
 	public PrologLoader.StatusCode getStatus() {
 		return this.status;

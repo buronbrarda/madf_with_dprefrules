@@ -5,6 +5,7 @@ import javax.swing.table.TableModel;
 import org.jpl7.Atom;
 import org.jpl7.Query;
 import org.jpl7.Term;
+import org.jpl7.Util;
 
 public class KnowledgePrologLoader implements PrologLoader{
 
@@ -22,7 +23,7 @@ public class KnowledgePrologLoader implements PrologLoader{
 		String [] toReturn = new String [tm.getColumnCount()-1];
 		
 		for(int i = 1; i < tm.getColumnCount(); i++){
-			toReturn[i] = tm.getColumnName(i);
+			toReturn[i-1] = tm.getColumnName(i);
 		}
 		
 		return toReturn;
@@ -34,19 +35,24 @@ public class KnowledgePrologLoader implements PrologLoader{
 	
 	
 	private void loadAssessment(String alternative, String values) throws PrologLoadException {
-		Query q = new Query("add_assessed_alternative", new Term [] {new Atom(alternative), new Atom(values)});
+		Query q = new Query("add_assessed_alternative", new Term [] {new Atom(alternative),  Util.textToTerm(values)});
+		
+		System.out.println(alternative+"----"+values);
 		
 		if(!q.hasSolution()) {
 			
-			this.err_msg = "There was a problem while loading alternative '"+alternative+"'."
-					+ "Please, check if the associated criteria and their values are correct."
+			this.err_msg = "There was a problem while loading alternative '"+alternative+"'."+"\n"
+					+ "Please, check if the associated criteria and their values are correct."+"\n"
 					+ "Values = "+values+".";
 			
 			this.status = PrologLoader.StatusCode.Error;
 			
 			
 			throw new PrologLoadException(getErrorMessage());
-		};
+		}else{
+			
+			this.status = PrologLoader.StatusCode.Ok;
+		}
 	}
 	
 	@Override
@@ -57,22 +63,30 @@ public class KnowledgePrologLoader implements PrologLoader{
 		String alternative, values;
 		String [] criteria = getCriteria(this.tm);
 		
+		int i,j;
 		
-		//row(0) = headers
-		for(int i = 1; i < tm.getRowCount(); i++) {
+		cleanKnowledgeBase();
+		
+		for(i = 0; i < tm.getRowCount(); i++) {
 			
 			alternative = getAlternative(tm, i);
 			
 			values = "[";
 			
-			for(int j = 0; j < criteria.length; j++) {
-				values = values + "["+criteria[j]+","+getValue(this.tm,i,j+1)+"]";
+			for(j = 0; j < criteria.length-1; j++) {
+				values = values + "["+criteria[j]+","+getValue(this.tm,i,j+1)+"],";
 			}
 			
-			values = values + "]";
+			values = values + "["+criteria[j]+","+getValue(this.tm,i,j+1)+"]]";
 			
 			loadAssessment(alternative, values);
 		}
+	}
+	
+	
+	private void cleanKnowledgeBase() {
+		Query q = new Query("remove_alternatives");
+		q.hasSolution();
 	}
 
 

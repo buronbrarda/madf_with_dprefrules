@@ -7,6 +7,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java_ui.CSVTableReader;
+import java_ui.DSJavaUI;
 import java_ui.TableEditorPanel;
 import java_ui.TableModelBuilder;
 import java_ui.cpref_rules_edition.DefineCPrefRuleDialog;
@@ -37,21 +38,27 @@ public class CriteriaTableEditorPanel extends TableEditorPanel {
 	}
 
 	@Override
-	protected void fileLoadButtonAction(ActionEvent event) throws IOException {
+	protected String fileLoadButtonAction(ActionEvent event) throws IOException {
 		File f = loadCSVFile();
+		
+		String filePath = null;
 		
 		if(f != null) {
 			TableModelBuilder tmb = new CriteriaTableModelBuilder(new CSVTableReader(f));
 			
 			this.setTableModel(tmb.getTableModel());
+			
+			filePath = f.getAbsolutePath();
 		}
+		
+		return filePath;
 		
 	}
 	
 	
 	private File loadCSVFile(){
 		
-		JFileChooser fc = new JFileChooser("./");
+		JFileChooser fc = new JFileChooser(DSJavaUI.getExamplesFolderRelativePath());
 		fc.setDialogTitle("Select the file to load");
 		
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);

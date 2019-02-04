@@ -25,22 +25,25 @@ public class CriteriaPrologLoader implements PrologLoader{
 	}
 	
 	
-	private void loadCriterion(String criterion, String values) throws PrologLoadException {	
+	private void loadCriterion(String criterion, String values) throws PrologLoadException {
 		
 		Query q = new Query("add_pair", new Term [] {new Atom(criterion), Util.textToTerm(values)});
 		
 		
 		if(!q.hasSolution()) {
 			
-			this.err_msg = "There was a problem while loading criterion '"+criterion+"'."
-					+ "Please, check if the associated values can be unified with a prolog-list."
+			this.err_msg = "There was a problem while loading criterion '"+criterion+"'."+"\n"
+					+ "Please, check criterion duplication and check if the associated values can be unified with a prolog-list."+"\n"
 					+ "Values = "+values+".";
 			
 			this.status = PrologLoader.StatusCode.Error;
 			
 			
 			throw new PrologLoadException(getErrorMessage());
-		};
+		}
+		else{
+			this.status = PrologLoader.StatusCode.Ok;
+		}
 		
 	}
 	
@@ -51,8 +54,10 @@ public class CriteriaPrologLoader implements PrologLoader{
 		
 		String criterion, values;
 		
-		//row(0) = headers
-		for(int i = 1; i < tm.getRowCount(); i++) {
+		cleanCriteria();
+		
+
+		for(int i = 0; i < tm.getRowCount(); i++) {
 			
 			criterion = getCriterion(i);
 			values = getValues(i);
@@ -70,6 +75,11 @@ public class CriteriaPrologLoader implements PrologLoader{
 		}
 	}
 
+
+	private void cleanCriteria() {
+		Query q = new Query("remove_pairs");
+		q.hasSolution();
+	}
 
 	@Override
 	public PrologLoader.StatusCode getStatus() {

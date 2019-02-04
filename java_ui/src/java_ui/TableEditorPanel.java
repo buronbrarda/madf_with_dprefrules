@@ -50,6 +50,7 @@ public abstract class TableEditorPanel extends JPanel {
 		gbc_scrollPane.gridy = 0;
 		add(scrollPane, gbc_scrollPane);
 		
+		/*
 		
 		JPanel buttonsPanel = new JPanel();
 		GridBagConstraints gbc_panel = new GridBagConstraints();
@@ -88,6 +89,8 @@ public abstract class TableEditorPanel extends JPanel {
 		gbc_separator.gridy = 2;
 		add(this.separator, gbc_separator);
 		
+		*/
+		
 		this.filePanel = new JPanel();
 		GridBagConstraints gbc_filePanel = new GridBagConstraints();
 		gbc_filePanel.insets = new Insets(0, 5, 5, 5);
@@ -125,7 +128,12 @@ public abstract class TableEditorPanel extends JPanel {
 		this.fileLoadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					fileLoadButtonAction(arg0);
+					String path = fileLoadButtonAction(arg0);
+					
+					if(path != null){
+						fileText.setText(path);
+					}
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -162,5 +170,5 @@ public abstract class TableEditorPanel extends JPanel {
 	
 	protected abstract void removeButtonAction(ActionEvent event);
 	
-	protected abstract void fileLoadButtonAction(ActionEvent event) throws IOException;
+	protected abstract String fileLoadButtonAction(ActionEvent event) throws IOException;
 }
