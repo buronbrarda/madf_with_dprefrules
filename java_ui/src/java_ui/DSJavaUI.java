@@ -11,8 +11,12 @@ import org.jpl7.*;
 public class DSJavaUI{
 
 	private JFrame frame;
+	
+	private static final boolean productionFlag = true;
+	
+	private static final String productionPrologFilesPath = "./swipl_core/";
 	private static final String prologFilesPath = "../swipl_core/";
-	private static final String prologEntryPoint = prologFilesPath + "data_manager.pl";
+	private static final String prologEntryPoint = "data_manager.pl";
 	
 
 	/**
@@ -57,10 +61,17 @@ public class DSJavaUI{
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		//JPL.init(new String [] {prologEntryPoint});
 		
-		Query q = new Query("consult", new Term [] {new Atom(prologEntryPoint)});
-		System.out.println(q.hasSolution());
+		Atom filesPath;
+		
+		if(DSJavaUI.productionFlag){
+			filesPath = new Atom(DSJavaUI.productionPrologFilesPath + DSJavaUI.prologEntryPoint);
+		}
+		else{
+			filesPath = new Atom(DSJavaUI.prologFilesPath + DSJavaUI.prologEntryPoint);
+		}
+		
+		new Query("consult", new Term [] {filesPath}).hasSolution();
 	}
 
 }
