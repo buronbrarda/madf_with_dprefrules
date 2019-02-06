@@ -1,4 +1,4 @@
-:- module(interpreter,[
+:- module(cpref_rules_interpreter,[
 		op(1101, xfx, ==>),
 		
 		coherent_cpref_rule/1,
@@ -14,24 +14,25 @@
 	% ============================================================================================
 	% 		These predicates define how each cpref-rule premises must be interpreted.
 	% ============================================================================================
-	better(X,Y,C,[FactX, FactY]):- 
-		FactX =..[C,X,Vx], FactY =..[C,Y,Vy], call(FactX), call(FactY),
+	better(X,Y,C,[Assessment_X, Assessment_Y]):- 
+		assessment(C,X,Vx), assessment(C,Y,Vy), Assessment_X =.. [C,X,Vx],  Assessment_Y =.. [C,Y,Vy],
 		alternative(X), alternative(Y),
-		values(C,Values), greater_value(Vx,Vy,Values).
+		values(C,Domain), greater_value(Vx,Vy,Domain).
 	
-	min(X,C,Value,[Fact]):-
-		Fact=..[C,X,Vx], call(Fact),alternative(X),values(C,AssValues), geq_value(Vx,Value,AssValues).
+	min(X,C,Value,[Assessment]):-
+		assessment(C,X,Vx), Assessment=..[C,X,Vx], alternative(X),values(C,Domain), geq_value(Vx,Value,Domain).
 	
-	max(Y,C,Value,[Fact]):-
-		Fact=..[C,Y,Vy], call(Fact),alternative(Y),values(C,AssValues), geq_value(Value,Vy,AssValues).
+	max(Y,C,Value,[Assessment]):-
+		assessment(C,Y,Vy), Assessment=..[C,Y,Vy], alternative(Y),values(C,Domain), geq_value(Value,Vy,Domain).
 		
-	equal(X,Y,C,[FactX, FactY]):-
-		FactX=..[C,X,V], FactY=..[C,Y,V],call(FactX),call(FactY), alternative(X), alternative(Y).
+	equal(X,Y,C,[Assessment_X, Assessment_Y]):-
+		assessment(C,X,V), assessment(C,Y,V), Assessment_X=..[C,X,V], Assessment_Y=..[C,Y,V], alternative(X), alternative(Y).
 	
 	
-	worse(X,Y,C,[FactX, FactY]):- 
-		FactX =..[C,X,Vx], FactY =..[C,Y,Vy], call(FactX), call(FactY),
-		values(C,Values), greater_value(Vy,Vx,Values).
+	worse(X,Y,C,[Assessment_X, Assessment_Y]):-
+		assessment(C,X,Vx), assessment(C,Y,Vy),
+		Assessment_X =..[C,X,Vx], Assessment_Y =..[C,Y,Vy],
+		values(C,Domain), greater_value(Vy,Vx,Domain).
 	
 	% ============================================================================================
 	% ============================================================================================
@@ -69,10 +70,7 @@
 	% 		These predicates define an interpreter of cpref-rules
 	% =================================================================================
 	
-	premise(better).
-	premise(worse).
-	premise(equal).
-	
+	premise_type(better). premise_type(worse). premise_type(equal).	
 	
 	/***********************************************************************************
 		coherent_cpref_rule(+CPrefRule).
@@ -88,7 +86,7 @@
 	
 	%Check better, worse and equal clauses.	
 	coherent_body((Premise, Body), Criteria, [X,Y], [[C,PType]|Criteria_Output]):-
-		premise(PType),
+		premise_type(PType),
 		Premise =.. [PType,X,Y,C],!,
 		
 		criterion(C),								%Check criterion existence.
@@ -99,15 +97,20 @@
 	
 	%Check min(X,C,V) clauses.
 	coherent_body((Premise, Body), Criteria, [X,Y], Criteria_Output):-
-		Premise =.. [min,X,C,V],!,
+		Premise =.. [min,X,C,Min_V],!,
 		
 		criterion(C),								%Check criterion existence.
-		values(C,Domain), member(V,Domain),			%Check criterion domain.
+		values(C,Domain), member(Min_V,Domain),			%Check criterion domain.
 		member([C,_PType],Criteria),				%Check previous b_premise, w_premise or e_premise.
+		
+		(%Check that Min_V < Max_V when there exists a previous max clause.
+			(member([C,max,Max_V],Criteria), greater_value(Max_V,Min_V,Domain));
+			(not(member([C,max,_],Criteria)))
+		),!,
 		
 		not(member([C,min,_Value],Criteria)),		%Check non-duplicate min.
 		
-		coherent_body(Body, [[C,min,V]|Criteria], [X,Y], Criteria_Output).
+		coherent_body(Body, [[C,min,Min_V]|Criteria], [X,Y], Criteria_Output).
 	
 	
 	
@@ -132,7 +135,7 @@
 	
 	%Check better, worse and equal clauses.	
 	coherent_body(Premise, Criteria, [X,Y], [[C,PType]]):-
-		premise(PType),
+		premise_type(PType),
 		Premise =.. [PType,X,Y,C],!,
 		
 		criterion(C),								%Check criterion existence.
@@ -141,11 +144,16 @@
 		
 	%Check min(X,C,V) clauses.
 	coherent_body(Premise, Criteria, [X,_Y], []):-
-		Premise =.. [min,X,C,V],!,
+		Premise =.. [min,X,C,Min_V],!,
 		
 		criterion(C),								%Check criterion existence.
-		values(C,Domain), member(V,Domain),			%Check criterion domain.
+		values(C,Domain), member(Min_V,Domain),			%Check criterion domain.
 		member([C,_PType],Criteria),				%Check previous b_premise, w_premise or e_premise.
+		
+		(%Check that Min_V < Max_V when there exists a previous max clause.
+			(member([C,max,Max_V],Criteria), greater_value(Max_V,Min_V,Domain));
+			(not(member([C,max,_],Criteria)))
+		),!,
 		
 		not(member([C,min,_Value],Criteria)).		%Check non-duplicate min.
 	

@@ -16,7 +16,7 @@ public class DSJavaUI{
 	
 	private static final String productionPrologFilesPath = "./swipl_core/";
 	private static final String prologFilesPath = "../swipl_core/";
-	private static final String prologEntryPoint = "data_manager.pl";
+	private static final String prologEntryPoint = "decision_framework.pl";
 	
 
 	/**
@@ -48,7 +48,6 @@ public class DSJavaUI{
 		frame.getContentPane().add(stepsView, BorderLayout.CENTER);
 		
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

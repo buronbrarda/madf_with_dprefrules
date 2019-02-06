@@ -43,6 +43,8 @@ public class CPrefRulesPrologLoader implements PrologLoader{
 			throw new PrologLoadException(getErrorMessage());
 		}else{
 			
+			System.out.println("f1");
+			
 			Query test_3 = new Query("cpref_rule(Id,Rule)");
 			
 			while(test_3.hasNext()){

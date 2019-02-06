@@ -36,7 +36,7 @@
 :- dynamic fact/3.
 :- dynamic assessment/3.
 
-:-use_module(interpreter, [coherent_cpref_rule/1]).
+:-use_module(cpref_rules_interpreter, [coherent_cpref_rule/1, op(1101, xfx, ==>)]).
 
 
 add_assessed_alternative(Id,Knowledge):-
@@ -136,3 +136,113 @@ remove_cpref_rule(Id):-
 
 remove_cpref_rules:-
 	retractall(cpref_rule(_,_)).
+	
+	/*
+	
+	%=============== JUST TO DEBUG ==============%
+	
+	alternative(a1). 
+    alternative(a2). 
+    alternative(a3). 
+    alternative(a4).
+    
+    assessment(cost,a1,bad).
+    assessment(location,a1,good).
+    assessment(size,a1,reg).
+    
+    assessment(cost,a2,good).
+    assessment(location,a2,reg).
+    assessment(size,a2,good).
+    
+    assessment(cost,a3,vgood).
+    assessment(location,a3,bad).
+    assessment(size,a3,vbad).
+    
+    assessment(cost,a4,bad).
+    assessment(location,a4,reg).
+    assessment(size,a4,good).
+    
+	
+	% ========================================
+    %       Criteria
+    % ========================================
+    criterion(cost).
+    criterion(location).
+    criterion(size).
+    
+    % ========================================
+    %       Values
+    % ========================================
+    values(cost,[vbad,bad,reg,good,vgood]).
+    values(location,[vbad,bad,reg,good,vgood]).
+    values(size,[vbad,bad,reg,good,vgood]).
+    
+    
+    % ========================================
+    %       CP - Rules
+    % ========================================
+    
+    %--Tim's Rules
+    
+    % R1: 
+    cpref_rule(r1, 
+        better(X,Y,cost) ==> pref(X,Y)
+    ).
+    
+    % R2: 
+    cpref_rule(r2, (
+        better(X,Y,location),
+        equal(X,Y,cost) ==> pref(X,Y)
+    )).
+    
+    % R3:
+    cpref_rule(r3, (
+        better(X,Y,size),
+        equal(X,Y,location),
+        equal(X,Y,cost) ==> pref(X,Y)
+    )).
+    
+    %================================================================
+    
+    %--August's Exceptions
+    
+    % R4: 
+    cpref_rule(r4, (
+        better(X,Y,location), min(X,location,good),
+        worse(X,Y,cost) ==> pref(X,Y)
+    )).
+    
+    % R5: 
+    cpref_rule(r5, (
+        better(X,Y,location), min(X,location,reg),
+        worse(X,Y,cost), min(X,cost,bad) ==> pref(X,Y)
+    )).
+    
+    %================================================================
+    
+    %--Kate's Exceptions
+    
+    % R6: 
+    cpref_rule(r6, (
+        better(X,Y,size), min(X,size,reg),
+        worse(X,Y,location), min(X,location,bad), max(Y,location,good),
+        better(X,Y,cost) ==> pref(X,Y)
+    )).
+    
+    % R7: 
+    cpref_rule(r7, (
+        equal(X,Y,cost),
+        worse(X,Y,location), min(X,location,bad), max(Y,location,good),
+        better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
+    )).
+	
+	
+	%--Kate's extra rule.
+	
+	% R8: Impose the minimal requirements to prefer the size over the location.
+    cpref_rule(r8, (
+        better(X,Y,cost), min(X,cost,good),
+        better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
+    )).
+    
+    */
