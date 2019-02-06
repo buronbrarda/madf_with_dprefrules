@@ -8,6 +8,7 @@ import javax.swing.JButton;
 
 import org.jpl7.Query;
 import org.jpl7.Term;
+import org.jpl7.Util;
 
 public class RunStepPanel extends StepPanel {
 	
@@ -53,9 +54,38 @@ public class RunStepPanel extends StepPanel {
 		if(q.hasSolution()){
 			q.open();
 			solution = q.getSolution();
-			resultsPanel.setSelectedAlternatives(solution.get("Selection").toString());
-			resultsPanel.setAlternativesRelation(solution.get("Order").toString());
+			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
+			resultsPanel.setAlternativesRelation(parseAlternativesRelation(Util.listToTermArray(solution.get("Order"))));
 		}
 	}
-
+	
+	
+	private String termArrayToText(Term [] list){
+		String toReturn = "";
+		
+		int i;
+		
+		for(i = 0; i < list.length-1; i++){
+			toReturn += list[i]+", ";
+		}
+		
+		toReturn += list[i];
+		
+		return toReturn;
+	}
+	
+	
+	private String parseAlternativesRelation(Term [] list){
+		String toReturn = "";
+		
+		int i;
+		
+		for(i = 0; i < list.length-1; i++){
+			toReturn += "["+termArrayToText(Util.listToTermArray(list[i]))+"] --> ";
+		}
+		
+		toReturn += "["+termArrayToText(Util.listToTermArray(list[i]))+"]";
+		
+		return toReturn;
+	}
 }

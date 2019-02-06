@@ -137,6 +137,7 @@ remove_cpref_rule(Id):-
 remove_cpref_rules:-
 	retractall(cpref_rule(_,_)).
 	
+	
 	/*
 	
 	%=============== JUST TO DEBUG ==============%

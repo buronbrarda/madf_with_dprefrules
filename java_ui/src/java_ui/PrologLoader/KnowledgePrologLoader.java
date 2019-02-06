@@ -37,8 +37,6 @@ public class KnowledgePrologLoader implements PrologLoader{
 	private void loadAssessment(String alternative, String values) throws PrologLoadException {
 		Query q = new Query("add_assessed_alternative", new Term [] {new Atom(alternative),  Util.textToTerm(values)});
 		
-		System.out.println(alternative+"----"+values);
-		
 		if(!q.hasSolution()) {
 			
 			this.err_msg = "There was a problem while loading alternative '"+alternative+"'."+"\n"
@@ -86,7 +84,7 @@ public class KnowledgePrologLoader implements PrologLoader{
 	
 	private void cleanKnowledgeBase() {
 		Query q = new Query("remove_alternatives");
-		q.hasSolution();
+		q.open();
 	}
 
 

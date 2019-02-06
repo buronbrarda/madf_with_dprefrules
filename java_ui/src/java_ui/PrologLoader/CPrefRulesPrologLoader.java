@@ -1,7 +1,5 @@
 package java_ui.PrologLoader;
 
-import java.util.Map;
-
 import javax.swing.table.TableModel;
 
 import org.jpl7.Atom;
@@ -42,16 +40,7 @@ public class CPrefRulesPrologLoader implements PrologLoader{
 			
 			throw new PrologLoadException(getErrorMessage());
 		}else{
-			
-			System.out.println("f1");
-			
-			Query test_3 = new Query("cpref_rule(Id,Rule)");
-			
-			while(test_3.hasNext()){
-				Map<String, Term> s = test_3.next();
-				System.out.println(s.get("Id")+" - "+s.get("Rule"));
-			}
-			
+				
 			this.status = PrologLoader.StatusCode.Ok;
 		}
 	}

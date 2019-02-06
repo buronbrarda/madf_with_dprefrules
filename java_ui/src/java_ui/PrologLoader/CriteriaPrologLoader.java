@@ -1,7 +1,5 @@
 package java_ui.PrologLoader;
 
-import java.util.Map;
-
 import javax.swing.table.TableModel;
 
 import org.jpl7.Atom;
@@ -63,15 +61,6 @@ public class CriteriaPrologLoader implements PrologLoader{
 			values = getValues(i);
 			
 			loadCriterion(criterion, values);
-		}
-		
-		
-		Query test = new Query("values(C,V)");
-		Map<String, Term> solution;
-		
-		while(test.hasNext()){
-			solution = test.next();
-			System.out.println("C = "+solution.get("C")+"; V = "+solution.get("V"));
 		}
 	}
 
