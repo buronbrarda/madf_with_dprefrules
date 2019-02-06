@@ -8,13 +8,16 @@ import javax.swing.JButton;
 
 import org.jpl7.Query;
 import org.jpl7.Term;
-import org.jpl7.Util;
 
 public class RunStepPanel extends StepPanel {
 	
 	private JButton runButton;
+	private ResultsPanel resultsPanel;
 	
-	RunStepPanel(){
+	RunStepPanel(ResultsPanel resultsPanel){
+		
+		this.resultsPanel = resultsPanel;
+		
 		//The run step must be the last step.
 		this.setFollowingStep(null);
 		
@@ -50,8 +53,8 @@ public class RunStepPanel extends StepPanel {
 		if(q.hasSolution()){
 			q.open();
 			solution = q.getSolution();
-			System.out.println("Selection = "+solution.get("Selection"));
-			System.out.println("Order = "+solution.get("Order"));
+			resultsPanel.setSelectedAlternatives(solution.get("Selection").toString());
+			resultsPanel.setAlternativesRelation(solution.get("Order").toString());
 		}
 	}
 

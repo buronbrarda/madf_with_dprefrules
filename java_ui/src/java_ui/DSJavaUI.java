@@ -3,10 +3,10 @@ package java_ui;
 import java.awt.EventQueue;
 import java.io.IOException;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-
 import org.jpl7.*;
+import javax.swing.BoxLayout;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 public class DSJavaUI{
 
@@ -41,11 +41,33 @@ public class DSJavaUI{
 	public DSJavaUI() {
 		initialize();
 		
-		JPanel stepsView;
-		try {
-			stepsView = new AllStepsPanel();
+		AllStepsPanel stepsView;
+		ResultsPanel resultsView;
 		
-		frame.getContentPane().add(stepsView, BorderLayout.CENTER);
+		try {
+			
+			resultsView = new ResultsPanel();
+			stepsView = new AllStepsPanel(resultsView);
+			
+			frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
+			
+			JSeparator separator_2 = new JSeparator();
+			separator_2.setOrientation(SwingConstants.VERTICAL);
+			frame.getContentPane().add(separator_2);
+			
+			
+			frame.getContentPane().add(stepsView);
+			
+			JSeparator separator = new JSeparator();
+			separator.setOrientation(SwingConstants.VERTICAL);
+			frame.getContentPane().add(separator);
+			
+			
+			frame.getContentPane().add(resultsView);
+			
+			JSeparator separator_1 = new JSeparator();
+			separator_1.setOrientation(SwingConstants.VERTICAL);
+			frame.getContentPane().add(separator_1);
 		
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -57,7 +79,7 @@ public class DSJavaUI{
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 791, 401);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		

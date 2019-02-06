@@ -2,6 +2,8 @@ package java_ui;
 
 import javax.swing.table.TableModel;
 
+import java_ui.PrologLoader.PrologLoadException;
+import java_ui.PrologLoader.PrologLoader;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,8 +20,14 @@ public class DefineStepPanel extends StepPanel{
 	private JButton stepButton;
 	private JLabel statusLabel;
 	private JLabel statusResultLabel;
+	
+	private TableEditorPanel tep;
+	private PrologLoader loader;
 
-	public DefineStepPanel(String instruction, TableEditorPanel tep, PrologLoader loader) {		
+	public DefineStepPanel(String instruction, TableEditorPanel tep, PrologLoader loader) {
+		this.tep = tep;
+		this.loader = loader;
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0};
@@ -103,5 +111,17 @@ public class DefineStepPanel extends StepPanel{
 	@Override
 	public void disableStepAction() {
 		this.stepButton.setEnabled(false);
+	}
+	
+	
+	public void setTableModel(TableModel tm){
+		this.tep.setTableModel(tm);
+		try {
+			this.loader.loadData(tm);
+			this.statusResultLabel.setText("OK");
+		} catch (PrologLoadException e) {
+			this.statusResultLabel.setText("ERROR");
+			e.printStackTrace();
+		}
 	}
 }
