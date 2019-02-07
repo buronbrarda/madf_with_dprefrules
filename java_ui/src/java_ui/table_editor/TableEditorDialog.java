@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.table_editor;
 
 import java.awt.BorderLayout;
 import javax.swing.JButton;
@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import javax.swing.table.TableModel;
+
+import java_ui.table_editor.panel.TableEditorPanel;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

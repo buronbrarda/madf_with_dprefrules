@@ -1,18 +1,17 @@
-package java_ui.cpref_rules_edition;
+package java_ui.table_editor.model_builder;
 
 import java.io.IOException;
 
 import javax.swing.table.DefaultTableModel;
 
-import java_ui.CSVTableReader;
-import java_ui.TableModelBuilder;
+import java_ui.table_editor.table_reader.CSVTableReader;
 
-public class CPrefRulesTableModelBuilder implements TableModelBuilder{
+public class RulesTableModelBuilder implements TableModelBuilder{
 	
 	private CSVTableReader reader;
 	private final String [] headers = {"Id", "Rule"};
 
-	public CPrefRulesTableModelBuilder(CSVTableReader reader) {
+	public RulesTableModelBuilder(CSVTableReader reader) {
 		this.reader = reader;
 	}
 	

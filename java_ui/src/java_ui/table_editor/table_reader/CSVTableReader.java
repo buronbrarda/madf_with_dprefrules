@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.table_editor.table_reader;
 
 import java.io.BufferedReader;
 import java.io.File;

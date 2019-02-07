@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.table_editor;
 
 import java.awt.Color;
 import java.awt.Component;

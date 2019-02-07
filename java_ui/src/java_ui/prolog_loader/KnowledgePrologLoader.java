@@ -1,4 +1,4 @@
-package java_ui.PrologLoader;
+package java_ui.prolog_loader;
 
 import javax.swing.table.TableModel;
 
@@ -84,7 +84,7 @@ public class KnowledgePrologLoader implements PrologLoader{
 	
 	private void cleanKnowledgeBase() {
 		Query q = new Query("remove_alternatives");
-		q.open();
+		q.hasSolution();
 	}
 
 

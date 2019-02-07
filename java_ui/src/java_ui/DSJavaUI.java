@@ -4,6 +4,9 @@ import java.awt.EventQueue;
 import java.io.IOException;
 import javax.swing.JFrame;
 import org.jpl7.*;
+
+import java_ui.steps.ResultsPanel;
+
 import javax.swing.BoxLayout;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;

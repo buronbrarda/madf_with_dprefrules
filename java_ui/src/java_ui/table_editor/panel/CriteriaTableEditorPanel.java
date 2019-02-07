@@ -1,4 +1,4 @@
-package java_ui.knowledge_edition;
+package java_ui.table_editor.panel;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,18 +6,18 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import java_ui.CSVTableReader;
 import java_ui.DSJavaUI;
-import java_ui.TableEditorPanel;
-import java_ui.TableModelBuilder;
-import java_ui.cpref_rules_edition.DefineCPrefRuleDialog;
-import java_ui.cpref_rules_edition.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
+import java_ui.DefineCPrefRuleDialog;
+import java_ui.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
+import java_ui.table_editor.model_builder.CriteriaTableModelBuilder;
+import java_ui.table_editor.model_builder.TableModelBuilder;
+import java_ui.table_editor.table_reader.CSVTableReader;
 
 import java.awt.event.ActionEvent;
 
-public class KnowledgeTableEditorPanel extends TableEditorPanel {
+public class CriteriaTableEditorPanel extends TableEditorPanel {
 	
-	public KnowledgeTableEditorPanel() throws IOException {
+	public CriteriaTableEditorPanel() throws IOException {
 		this.init();
 	}
 	
@@ -44,11 +44,11 @@ public class KnowledgeTableEditorPanel extends TableEditorPanel {
 		String filePath = null;
 		
 		if(f != null) {
-			TableModelBuilder tmb = new EvidenceTableModelBuilder(new CSVTableReader(f));
+			TableModelBuilder tmb = new CriteriaTableModelBuilder(new CSVTableReader(f));
 			
 			this.setTableModel(tmb.getTableModel());
 			
-			filePath  = f.getAbsolutePath();
+			filePath = f.getAbsolutePath();
 		}
 		
 		return filePath;

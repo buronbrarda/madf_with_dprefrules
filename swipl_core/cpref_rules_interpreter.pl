@@ -6,7 +6,6 @@
 		consult_cpref_rule/2
 	]).
 	
-	:-use_module(utils).
 	:-use_module(data_manager).
 	
 	:-op(1101, xfx, ==>).
@@ -40,28 +39,21 @@
 	
 	
 	/***********************************************************************************
-		greater_value(+V, +U, +Values).
-		geq_Values(+V, +U, +Values).
+		greater_value(+V, +U, +Domain).
+		geq_Values(+V, +U, +Domain).
 		
 		Defines whether V > U and V >= U, with respect to their position in the list
-		Values. V > U iff pos(V,Values) > pos(U,Values).
+		Domain. V > U iff pos(V,Values) > pos(U,Values).
 	************************************************************************************/
-	greater_value(V,U,Values):-
-		pos(V,Values,PosV),
-		pos(U,Values,PosU),
-		PosV > PosU.
+	greater_value(V,U,Domain):-
+		nth0(Index_1,Domain,V),
+		nth0(Index_2,Domain,U),
+		Index_1 > Index_2.
 	
-	geq_value(V,U,Values):- 
-		member(V,Values),
-		member(U,Values),
-		not(greater_value(U,V,Values)).
-
-	
-	pos(V, [V|_], 0):-!.
-	
-	pos(V, [_|T], Out):-
-		pos(V, T, Pos),
-		Out is Pos + 1.
+	geq_value(V,U,Domain):- 
+		nth0(Index_1,Domain,V),
+		nth0(Index_2,Domain,U),
+		Index_1 >= Index_2.
 	
 	/**********************************************************************************/
 	

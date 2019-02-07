@@ -1,11 +1,10 @@
-package java_ui.criteria_edition;
+package java_ui.table_editor.model_builder;
 
 import java.io.IOException;
 
 import javax.swing.table.DefaultTableModel;
 
-import java_ui.CSVTableReader;
-import java_ui.TableModelBuilder;
+import java_ui.table_editor.table_reader.CSVTableReader;
 
 public class CriteriaTableModelBuilder implements TableModelBuilder{
 	

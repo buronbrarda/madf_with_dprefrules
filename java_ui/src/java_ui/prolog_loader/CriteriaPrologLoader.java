@@ -1,4 +1,4 @@
-package java_ui.PrologLoader;
+package java_ui.prolog_loader;
 
 import javax.swing.table.TableModel;
 
@@ -25,7 +25,7 @@ public class CriteriaPrologLoader implements PrologLoader{
 	
 	private void loadCriterion(String criterion, String values) throws PrologLoadException {
 		
-		Query q = new Query("add_pair", new Term [] {new Atom(criterion), Util.textToTerm(values)});
+		Query q = new Query("add_criterion", new Term [] {new Atom(criterion), Util.textToTerm(values)});
 		
 		
 		if(!q.hasSolution()) {
@@ -66,7 +66,7 @@ public class CriteriaPrologLoader implements PrologLoader{
 
 
 	private void cleanCriteria() {
-		Query q = new Query("remove_pairs");
+		Query q = new Query("remove_criteria");
 		q.hasSolution();
 	}
 

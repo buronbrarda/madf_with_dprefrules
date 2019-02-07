@@ -5,15 +5,21 @@ import java.awt.BorderLayout;
 import javax.swing.JSeparator;
 import javax.swing.table.TableModel;
 
-import java_ui.PrologLoader.CPrefRulesPrologLoader;
-import java_ui.PrologLoader.CriteriaPrologLoader;
-import java_ui.PrologLoader.KnowledgePrologLoader;
-import java_ui.cpref_rules_edition.CPrefRulesTableEditorPanel;
-import java_ui.cpref_rules_edition.CPrefRulesTableModelBuilder;
-import java_ui.criteria_edition.CriteriaTableEditorPanel;
-import java_ui.criteria_edition.CriteriaTableModelBuilder;
-import java_ui.knowledge_edition.EvidenceTableModelBuilder;
-import java_ui.knowledge_edition.KnowledgeTableEditorPanel;
+import java_ui.prolog_loader.CPrefRulesPrologLoader;
+import java_ui.prolog_loader.CriteriaPrologLoader;
+import java_ui.prolog_loader.KnowledgePrologLoader;
+import java_ui.steps.DefineStepPanel;
+import java_ui.steps.ResultsPanel;
+import java_ui.steps.RunStepPanel;
+import java_ui.steps.StepPanel;
+import java_ui.table_editor.model_builder.RulesTableModelBuilder;
+import java_ui.table_editor.model_builder.CriteriaTableModelBuilder;
+import java_ui.table_editor.model_builder.EvidenceTableModelBuilder;
+import java_ui.table_editor.panel.CPrefRulesTableEditorPanel;
+import java_ui.table_editor.panel.CriteriaTableEditorPanel;
+import java_ui.table_editor.panel.KnowledgeTableEditorPanel;
+import java_ui.table_editor.table_reader.CSVTableReader;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -115,7 +121,7 @@ public class AllStepsPanel extends JPanel{
 		
 		TableModel criteriaModel = new CriteriaTableModelBuilder(new CSVTableReader(criteria_file)).getTableModel();
 		TableModel knowledgeModel = new EvidenceTableModelBuilder(new CSVTableReader(knowledge_file)).getTableModel();
-		TableModel cprefRulesModel = new CPrefRulesTableModelBuilder(new CSVTableReader(cpref_rules_file)).getTableModel();
+		TableModel cprefRulesModel = new RulesTableModelBuilder(new CSVTableReader(cpref_rules_file)).getTableModel();
 				
 		step_1.setTableModel(criteriaModel);
 		step_2.setTableModel(knowledgeModel);

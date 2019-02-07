@@ -1,4 +1,4 @@
-package java_ui.PrologLoader;
+package java_ui.prolog_loader;
 
 import javax.swing.table.TableModel;
 
@@ -7,8 +7,9 @@ import org.jpl7.Compound;
 import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
+import org.jpl7.Variable;
 
-public class CPrefRulesPrologLoader implements PrologLoader{
+public class ProfileRulesPrologLoader implements PrologLoader{
 
 	private TableModel tm;
 	private PrologLoader.StatusCode status;
@@ -27,9 +28,9 @@ public class CPrefRulesPrologLoader implements PrologLoader{
 	
 	private void loadRule(String id, String rule) throws PrologLoadException {
 		
-		String[] splittedRule = rule.split("==>");
+		Query parser = new Query("term_to_atom", new Term [] { new Variable("Rule"), new Atom(rule)});
 		
-		Query q = new Query("add_cpref_rule", new Term [] {new Atom(id), new Compound("==>", new Term [] {Util.textToTerm(splittedRule[0]), Util.textToTerm(splittedRule[1])})});
+		Query q = new Query("add_profile_rule", new Term [] {new Atom(id), RUle);
 		
 		if(!q.hasSolution()) {
 			

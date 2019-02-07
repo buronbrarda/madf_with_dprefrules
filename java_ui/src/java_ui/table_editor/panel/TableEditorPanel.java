@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.table_editor.panel;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,6 +16,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
+
+import java_ui.table_editor.NoWrappingTableCellRenderer;
 
 public abstract class TableEditorPanel extends JPanel {
 	

@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.steps;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +15,7 @@ public class RunStepPanel extends StepPanel {
 	private JButton runButton;
 	private ResultsPanel resultsPanel;
 	
-	RunStepPanel(ResultsPanel resultsPanel){
+	public RunStepPanel(ResultsPanel resultsPanel){
 		
 		this.resultsPanel = resultsPanel;
 		

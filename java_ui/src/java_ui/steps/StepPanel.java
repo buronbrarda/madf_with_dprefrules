@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.steps;
 
 import javax.swing.JPanel;
 

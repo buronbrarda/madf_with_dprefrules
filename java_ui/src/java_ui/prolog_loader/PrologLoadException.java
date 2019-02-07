@@ -1,4 +1,4 @@
-package java_ui.PrologLoader;
+package java_ui.prolog_loader;
 
 import java.io.IOException;
 

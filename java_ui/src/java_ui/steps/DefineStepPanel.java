@@ -1,9 +1,12 @@
-package java_ui;
+package java_ui.steps;
 
 import javax.swing.table.TableModel;
 
-import java_ui.PrologLoader.PrologLoadException;
-import java_ui.PrologLoader.PrologLoader;
+import java_ui.prolog_loader.PrologLoadException;
+import java_ui.prolog_loader.PrologLoader;
+import java_ui.table_editor.TableEditorDialog;
+import java_ui.table_editor.panel.TableEditorPanel;
+
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;

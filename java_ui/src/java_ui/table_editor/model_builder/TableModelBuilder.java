@@ -1,4 +1,4 @@
-package java_ui;
+package java_ui.table_editor.model_builder;
 
 import javax.swing.table.DefaultTableModel;
 
