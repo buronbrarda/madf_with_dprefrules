@@ -7,7 +7,7 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
 
-public class KnowledgePrologLoader implements PrologLoader{
+public class EvidencePrologLoader implements PrologLoader{
 
 	private TableModel tm;
 	private String err_msg;
@@ -35,12 +35,12 @@ public class KnowledgePrologLoader implements PrologLoader{
 	
 	
 	private void loadAssessment(String alternative, String values) throws PrologLoadException {
-		Query q = new Query("add_assessed_alternative", new Term [] {new Atom(alternative),  Util.textToTerm(values)});
+		Query q = new Query("add_alternative", new Term [] {new Atom(alternative),  Util.textToTerm(values)});
 		
 		if(!q.hasSolution()) {
 			
 			this.err_msg = "There was a problem while loading alternative '"+alternative+"'."+"\n"
-					+ "Please, check if the associated criteria and their values are correct."+"\n"
+					+ "Please, check if the associated features and their values are correct."+"\n"
 					+ "Values = "+values+".";
 			
 			this.status = PrologLoader.StatusCode.Error;

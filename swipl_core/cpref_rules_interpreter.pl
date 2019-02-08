@@ -7,6 +7,7 @@
 	]).
 	
 	:-use_module(data_manager).
+	:-use_module(translator, [assessment/3]).
 	
 	:-op(1101, xfx, ==>).
 	

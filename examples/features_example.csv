@@ -1,0 +1,6 @@
+criteria;domain
+price;real_numbers
+distance;real_numbers
+noise;[low, med, high]
+area;real_numbers
+rooms;real_numbers

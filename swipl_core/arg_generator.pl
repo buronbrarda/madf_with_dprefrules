@@ -10,7 +10,7 @@
 		print_rule/1
 	]).
 	
-	:-use_module(data_manager, [cpref_rule/2]).	
+	:-use_module(data_manager, [cpref_rule/2]).
 	:-use_module(cpref_rules_interpreter).
 	:-use_module(utils, [next_id/2, reset_id/1, equals_sets/2]).
 	
@@ -42,6 +42,7 @@
 			
 	************************************************************************************/
 	generate_arguments:-
+		
 		remove_arguments,
 					
 		% Generates raw_arguments from grules

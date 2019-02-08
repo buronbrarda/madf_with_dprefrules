@@ -12,8 +12,11 @@
 	:-reexport(data_manager).
 	
 	:-use_module(arg_generator, [argument/4]).
+	:-use_module(translator, [generate_assessments/0]).
 	:-use_module(argumentation_framework, [warranted/1, justification/4, generate_warranted_conclusions/0]).
 	:-use_module(utils).
+	
+	:-reexport(profile_rules_interpreter, [op(1020, xfy, is), op(1010, xfy, if), op(1000, xfy, or), op(900, xfy, and), op(800, xfy, in)]).
 	
 	:-dynamic explicitly_preferred/2.
 	:-dynamic reaches/2.
@@ -30,6 +33,8 @@
 		
 	
 	init:-
+		generate_assessments,
+		
 		generate_warranted_conclusions,
 		
 		generate_preferences.

@@ -9,15 +9,15 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java_ui.DSJavaUI;
 import java_ui.DefineCPrefRuleDialog;
 import java_ui.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
-import java_ui.table_editor.model_builder.EvidenceTableModelBuilder;
+import java_ui.table_editor.model_builder.CriteriaTableModelBuilder;
 import java_ui.table_editor.model_builder.TableModelBuilder;
 import java_ui.table_editor.table_reader.CSVTableReader;
 
 import java.awt.event.ActionEvent;
 
-public class KnowledgeTableEditorPanel extends TableEditorPanel {
+public class FeaturesTableEditorPanel extends TableEditorPanel {
 	
-	public KnowledgeTableEditorPanel() throws IOException {
+	public FeaturesTableEditorPanel() throws IOException {
 		this.init();
 	}
 	
@@ -44,11 +44,11 @@ public class KnowledgeTableEditorPanel extends TableEditorPanel {
 		String filePath = null;
 		
 		if(f != null) {
-			TableModelBuilder tmb = new EvidenceTableModelBuilder(new CSVTableReader(f));
+			TableModelBuilder tmb = new CriteriaTableModelBuilder(new CSVTableReader(f));
 			
 			this.setTableModel(tmb.getTableModel());
 			
-			filePath  = f.getAbsolutePath();
+			filePath = f.getAbsolutePath();
 		}
 		
 		return filePath;

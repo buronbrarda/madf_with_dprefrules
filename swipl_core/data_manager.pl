@@ -7,10 +7,9 @@
 		profile_rule/2,
 		cpref_rule/2,
 		fact/3,
-		assessment/3,
 		
-		add_assessed_alternative/2,
 		add_alternative/2,
+		
 		remove_alternative/1,
 		remove_alternatives/0,
 		
@@ -40,30 +39,11 @@
 	:- dynamic profile_rule/2.
 	:- dynamic cpref_rule/2.
 	:- dynamic fact/3.
-	:- dynamic assessment/3.
+	
 	
 	:-use_module(cpref_rules_interpreter, [coherent_cpref_rule/1, op(1101, xfx, ==>)]).
-	
-	
-	add_assessed_alternative(Id,Knowledge):-
-		%Verify singleton alternatives.
-		not(alternative(Id)),
-		assert(alternative(Id)),
-		
-		forall(member([Criterion,Value],Knowledge),(
-			%Verify criterion-value domain.
-			values(Criterion,Domain),
-			member(Value,Domain),!,
-			
-			assert(assessment(Criterion, Id, Value))
-		)),!.
-	
-	% If fails, execute contingency plan and fail.
-	add_assessed_alternative(Id,_Knowledge):-
-		alternative(Id),
-		remove_alternative(Id),
-		false.
-		
+	:-use_module(profile_rules_interpreter).
+	:-use_module(translator, [assessment/3, remove_assessments/1, remove_assessments/0]).
 	
 	add_alternative(Id,Evidence):-
 		not(alternative(Id)),!,
@@ -89,9 +69,7 @@
 		)),
 		
 		%Remove related assessments.
-		forall(criterion(Criterion),(
-			retract(assessment(Criterion,Id,_))
-		)).
+		remove_assessments(Id).
 		
 	
 	remove_alternatives:-
@@ -101,7 +79,7 @@
 		retractall(fact(_,_,_)),
 		
 		%Remove assessments.
-		retractall(assessment(_,_,_)).
+		remove_assessments.
 		
 	
 	
@@ -137,6 +115,10 @@
 		retractall(feature_domain(_,_)).
 	
 	
+	add_profile_rule(Id,Atom_Rule):-
+		atom(Atom_Rule),!,
+		term_to_atom(Rule,Atom_Rule),
+		assert(profile_rule(Id, Rule)).
 	
 	add_profile_rule(Id, Rule):-
 		assert(profile_rule(Id, Rule)).
@@ -163,21 +145,6 @@
 	
 	
 	%=============== JUST TO DEBUG ==============%
-	/*
-	alternative(a1).
-	
-	feature(price).
-	feature(noise).
-	
-	feature_domain(price,real_numbers).
-	feature_domain(noise,[low,med,high]).
-	
-	criterion(confort).
-	values(confort,[bad,reg,good]).
-	
-	fact(price,a1,500).
-	fact(noise,a1,med).
-	*/
 	
 	/*
 	alternative(a1). 
@@ -185,22 +152,25 @@
     alternative(a3). 
     alternative(a4).
     
-    assessment(cost,a1,bad).
-    assessment(location,a1,good).
-    assessment(size,a1,reg).
+    fact(price,a1, 500). 	fact(distance,a1,20).		fact(noise, a1, low).		fact(area, a1, 60).		fact(rooms, a1, 2).
+        
+    fact(price,a2, 400).	fact(distance,a2,10).		fact(noise, a2, high).		fact(area, a2, 70).		fact(rooms, a2, 2).
     
-    assessment(cost,a2,good).
-    assessment(location,a2,reg).
-    assessment(size,a2,good).
+    fact(price,a3, 300).	fact(distance,a3,60).		fact(noise, a3, low).		fact(area, a3, 30).		fact(rooms, a3, 1).
     
-    assessment(cost,a3,vgood).
-    assessment(location,a3,bad).
-    assessment(size,a3,vbad).
+    fact(price,a4, 550).	fact(distance,a4,15).		fact(noise, a4, med).		fact(area, a4, 80).		fact(rooms, a4, 3).
     
-    assessment(cost,a4,bad).
-    assessment(location,a4,reg).
-    assessment(size,a4,good).
-    
+    feature(price).
+    feature(distance).
+	feature(noise).
+	feature(area).
+	feature(rooms).
+	
+	feature_domain(price, real_numbers).
+	feature_domain(distance, real_numbers).
+	feature_domain(noise, [low,med,high]).
+	feature_domain(area, real_numbers).
+	feature_domain(rooms, real_numbers).
 	
 	% ========================================
     %       Criteria
@@ -215,6 +185,26 @@
     values(cost,[vbad,bad,reg,good,vgood]).
     values(location,[vbad,bad,reg,good,vgood]).
     values(size,[vbad,bad,reg,good,vgood]).
+    
+    % ========================================
+    %       Profile - Rules
+    % ========================================
+    
+    profile_rule(p1, location is vgood if noise == low and distance =< 15).
+	profile_rule(p2, location is good if noise == low and 15 < distance and distance =< 20).
+	profile_rule(p3, location is reg if (noise == med and distance =< 15) or (noise == high and distance =< 10)).
+	profile_rule(p4, location is bad if ((noise == high and 10 < distance) or (noise == low and 20 < distance)) and distance =< 60).
+	profile_rule(p5, location is vbad if 60 < distance).
+	profile_rule(p6, cost is vgood if price =< 300).
+	profile_rule(p7, cost is good if 300 < price and price =< 400).
+	profile_rule(p8, cost is reg if 400 < price and price =< 450).
+	profile_rule(p9, cost is bad if 450 < price and price =< 600).
+	profile_rule(p10, cost is vbad if 600 < price).
+	profile_rule(p11, size is vgood if 100 =< area and 3 =< rooms).
+	profile_rule(p12, size is good if (70 =< area and area < 100 and 2 =< rooms) or (100 =< area and rooms < 3)).
+	profile_rule(p13, size is reg if (50 =< area and area < 70 and 2 =< rooms) or (70 < area and rooms == 1)).
+	profile_rule(p14, size is bad if (35 =< area and area < 50 and rooms =< 3) or (35 =< area and area < 70 and rooms == 1) ).
+	profile_rule(p15, size is vbad if area < 35).
     
     
     % ========================================

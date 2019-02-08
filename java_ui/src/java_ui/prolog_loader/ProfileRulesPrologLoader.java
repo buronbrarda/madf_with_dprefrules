@@ -2,12 +2,7 @@ package java_ui.prolog_loader;
 
 import javax.swing.table.TableModel;
 
-import org.jpl7.Atom;
-import org.jpl7.Compound;
 import org.jpl7.Query;
-import org.jpl7.Term;
-import org.jpl7.Util;
-import org.jpl7.Variable;
 
 public class ProfileRulesPrologLoader implements PrologLoader{
 
@@ -28,14 +23,12 @@ public class ProfileRulesPrologLoader implements PrologLoader{
 	
 	private void loadRule(String id, String rule) throws PrologLoadException {
 		
-		Query parser = new Query("term_to_atom", new Term [] { new Variable("Rule"), new Atom(rule)});
-		
-		Query q = new Query("add_profile_rule", new Term [] {new Atom(id), RUle);
+		Query q = new Query("add_profile_rule("+id+","+rule+")");
 		
 		if(!q.hasSolution()) {
 			
 			this.err_message = "There was a problem while loading rule '"+id+"'."+"\n"
-					+ "Please, check if its syntax is correct and if it is a coherent CPref-Rule.";
+					+ "Please, check if its syntax is correct.";
 			
 			this.status = PrologLoader.StatusCode.Error;
 			
@@ -67,7 +60,7 @@ public class ProfileRulesPrologLoader implements PrologLoader{
 
 	
 	private void cleanCPrefRules(){
-		Query q = new Query("remove_cpref_rules");
+		Query q = new Query("remove_profile_rules");
 		q.hasSolution();
 	}
 	

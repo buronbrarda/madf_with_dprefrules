@@ -1,9 +1,9 @@
 :- module(profile_rules_interpreter,[
-		op(1020, xfx, is),
-		op(1010, xfx, if),
-		op(1000, xfx, or),
-		op(900, xfx, and),
-		op(800, xfx, in),
+		op(1020, xfy, is),
+		op(1010, xfy, if),
+		op(1000, xfy, or),
+		op(900, xfy, and),
+		op(800, xfy, in),
 		
 		eval_profile_rule/2
 	]).
@@ -11,18 +11,17 @@
 	
 	:-use_module(data_manager).
 	
-	:-op(1020, xfx, is).
-	:-op(1010, xfx, if).
-	:-op(1000, xfx, or).
-	:-op(900, xfx, and).
-	:-op(800, xfx, in).
+	:-op(1020, xfy, is).
+	:-op(1010, xfy, if).
+	:-op(1000, xfy, or).
+	:-op(900, xfy, and).
+	:-op(800, xfy, in).
 	
 	eval_profile_rule((Criterion is Assessment if Condition), Alternative):-
 		criterion(Criterion),
 		values(Criterion, Domain),
 		member(Assessment,Domain),
 		alternative(Alternative),
-		trace,
 		eval_features(Condition,Alternative).		
 		
 	eval_features(Condition_A or Condition_B, Alternative):-

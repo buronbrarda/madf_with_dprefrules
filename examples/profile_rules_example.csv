@@ -1,0 +1,16 @@
+id;rule
+p1;location is vgood if noise == low and distance =< 15
+p2;location is good if noise == low and 15 < distance and distance =< 20
+p3;location is reg if (noise == med and distance =< 15) or (noise == high and distance =< 10)
+p4;location is bad if ((noise == high and 10 < distance) or (noise == low and 20 < distance)) and distance =< 60
+p5;location is vbad if 60 < distance
+p6;cost is vgood if price =< 300
+p7;cost is good if 300 < price and price =< 400
+p8;cost is reg if 400 < price and price =< 450
+p9;cost is bad if 450 < price and price =< 600
+p10;cost is vbad if 600 < price
+p11;size is vgood if 100 =< area and 3 =< rooms
+p12;size is good if (70 =< area and area < 100 and 2 =< rooms) or (100 =< area and rooms < 3)
+p13;size is reg if (50 =< area and area < 70 and 2 =< rooms) or (70 < area and rooms == 1)
+p14;size is bad if (35 =< area and area < 50 and rooms =< 3) or (35 =< area and area < 70 and rooms == 1)
+p15;size is vbad if area < 35
