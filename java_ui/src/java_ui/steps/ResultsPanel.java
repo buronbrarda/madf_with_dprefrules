@@ -46,6 +46,7 @@ public class ResultsPanel extends JPanel {
 		mainResults.add(selectedAlternativesLabel, gbc_selectedAlternativesLabel);
 		
 		selectedAlternativesResult = new JTextArea();
+		selectedAlternativesResult.setLineWrap(true);
 		selectedAlternativesResult.setEditable(false);
 		GridBagConstraints gbc_selectedAlternativesResult = new GridBagConstraints();
 		gbc_selectedAlternativesResult.insets = new Insets(0, 5, 5, 5);
@@ -63,13 +64,13 @@ public class ResultsPanel extends JPanel {
 		mainResults.add(alternativesRelationLabel, gbc_alternativesRelationLabel);
 		
 		relationResults = new JTextArea();
+		relationResults.setLineWrap(true);
 		GridBagConstraints gbc_relationResults = new GridBagConstraints();
 		gbc_relationResults.insets = new Insets(0, 5, 5, 5);
 		gbc_relationResults.fill = GridBagConstraints.BOTH;
 		gbc_relationResults.gridx = 0;
 		gbc_relationResults.gridy = 4;
 		mainResults.add(relationResults, gbc_relationResults);
-
 	}
 	
 	

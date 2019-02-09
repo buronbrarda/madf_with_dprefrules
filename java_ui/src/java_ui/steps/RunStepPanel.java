@@ -51,9 +51,8 @@ public class RunStepPanel extends StepPanel {
 		
 		Map<String, Term> solution;
 		
-		if(q.hasSolution()){
-			q.open();
-			solution = q.getSolution();
+		while(q.hasNext()){
+			solution = q.next();
 			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
 			resultsPanel.setAlternativesRelation(parseAlternativesRelation(Util.listToTermArray(solution.get("Order"))));
 		}

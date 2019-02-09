@@ -2,7 +2,7 @@ id;rule
 p1;location is vgood if noise == low and distance =< 15
 p2;location is good if noise == low and 15 < distance and distance =< 20
 p3;location is reg if (noise == med and distance =< 15) or (noise == high and distance =< 10)
-p4;location is bad if ((noise == high and 10 < distance) or (noise == low and 20 < distance)) and distance =< 60
+p4;location is bad if ((noise == high and 10 < distance) or (noise == med and 15 < distance) or (noise == low and 20 < distance)) and distance =< 60
 p5;location is vbad if 60 < distance
 p6;cost is vgood if price =< 300
 p7;cost is good if 300 < price and price =< 400

@@ -22,10 +22,21 @@
 	    	forall(profile_rule(_,Rule),
 	    		try_to_assess(Rule,Alternative)
 			)
-		)),
+		)),		
 		
 		verify_assessments_base.
     
+    
+    show_knowledge:-
+        forall((alternative(Alternative)),(
+        	findall((Criterion, Value),(criterion(Criterion), get_assessment(Alternative,Criterion,Value)), Values),
+        	write(Alternative), write(' - '), writeln(Values)
+        )),!.
+        
+   	get_assessment(Alternative,Criterion,Value):-
+	   	assessment(Criterion,Alternative,Value),!.
+	
+	get_assessment(_,_,null).
     
     try_to_assess(Rule, Alternative):-
 	    Rule = (Criterion is Assessment if _Condition),

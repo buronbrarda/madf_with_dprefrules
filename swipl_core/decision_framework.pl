@@ -233,9 +233,10 @@
 	
 	
 	aggregate_sorted_alternatives(In_Process,Aux,Aggregated_Set):-
-		In_Process = [(X,N)|_],
+		In_Process = [(_,N)|_],
 		
-		findall((E,N), (member((E,N),In_Process), ((X = E,!); equivalent(X,E)) ), Substract_Equivalent_Set),
+		findall((E,N), (member((E,N),In_Process)), Substract_Equivalent_Set),
+		
 		findall(E, member((E,N),Substract_Equivalent_Set), Equivalent_Set),
 		
 		subtract(In_Process,Substract_Equivalent_Set,Substracted_List),
