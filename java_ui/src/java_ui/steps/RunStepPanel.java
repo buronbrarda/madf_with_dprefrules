@@ -41,7 +41,7 @@ public class RunStepPanel extends StepPanel {
 		this.runButton.setEnabled(true);
 		
 		resultsPanel.setSelectedAlternatives("");
-		resultsPanel.setSelectedAlternatives("");
+		resultsPanel.setAlternativesRelation("");
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class RunStepPanel extends StepPanel {
 		resultsPanel.cleanAssessmentsBase();
 		
 		resultsPanel.setSelectedAlternatives("");
-		resultsPanel.setSelectedAlternatives("");
+		resultsPanel.setAlternativesRelation("");
 	}
 	
 	
