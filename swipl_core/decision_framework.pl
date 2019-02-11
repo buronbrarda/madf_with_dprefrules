@@ -1,6 +1,8 @@
 :- module(decision_framework,[
 		run/2,
-
+		
+		assessments/2,	
+		
 		transitively_preferred/2,
 		strict_preferred/2,
 		equivalent/2,
@@ -12,7 +14,7 @@
 	:-reexport(data_manager).
 	
 	:-use_module(arg_generator, [argument/4]).
-	:-use_module(translator, [generate_assessments/0]).
+	:-use_module(translator, [assessments/2, generate_assessments/0]).
 	:-use_module(argumentation_framework, [warranted/1, justification/4, generate_warranted_conclusions/0]).
 	:-use_module(utils).
 	

@@ -82,7 +82,7 @@ public class DSJavaUI{
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 857, 525);
+		frame.setBounds(100, 100, 857, 566);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		

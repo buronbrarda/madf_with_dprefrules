@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 import org.jpl7.Query;
 import org.jpl7.Term;
@@ -38,11 +39,19 @@ public class RunStepPanel extends StepPanel {
 	@Override
 	public void enableStep() {
 		this.runButton.setEnabled(true);
+		
+		resultsPanel.setSelectedAlternatives("");
+		resultsPanel.setSelectedAlternatives("");
 	}
 
 	@Override
 	public void disableStepAction() {
 		this.runButton.setEnabled(false);
+		
+		resultsPanel.cleanAssessmentsBase();
+		
+		resultsPanel.setSelectedAlternatives("");
+		resultsPanel.setSelectedAlternatives("");
 	}
 	
 	
@@ -56,6 +65,15 @@ public class RunStepPanel extends StepPanel {
 			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
 			resultsPanel.setAlternativesRelation(parseAlternativesRelation(Util.listToTermArray(solution.get("Order"))));
 		}
+		
+		if(!q.hasSolution()){
+			String message = "The completeness and consistency requirements for the assessments base are not fullfilled.\n"+
+							 "Please, check if the set if set profile rules and the evidence set are correct.";
+			
+			JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		resultsPanel.loadAssessmentBase();
 	}
 	
 	

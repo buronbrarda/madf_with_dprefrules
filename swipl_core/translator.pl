@@ -1,6 +1,8 @@
 :- module(translator,[
         assessment/3,
 		
+		assessments/2,
+		
 		remove_assessments/1,
 		remove_assessments/0,
 		
@@ -22,7 +24,7 @@
 	    	forall(profile_rule(_,Rule),
 	    		try_to_assess(Rule,Alternative)
 			)
-		)),		
+		)),
 		
 		verify_assessments_base.
     
@@ -37,6 +39,10 @@
 	   	assessment(Criterion,Alternative,Value),!.
 	
 	get_assessment(_,_,null).
+	
+	assessments(Alternative,Assessments):-
+		alternative(Alternative),
+		findall([Criterion,Value],(criterion(Criterion), get_assessment(Alternative,Criterion,Value)),Assessments).
     
     try_to_assess(Rule, Alternative):-
 	    Rule = (Criterion is Assessment if _Condition),

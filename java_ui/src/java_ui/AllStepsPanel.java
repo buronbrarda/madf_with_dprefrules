@@ -96,6 +96,7 @@ public class AllStepsPanel extends JPanel{
 		step_2.setFollowingStep(step_3);
 		step_3.setFollowingStep(step_4);
 		step_4.setFollowingStep(step_5);
+		step_5.setFollowingStep(run_step);
 		
 		step_2.disableStep();
 		
