@@ -89,7 +89,7 @@ public class AllStepsPanel extends JPanel{
 				new CPrefRulesPrologLoader()
 		);
 		
-		run_step = new RunStepPanel(resultsPanel);
+		run_step = new RunStepPanel(step_1, resultsPanel);
 		
 		
 		step_1.setFollowingStep(step_2);
@@ -153,12 +153,15 @@ public class AllStepsPanel extends JPanel{
 		step_4.setTableModel(profileRulesModel);
 		step_5.setTableModel(cprefRulesModel);
 		
-		step_2.enableStep();
-		step_3.enableStep();
-		step_4.enableStep();
-		step_5.enableStep();
+		
 		run_step.enableStep();
 		
+	}
+	
+	public void cleanSteps(){
+		if(this.step_1 != null){
+			this.step_1.cleanStep();
+		}
 	}
 	
 }

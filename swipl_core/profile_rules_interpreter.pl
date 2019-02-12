@@ -5,6 +5,8 @@
 		op(900, xfy, and),
 		op(800, xfy, in),
 		
+		check_profile_rule/1,
+		
 		eval_profile_rule/2
 	]).
 	
@@ -16,6 +18,73 @@
 	:-op(1000, xfy, or).
 	:-op(900, xfy, and).
 	:-op(800, xfy, in).
+	
+	
+	check_profile_rule(Criterion is Assessment if Condition):-
+		criterion(Criterion),
+		values(Criterion, Domain),
+		member(Assessment,Domain),
+		check_profile_rule_condition(Condition).
+		
+	check_profile_rule_condition(Condition_A or Condition_B):-
+		check_profile_rule_condition(Condition_A),
+		check_profile_rule_condition(Condition_B),!.
+		
+	check_profile_rule_condition(Condition_A and Condition_B):-
+		check_profile_rule_condition(Condition_A),
+		check_profile_rule_condition(Condition_B),!.
+	
+	
+	check_profile_rule_condition(Feature < Value):-
+		acceptable_expression(Feature,Value),!.
+	
+	check_profile_rule_condition(Value < Feature):-
+		acceptable_expression(Feature,Value),!.
+	
+	
+	check_profile_rule_condition(Feature =< Value):-
+		acceptable_expression(Feature,Value),!.
+	
+	check_profile_rule_condition(Value =< Feature):-
+		acceptable_expression(Feature,Value),!.
+		
+		
+	check_profile_rule_condition(Feature > Value):-
+		acceptable_expression(Feature,Value),!.
+	
+	check_profile_rule_condition(Value > Feature):-
+		acceptable_expression(Feature,Value),!.	
+		
+		
+	check_profile_rule_condition(Feature >= Value):-
+		acceptable_expression(Feature,Value),!.
+		
+	check_profile_rule_condition(Value >= Feature):-
+		acceptable_expression(Feature,Value),!.
+		
+		
+	check_profile_rule_condition(Feature == Value):-
+		acceptable_expression(Feature,Value),!.
+	
+	check_profile_rule_condition(Value == Feature):-
+		acceptable_expression(Feature,Value),!.
+		
+	
+		
+	check_profile_rule_condition(Feature in Values):-
+		forall(member(V,Values),acceptable_expression(Feature,V)).
+	
+	acceptable_expression(Feature,Value):-
+		feature(Feature),
+		feature_domain(Feature,Domain),
+		acceptable_value(Value,Domain).
+	
+	acceptable_value(Value,Domain):-
+		member(Value,Domain),!.
+		
+	acceptable_value(Value,real_numbers):-
+		number(Value).		
+	
 	
 	eval_profile_rule((Criterion is Assessment if Condition), Alternative):-
 		criterion(Criterion),

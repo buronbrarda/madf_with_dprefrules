@@ -152,7 +152,11 @@ public class ResultsPanel extends JPanel {
 				String criterion = values[0].toString();
 				int index = indexes.get(criterion);
 				
-				data.setElementAt(values[1].toString(), index);
+				if(Util.isList(values[1]))
+					data.setElementAt(termArrayToString(Util.listToTermArray(values[1])), index);
+				else{
+					data.setElementAt(values[1].toString(), index);
+				}
 				
 			}
 			
@@ -162,6 +166,21 @@ public class ResultsPanel extends JPanel {
 		}
 		
 		return table;
+	}
+	
+	
+	private String termArrayToString(Term [] list){
+		String toReturn = "[";
+		
+		int i;
+		
+		for(i=0; i < list.length-1; i++){
+			toReturn += list[i]+", ";
+		}
+		
+		toReturn += list[i];
+		
+		return toReturn + "]";
 	}
 	
 	

@@ -8,7 +8,18 @@ public abstract class  StepPanel extends JPanel{
 	
 	public abstract void enableStep();
 	
-	public abstract void disableStepAction();
+	protected abstract void disableStepAction();
+	
+	protected abstract void cleanStepAction();
+	
+	public final void cleanStep(){
+		cleanStepAction();
+		
+		if(this.following != null){
+			this.following.cleanStep();
+			this.following.disableStep();	
+		}
+	}
 	
 	public final void disableStep(){
 		disableStepAction();

@@ -11,20 +11,47 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
 
+import java.awt.GridBagLayout;
+import java.awt.Cursor;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+
 public class RunStepPanel extends StepPanel {
 	
 	private JButton runButton;
 	private ResultsPanel resultsPanel;
 	
-	public RunStepPanel(ResultsPanel resultsPanel){
+	public RunStepPanel(StepPanel first_step, ResultsPanel resultsPanel){
 		
 		this.resultsPanel = resultsPanel;
 		
 		//The run step must be the last step.
 		this.setFollowingStep(null);
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[]{99, 285, 87, 0};
+		gridBagLayout.rowHeights = new int[]{23, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		setLayout(gridBagLayout);
+		
+		JButton clearButton = new JButton("Clear");
+		clearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				first_step.cleanStep();
+			}
+		});
+		GridBagConstraints gbc_clearButton = new GridBagConstraints();
+		gbc_clearButton.insets = new Insets(5, 5, 5, 5);
+		gbc_clearButton.gridx = 0;
+		gbc_clearButton.gridy = 0;
+		add(clearButton, gbc_clearButton);
 		
 		this.runButton = new JButton("Run");
-		this.add(runButton);
+		GridBagConstraints gbc_runButton = new GridBagConstraints();
+		gbc_runButton.insets = new Insets(5, 5, 5, 5);
+		gbc_runButton.gridx = 2;
+		gbc_runButton.gridy = 0;
+		this.add(runButton, gbc_runButton);
 		
 		runButton.addActionListener(new ActionListener(){
 
@@ -60,6 +87,8 @@ public class RunStepPanel extends StepPanel {
 		
 		Map<String, Term> solution;
 		
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		
 		while(q.hasNext()){
 			solution = q.next();
 			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
@@ -72,6 +101,8 @@ public class RunStepPanel extends StepPanel {
 			
 			JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
 		}
+		
+		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		
 		resultsPanel.loadAssessmentBase();
 	}
@@ -104,5 +135,12 @@ public class RunStepPanel extends StepPanel {
 		toReturn += "["+termArrayToText(Util.listToTermArray(list[i]))+"]";
 		
 		return toReturn;
+	}
+
+	@Override
+	protected void cleanStepAction() {
+		resultsPanel.cleanAssessmentsBase();
+		resultsPanel.setSelectedAlternatives("");
+		resultsPanel.setAlternativesRelation("");
 	}
 }

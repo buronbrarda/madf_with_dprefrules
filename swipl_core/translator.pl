@@ -35,14 +35,14 @@
         	write(Alternative), write(' - '), writeln(Values)
         )),!.
         
-   	get_assessment(Alternative,Criterion,Value):-
-	   	assessment(Criterion,Alternative,Value),!.
+   	get_assessment(Alternative,Criterion,Values):-
+	   	findall(V,assessment(Criterion,Alternative,V),Values), Values \= [], !.
 	
 	get_assessment(_,_,null).
 	
 	assessments(Alternative,Assessments):-
 		alternative(Alternative),
-		findall([Criterion,Value],(criterion(Criterion), get_assessment(Alternative,Criterion,Value)),Assessments).
+		findall([Criterion,Values],(criterion(Criterion), get_assessment(Alternative,Criterion,Values)),Assessments).
     
     try_to_assess(Rule, Alternative):-
 	    Rule = (Criterion is Assessment if _Condition),

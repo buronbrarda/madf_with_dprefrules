@@ -118,9 +118,11 @@
 	add_profile_rule(Id,Atom_Rule):-
 		atom(Atom_Rule),!,
 		term_to_atom(Rule,Atom_Rule),
+		check_profile_rule(Rule),
 		assert(profile_rule(Id, Rule)).
 	
 	add_profile_rule(Id, Rule):-
+		check_profile_rule(Rule),
 		assert(profile_rule(Id, Rule)).
 	
 	remove_profile_rule(Id):-
@@ -146,7 +148,7 @@
 	
 	%=============== JUST TO DEBUG ==============%
 	
-	/*
+	
 	
 	alternative(a1). 
     alternative(a2). 
@@ -353,4 +355,4 @@
         better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
     )).
     
-    */
+    

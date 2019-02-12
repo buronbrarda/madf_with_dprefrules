@@ -1,5 +1,6 @@
 package java_ui.steps;
 
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import java_ui.prolog_loader.PrologLoadException;
@@ -28,6 +29,8 @@ public class DefineStepPanel extends StepPanel{
 	private TableEditorPanel tep;
 	private PrologLoader loader;
 	private JButton viewButton;
+	
+	private TableViewer viewer;
 
 	public DefineStepPanel(String instruction, TableEditorPanel tep, PrologLoader loader) {
 		this.tep = tep;
@@ -76,11 +79,13 @@ public class DefineStepPanel extends StepPanel{
 					statusResultLabel.setText("ERROR");
 					e1.printStackTrace();
 					JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					disableStep();
 				}
 				catch (IOException e1) {
 					getFollowingStep().disableStep();
 					statusResultLabel.setText("ERROR");
 					e1.printStackTrace();
+					disableStep();
 				}
 			}
 		});
@@ -112,8 +117,13 @@ public class DefineStepPanel extends StepPanel{
 		
 		viewButton = new JButton("View");
 		viewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {			
-				new TableViewer(tep.getTableModel());
+			public void actionPerformed(ActionEvent arg0) {
+				if(viewer == null){
+					viewer = new TableViewer(tep.getTableModel());
+				}else{
+					viewer.setVisible(true);
+					viewer.requestFocus();
+				};
 			}
 		});
 		GridBagConstraints gbc_viewButton = new GridBagConstraints();
@@ -139,14 +149,31 @@ public class DefineStepPanel extends StepPanel{
 	}
 	
 	
-	public void setTableModel(TableModel tm){
+	public void cleanStepAction(){
+		this.tep.setTableModel(new DefaultTableModel());
+		this.statusResultLabel.setText("---");
+		if(this.viewer != null){
+			this.viewer.setVisible(false);
+			this.viewer = null;
+		}
+	}
+	
+
+	public PrologLoader.StatusCode getLoaderStatus(){
+		return this.loader.getStatus();
+	}
+	
+	public void setTableModel(TableModel tm) throws PrologLoadException{
 		this.tep.setTableModel(tm);
+		this.enableStep();
 		try {
 			this.loader.loadData(tm);
 			this.statusResultLabel.setText("OK");
 		} catch (PrologLoadException e) {
 			this.statusResultLabel.setText("ERROR");
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+			getFollowingStep().disableStep();
+			throw e;
 		}
 	}
 }

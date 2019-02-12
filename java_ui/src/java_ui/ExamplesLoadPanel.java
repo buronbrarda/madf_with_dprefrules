@@ -51,6 +51,7 @@ public class ExamplesLoadPanel extends JPanel {
 		example1RadioBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				example_number = 1;
+				stepsPanel.cleanSteps();
 			}
 		});
 		buttonGroup1.add(example1RadioBtn);
@@ -65,6 +66,7 @@ public class ExamplesLoadPanel extends JPanel {
 		example2RadioBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				example_number = 2;
+				stepsPanel.cleanSteps();
 			}
 		});
 		buttonGroup1.add(example2RadioBtn);
@@ -104,6 +106,7 @@ public class ExamplesLoadPanel extends JPanel {
 		timButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				example_preferences = "Tim";
+				stepsPanel.cleanSteps();
 			}
 		});
 		
@@ -118,6 +121,7 @@ public class ExamplesLoadPanel extends JPanel {
 		augustButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				example_preferences = "August";
+				stepsPanel.cleanSteps();
 			}
 		});
 		
@@ -132,6 +136,7 @@ public class ExamplesLoadPanel extends JPanel {
 		kateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				example_preferences = "Kate";
+				stepsPanel.cleanSteps();
 			}
 		});
 		
