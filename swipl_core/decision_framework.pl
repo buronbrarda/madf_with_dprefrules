@@ -11,7 +11,8 @@
 		incomparable/2,
 		
 		recommended_alternatives/1,
-		justification_rules/3
+		justification_rules/3,
+		equivalent_groups_ranking/1
 	]).
 	
 	:-reexport(data_manager).
@@ -34,7 +35,7 @@
 		
 		recommended_alternatives(Selection),
 		
-		pseudo_ranking(Order).
+		equivalent_groups_ranking(Order).
 		
 	
 	init:-
@@ -117,7 +118,20 @@
 		alternative(X), alternative(Y), X \= Y,
 		transitively_preferred(X,Y),
 		transitively_preferred(Y,X).
-
+	
+	equivalent_alternatives(X, [X|Equivalent_Alts]):-
+		findall(Y,equivalent(X,Y),Equivalent_Alts).
+	
+	equivalent_groups(Groups):-
+		equivalent_groups([],Groups).
+		
+	equivalent_groups(Visited, [New_Group|Groups]):-
+		alternative(X), not(member(X,Visited)),
+		equivalent_alternatives(X,New_Group),
+		append(Visited,New_Group,New_Visited),
+		equivalent_groups(New_Visited,Groups),!.
+		
+	equivalent_groups(_, []).
 
 	/***********************************************************************************
 		incomparable(?X,?Y).
@@ -208,50 +222,51 @@
 	
 	
 	/***********************************************************************************
-		pseudo_ranking(?Ranking).
+		equivalent_groups_ranking(?Ranking).
 		
 		
 
 	************************************************************************************/
-	pseudo_ranking(Ranking):-
+	equivalent_groups_ranking(Ranking):-
 		assert_preferences_amount,
-		sort_alternatives([],[],Sorted),
-		aggregate_sorted_alternatives(Sorted,[],Ranking),
+		sort_groups([],[],Sorted),
+		aggregate_sorted_groups(Sorted,[],Ranking),
 		retractall(preference_amount(_,_)).
 	
 	
 	assert_preferences_amount:-
 		retractall(preference_amount(_,_)),
-		forall((alternative(X)), (
+		equivalent_groups(Groups),
+		forall(member(G,Groups), (
+				G = [X|_],
 				findall(Y,strict_preferred(X,Y),StrictAux),
 				list_to_set(StrictAux,StrictList),
 				length(StrictList,StrictCount),
-				assert(preference_amount(X,StrictCount))
+				assert(preference_amount(G,StrictCount))
 			)).
 
-	sort_alternatives([],[],Sorted):-
-		preference_amount(X,N),
+	sort_groups([],[],Sorted):-
+		preference_amount(Group_A,N),
 		not((
-			preference_amount(Y,M),
-			Y \= X,
+			preference_amount(Group_B,M),
+			Group_A \= Group_B,
 			M > N
-		)),sort_alternatives([X],[(X,N)],Sorted),!.
+		)),sort_groups([Group_A],[(Group_A,N)],Sorted),!.
 
-	sort_alternatives(Visited,[(Y,M)|List],Sorted):-
-		preference_amount(X,N),
+	sort_groups(Visited,[(Group_B,M)|List],Sorted):-
+		preference_amount(Group_A,N),
 		N =< M,
-		not(member(X,Visited)),
+		not(member(Group_A,Visited)),
 		not((
-			preference_amount(Z,M2),
-			not(member(Z,Visited)),
-			Z \= X,
+			preference_amount(Group_C,M2),
+			not(member(Group_C,Visited)),
+			Group_C \= Group_A,
 			M2 > N
-		)),sort_alternatives([X|Visited],[(X,N),(Y,M)|List],Sorted),!.
+		)),sort_groups([Group_A|Visited],[(Group_A,N),(Group_B,M)|List],Sorted),!.
 
-	sort_alternatives(_,L,L).
+	sort_groups(_,L,L).
 	
-	
-	aggregate_sorted_alternatives(In_Process,Aux,Aggregated_Set):-
+	aggregate_sorted_groups(In_Process,Aux,Aggregated_Set):-
 		In_Process = [(_,N)|_],
 		
 		findall((E,N), (member((E,N),In_Process)), Substract_Equivalent_Set),
@@ -260,9 +275,9 @@
 		
 		subtract(In_Process,Substract_Equivalent_Set,Substracted_List),
 		
-		aggregate_sorted_alternatives(Substracted_List,[Equivalent_Set|Aux],Aggregated_Set),!.
+		aggregate_sorted_groups(Substracted_List,[Equivalent_Set|Aux],Aggregated_Set),!.
 	
 	
-	aggregate_sorted_alternatives([],Aggregated_Set,Aggregated_Set).
+	aggregate_sorted_groups([],Aggregated_Set,Aggregated_Set).
 		
 		

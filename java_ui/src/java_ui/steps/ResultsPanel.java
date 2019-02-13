@@ -110,8 +110,8 @@ public class ResultsPanel extends JPanel {
 		
 		graphPanel = new AlternativesGraphPanel();
 		GridBagConstraints gbc_graphPanel = new GridBagConstraints();
-		gbc_graphPanel.insets = new Insets(0, 5, 5, 5);
 		gbc_graphPanel.fill = GridBagConstraints.BOTH;
+		gbc_graphPanel.insets = new Insets(0, 5, 5, 5);
 		gbc_graphPanel.gridx = 0;
 		gbc_graphPanel.gridy = 6;
 		mainResults.add(graphPanel, gbc_graphPanel);

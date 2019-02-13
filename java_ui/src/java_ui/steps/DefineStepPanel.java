@@ -32,7 +32,7 @@ public class DefineStepPanel extends StepPanel{
 	
 	private TableViewer viewer;
 
-	public DefineStepPanel(String instruction, TableEditorPanel tep, PrologLoader loader) {
+	public DefineStepPanel(String instruction, String tableViewerTitle, TableEditorPanel tep, PrologLoader loader) {
 		this.tep = tep;
 		this.loader = loader;
 		
@@ -120,6 +120,9 @@ public class DefineStepPanel extends StepPanel{
 			public void actionPerformed(ActionEvent arg0) {
 				if(viewer == null){
 					viewer = new TableViewer(tep.getTableModel());
+					viewer.setFocusable(true);
+					viewer.setTitle(tableViewerTitle);
+					viewer.disableTable();
 				}else{
 					viewer.setVisible(true);
 					viewer.requestFocus();

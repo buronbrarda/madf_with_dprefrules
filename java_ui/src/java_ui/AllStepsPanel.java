@@ -61,30 +61,35 @@ public class AllStepsPanel extends JPanel{
 		
 		step_1 = new DefineStepPanel(
 				"1. Define the set of features and their domain.",
+				"Features",
 				new FeaturesTableEditorPanel(),
 				new FeaturesPrologLoader()
 		);
 		
 		step_2 = new DefineStepPanel(
 				"2. Define the set of evidence.",
+				"Evidence",
 				new EvidenceTableEditorPanel(),
 				new EvidencePrologLoader()
 		);
 		
 		step_3 = new DefineStepPanel(
 				"3. Define the set of criteria and their assessment values.",
+				"Criteria",
 				new CriteriaTableEditorPanel(),
 				new CriteriaPrologLoader()
 		);
 		
 		step_4 = new DefineStepPanel(
 				"4. Define the set of Profile-Rules.",
+				"Profile-Rules",
 				new ProfileRulesTableEditorPanel(),
 				new ProfileRulesPrologLoader()
 		);
 		
 		step_5 = new DefineStepPanel(
 				"5. Define the set of CPref-Rules.",
+				"CPref-Rules",
 				new CPrefRulesTableEditorPanel(),
 				new CPrefRulesPrologLoader()
 		);

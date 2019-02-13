@@ -31,7 +31,7 @@ public class AlternativesGraph {
 		
 		loadStrongEdges();
 		
-		loadWeakEdges();
+		//loadWeakEdges();
 		
 	}
 	
@@ -90,6 +90,12 @@ public class AlternativesGraph {
 		
 		return v;
 	}
+	
+	
+	private void loadMinimumEdges(){
+		
+	}
+	
 	
 	private ArrayList<String> parseRules(Term [] rules){
 		ArrayList<String> toReturn = new ArrayList<String>();

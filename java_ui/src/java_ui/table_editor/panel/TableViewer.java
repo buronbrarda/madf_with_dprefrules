@@ -42,4 +42,8 @@ public class TableViewer extends JDialog {
 		this.setVisible(true);
 	}
 
+	public void disableTable() {
+		this.table.setEnabled(false);	
+	}
+
 }

@@ -21,7 +21,8 @@ public class AlternativesGraphPanel extends JPanel {
 		
 		graphContainer = new JPanel();
 		graphContainer.setLayout(new BorderLayout());	
-
+		
+		this.setLocation(0, 0);
 		this.setLayout(new BorderLayout());
 		this.add(graphContainer, BorderLayout.CENTER);
 		
@@ -33,6 +34,7 @@ public class AlternativesGraphPanel extends JPanel {
 		initVisualizerViewer();
 		
 		graphContainer.add(vv, BorderLayout.CENTER);
+		this.vv.setLocation(0, 0);
 	}
 	
 	
@@ -65,7 +67,6 @@ public class AlternativesGraphPanel extends JPanel {
 		this.layout.setSize(this.graphContainer.getSize());
 		
 		this.vv.setGraphLayout(layout);
-		this.vv.setLocation(0, 0);
 	}
 	
 	public void clearGraph(){
