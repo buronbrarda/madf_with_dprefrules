@@ -15,7 +15,7 @@ public class DSJavaUI{
 
 	private JFrame frame;
 	
-	private static final boolean productionFlag = true;
+	private static final boolean productionFlag = false;
 	
 	private static final String productionPrologFilesPath = "./swipl_core/";
 	private static final String prologFilesPath = "../swipl_core/";
