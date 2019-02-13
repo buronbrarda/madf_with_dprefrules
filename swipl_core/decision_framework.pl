@@ -3,11 +3,14 @@
 		
 		assessments/2,	
 		
+		explicitly_preferred/2,
+		weakly_preferred/2,
 		transitively_preferred/2,
 		strict_preferred/2,
 		equivalent/2,
 		incomparable/2,
 		
+		recommended_alternatives/1,
 		justification_rules/3
 	]).
 	
@@ -67,9 +70,23 @@
 	
 	
 	/***********************************************************************************
+		weakly_preferred(?X,?Y).
+		
+		An alternative X is weakly preferred over Y iff X is transitively preferred over
+		Y but it is not the case that X is explecitly preferred over Y. That means that
+		there is no argument-based explanation to justify that X is preferred over Y.
+			
+	************************************************************************************/
+	weakly_preferred(X,Y):-
+		alternative(X), alternative(Y),
+		transitively_preferred(X,Y),
+		explicitly_preferred(X,Y).
+	
+	
+	/***********************************************************************************
 		transitively_preferred(?X,?Y).
 		
-		An alternative X is transitively preffered over Y iff there exists a transitive
+		An alternative X is transitively preferred over Y iff there exists a transitive
 		sequence between X and Y.
 			
 	************************************************************************************/
@@ -167,7 +184,7 @@
 	************************************************************************************/
 	justification_rules(X,Y,Rules):-
 		explicitly_preferred(X,Y),
-		Claim =.. [preferred,X,Y],
+		Claim =.. [pref,X,Y],
 		findall(Arg_Rules, argument(_,Arg_Rules,_,Claim), Rules_List),
 		flatten(Rules_List, Aux),
 		list_to_set(Aux, Rules).

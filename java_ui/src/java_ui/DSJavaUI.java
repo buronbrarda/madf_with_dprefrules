@@ -15,7 +15,7 @@ public class DSJavaUI{
 
 	private JFrame frame;
 	
-	private static final boolean productionFlag = false;
+	private static final boolean productionFlag = true;
 	
 	private static final String productionPrologFilesPath = "./swipl_core/";
 	private static final String prologFilesPath = "../swipl_core/";
@@ -85,6 +85,7 @@ public class DSJavaUI{
 		frame.setBounds(100, 100, 857, 566);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		frame.setTitle("Argumentation-Based Multi-Criteria Decision Support System With Conditional Preferences");
 		
 		Atom filesPath;
 		

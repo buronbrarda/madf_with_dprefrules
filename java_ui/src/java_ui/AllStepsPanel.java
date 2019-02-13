@@ -103,9 +103,11 @@ public class AllStepsPanel extends JPanel{
 		StepPanel [] stepsPanels = {step_1, step_2, step_3, step_4, step_5};
 		
 		int i;
+		GridBagConstraints gbc_container;
+		
 		for(i = 0; i < stepsPanels.length; i++) {
 			JPanel container = new JPanel();
-			GridBagConstraints gbc_container = new GridBagConstraints();
+			gbc_container = new GridBagConstraints();
 			gbc_container.fill = GridBagConstraints.BOTH;
 			gbc_container.insets = new Insets(0, 0, 5, 0);
 			gbc_container.gridx = 0;
@@ -120,6 +122,7 @@ public class AllStepsPanel extends JPanel{
 		
 		GridBagConstraints gbc_lastPanel = new GridBagConstraints();
 		gbc_lastPanel.fill = GridBagConstraints.BOTH;
+		gbc_lastPanel.insets = new Insets(0, 0, 5, 0);
 		gbc_lastPanel.gridx = 0;
 		gbc_lastPanel.gridy = i+1;
 		stepsPanel.add(run_step, gbc_lastPanel);

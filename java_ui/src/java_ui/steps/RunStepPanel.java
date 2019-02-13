@@ -83,6 +83,8 @@ public class RunStepPanel extends StepPanel {
 	
 	
 	private void runButtonAction(ActionEvent e){
+		cleanStepAction();
+		
 		Query q = new Query("run(Selection,Order)");
 		
 		Map<String, Term> solution;
@@ -93,6 +95,7 @@ public class RunStepPanel extends StepPanel {
 			solution = q.next();
 			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
 			resultsPanel.setAlternativesRelation(parseAlternativesRelation(Util.listToTermArray(solution.get("Order"))));
+			resultsPanel.loadAlternativesGraph();
 		}
 		
 		if(!q.hasSolution()){
@@ -142,5 +145,6 @@ public class RunStepPanel extends StepPanel {
 		resultsPanel.cleanAssessmentsBase();
 		resultsPanel.setSelectedAlternatives("");
 		resultsPanel.setAlternativesRelation("");
+		resultsPanel.cleanGraph();
 	}
 }

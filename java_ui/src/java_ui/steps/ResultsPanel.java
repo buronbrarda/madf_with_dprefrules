@@ -18,6 +18,8 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
 
+import java_ui.graphs.alternatives.AlternativesGraphPanel;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
@@ -28,6 +30,7 @@ public class ResultsPanel extends JPanel {
 	private JTextArea selectedAlternativesResult;
 	private JTextArea relationResults;
 	private JTable table;
+	private AlternativesGraphPanel graphPanel;
 
 	public ResultsPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -103,7 +106,15 @@ public class ResultsPanel extends JPanel {
 		gbc_relationResults.fill = GridBagConstraints.BOTH;
 		gbc_relationResults.gridx = 0;
 		gbc_relationResults.gridy = 6;
-		mainResults.add(relationResults, gbc_relationResults);
+		//mainResults.add(relationResults, gbc_relationResults);
+		
+		graphPanel = new AlternativesGraphPanel();
+		GridBagConstraints gbc_graphPanel = new GridBagConstraints();
+		gbc_graphPanel.insets = new Insets(0, 5, 5, 5);
+		gbc_graphPanel.fill = GridBagConstraints.BOTH;
+		gbc_graphPanel.gridx = 0;
+		gbc_graphPanel.gridy = 6;
+		mainResults.add(graphPanel, gbc_graphPanel);
 	}
 	
 	
@@ -117,6 +128,10 @@ public class ResultsPanel extends JPanel {
 	
 	public void loadAssessmentBase(){
 		this.table.setModel(getAssessmentBase());
+	}
+	
+	public void loadAlternativesGraph(){
+		graphPanel.loadGraph();
 	}
 	
 	
@@ -211,6 +226,11 @@ public class ResultsPanel extends JPanel {
 
 	public void cleanAssessmentsBase() {
 		this.table.setModel(new DefaultTableModel());
+	}
+	
+	
+	public void cleanGraph(){
+		this.graphPanel.clearGraph();
 	}
 
 }
