@@ -1,5 +1,5 @@
 :- module(decision_framework,[
-		run/2,
+		run/5,
 		
 		assessments/2,	
 		
@@ -30,18 +30,31 @@
 	
 	
 	
-	run(Selection,Order):-
-		init,
+	run(Selection,Order,Args_Count,Reasoning_Time,Selection_Time):-
+		init(T1,T2),
 		
 		recommended_alternatives(Selection),
 		
-		equivalent_groups_ranking(Order).
+		equivalent_groups_ranking(Order),
+			
+		get_time(T3),
+			
+		is(Reasoning_Time, round((T2 - T1)*1000)),
+		is(Selection_Time, round((T3 - T2)*1000)),
+		
+		findall(Id,argument(Id,_,_,_),Args),
+		length(Args,Args_Count).
 		
 	
-	init:-
+	init(T1,T2):-
+		
+		get_time(T1),
+		
 		generate_assessments,
 		
 		generate_warranted_conclusions,
+		
+		get_time(T2),
 		
 		generate_preferences.
 				

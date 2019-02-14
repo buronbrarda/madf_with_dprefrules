@@ -27,9 +27,11 @@ public class AlternativesGraph {
 	
 	public void load(){
 		
-		loadVerteces();
+		loadFirstSigthGraph();
 		
-		loadStrongEdges();
+		//loadVerteces();
+		
+		//loadStrongEdges();
 		
 		//loadWeakEdges();
 		
@@ -92,10 +94,76 @@ public class AlternativesGraph {
 	}
 	
 	
-	private void loadMinimumEdges(){
+	private void loadFirstSigthGraph(){	
+		Query q = new Query("equivalent_groups_ranking(Ranking)");
+		
+		while(q.hasNext()){
+			Map<String, Term> s = q.next();
+			
+			loadFirstSightGraphVerteces(s.get("Ranking"));
+			
+			loadFirstSightGraphEdges(s.get("Ranking"));	
+			
+		}
 		
 	}
 	
+	
+	private void loadFirstSightGraphVerteces(Term ranking){		
+		Term [] eq_groups = Util.listToTermArray(ranking);
+		
+		for(Term eqg : eq_groups){
+			
+			Term [] groups = Util.listToTermArray(eqg);
+			
+			for(Term g : groups){
+				AlternativesGraphVertex v = buildVertex(listToString(g));
+				graph.addVertex(v);
+			}
+		}
+	}
+	
+	
+	private void loadFirstSightGraphEdges(Term ranking) {
+		Term [] eq_groups = Util.listToTermArray(ranking);
+		
+		AlternativesGraphVertex v1, v2;
+		
+		for(int i = 0; i < eq_groups.length-1; i++){
+			
+			Term [] groups1 = Util.listToTermArray(eq_groups[i]);
+			Term [] groups2 = Util.listToTermArray(eq_groups[i+1]);
+			
+			for(Term g1 : groups1){
+				for(Term g2 : groups2){
+					v1 = alternativesVertexMap.get(listToString(g1));
+					v2 = alternativesVertexMap.get(listToString(g2));
+					
+					graph.addEdge(new AlternativesGraphWeakEdge(), v1, v2);
+				}
+			}
+			
+		}
+		
+	}
+	
+	
+	
+	private String listToString(Term list){
+		String toReturn = "[";
+		
+		Term [] elements = Util.listToTermArray(list);
+		
+		int i;
+		
+		for(i = 0; i<elements.length-1; i++){
+			toReturn += elements[i].toString() + ", ";
+		}
+		
+		toReturn += elements[i].toString();
+		
+		return toReturn + "]";
+	}
 	
 	private ArrayList<String> parseRules(Term [] rules){
 		ArrayList<String> toReturn = new ArrayList<String>();

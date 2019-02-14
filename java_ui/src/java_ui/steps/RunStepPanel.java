@@ -79,13 +79,19 @@ public class RunStepPanel extends StepPanel {
 		
 		resultsPanel.setSelectedAlternatives("");
 		resultsPanel.setAlternativesRelation("");
+		
+		resultsPanel.setArgumentsCount("");
+		resultsPanel.setReasoningTime("");
+		resultsPanel.setSelectionTime("");
+		
+		resultsPanel.disableGraphButton();
 	}
 	
 	
 	private void runButtonAction(ActionEvent e){
 		cleanStepAction();
 		
-		Query q = new Query("run(Selection,Order)");
+		Query q = new Query("run(Selection,Order,Args_Count,Reasoning_Time,Selection_Time)");
 		
 		Map<String, Term> solution;
 		
@@ -95,7 +101,10 @@ public class RunStepPanel extends StepPanel {
 			solution = q.next();
 			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
 			resultsPanel.setAlternativesRelation(parseAlternativesRelation(Util.listToTermArray(solution.get("Order"))));
-			resultsPanel.loadAlternativesGraph();
+			resultsPanel.setArgumentsCount(solution.get("Args_Count").toString());
+			resultsPanel.setReasoningTime(solution.get("Reasoning_Time").toString()+" ms");
+			resultsPanel.setSelectionTime(solution.get("Selection_Time").toString()+" ms");
+			resultsPanel.enableGraphButton();
 		}
 		
 		if(!q.hasSolution()){
@@ -145,6 +154,10 @@ public class RunStepPanel extends StepPanel {
 		resultsPanel.cleanAssessmentsBase();
 		resultsPanel.setSelectedAlternatives("");
 		resultsPanel.setAlternativesRelation("");
-		resultsPanel.cleanGraph();
+		resultsPanel.setArgumentsCount("");
+		resultsPanel.setReasoningTime("");
+		resultsPanel.setSelectionTime("");
+		
+		resultsPanel.disableGraphButton();
 	}
 }

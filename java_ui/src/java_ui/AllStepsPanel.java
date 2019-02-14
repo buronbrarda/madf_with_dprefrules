@@ -42,7 +42,7 @@ public class AllStepsPanel extends JPanel{
 		JPanel stepsPanel = new JPanel();
 		add(stepsPanel);
 		GridBagLayout gbl_stepsPanel = new GridBagLayout();
-		gbl_stepsPanel.columnWidths = new int[]{225, 0};
+		gbl_stepsPanel.columnWidths = new int[]{313, 0};
 		gbl_stepsPanel.rowHeights = new int[]{80, 80, 0, 0, 0};
 		gbl_stepsPanel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gbl_stepsPanel.rowWeights = new double[]{1.0, 1.0, 1.0, 0.0, Double.MIN_VALUE};
