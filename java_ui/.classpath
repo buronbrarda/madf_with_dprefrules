@@ -27,7 +27,5 @@
 			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-io-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-jai-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

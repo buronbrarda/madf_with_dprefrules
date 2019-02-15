@@ -152,7 +152,7 @@
 	
 	alternative(a1). 
     alternative(a2). 
-    alternative(a3). 
+    alternative(a3).
     alternative(a4).
 	alternative(a5). 
     alternative(a6). 

@@ -1,19 +1,12 @@
 package java_ui.graphs.alternatives;
 
-public class AlternativesGraphVertex {
+import java.util.ArrayList;
+
+public interface AlternativesGraphVertex {
 	
-	private String id;
-	
-	public AlternativesGraphVertex(String id){
-		this.id = id;
-	}
-	
-	
-	public String getId(){
-		return id;
-	}
-	
-	public void setId(String id){
-		this.id = id;
-	}
+	public String getId();
+		
+	public boolean isSelected();
+
+	public ArrayList<String> getJustificationRulesFor(AlternativesGraphVertex v2);
 }

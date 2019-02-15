@@ -1,5 +1,6 @@
 package java_ui.graphs.alternatives;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,15 +91,27 @@ public class AlternativesGraph {
 	
 	*/
 	
-	private AlternativesGraphVertex buildVertex(String a1) {
-		AlternativesGraphVertex v = new AlternativesGraphVertex(a1);
+	private AlternativesGraphVertex buildVertex(Term [] verteces_group) {
 		
-		alternativesVertexMap.put(a1, v);
+		AlternativesGraphVertex toReturn;
 		
-		return v;
+		if(verteces_group.length == 1){
+			
+			toReturn = new AlternativesGraphSimpleVertex(verteces_group[0].toString());
+		
+			alternativesVertexMap.put(toReturn.getId(), toReturn);
+			
+		}else{
+			
+			toReturn = new AlternativesGraphCompoundVertex(termArrayToStringArray(verteces_group));
+			
+			alternativesVertexMap.put(toReturn.getId(), toReturn);
+			
+		}
+		
+		return toReturn;
 	}
-	
-	
+
 	private void loadFirstSigthGraph(){	
 		Query q = new Query("equivalent_groups_ranking(Ranking)");
 		
@@ -122,7 +135,7 @@ public class AlternativesGraph {
 			Term [] groups = Util.listToTermArray(eqg);
 			
 			for(Term g : groups){
-				AlternativesGraphVertex v = buildVertex(listToString(g));
+				AlternativesGraphVertex v = buildVertex(Util.listToTermArray(g));
 				graph.addVertex(v);
 			}
 		}
@@ -141,19 +154,24 @@ public class AlternativesGraph {
 			
 			for(Term g1 : groups1){
 				for(Term g2 : groups2){
-					v1 = alternativesVertexMap.get(listToString(g1));
-					v2 = alternativesVertexMap.get(listToString(g2));
 					
-					graph.addEdge(new AlternativesGraphWeakEdge(), v1, v2);
+					Term [] array1 = Util.listToTermArray(g1);
+					Term [] array2 = Util.listToTermArray(g2);
+					
+					String id1 = array1.length == 1 ? array1[0].toString() : listToString(g1);
+					String id2 = array2.length == 1 ? array2[0].toString() : listToString(g2);
+					
+					v1 = alternativesVertexMap.get(id1);
+					v2 = alternativesVertexMap.get(id2);					
+					
+					graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
 				}
 			}
 			
 		}
 		
 	}
-	
-	
-	
+
 	private String listToString(Term list){
 		String toReturn = "[";
 		
@@ -168,6 +186,17 @@ public class AlternativesGraph {
 		toReturn += elements[i].toString();
 		
 		return toReturn + "]";
+	}
+	
+	
+	private ArrayList<String> termArrayToStringArray(Term [] elements){
+		ArrayList<String> toReturn = new ArrayList<String>();
+		
+		for(Term e : elements){
+			toReturn.add(e.toString());
+		}
+		
+		return toReturn;
 	}
 	
 	/*

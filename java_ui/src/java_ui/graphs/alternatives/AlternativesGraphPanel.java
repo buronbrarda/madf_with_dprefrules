@@ -1,11 +1,14 @@
 package java_ui.graphs.alternatives;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Paint;
+
 import javax.swing.JPanel;
 
 import org.apache.commons.collections15.Transformer;
 
-import edu.uci.ics.jung.algorithms.layout.DAGLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
@@ -13,7 +16,7 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 public class AlternativesGraphPanel extends JPanel {
 	
 	private AlternativesGraph graph;
-	private DAGLayout<AlternativesGraphVertex, AlternativesGraphEdge> layout;
+	private KKLayout<AlternativesGraphVertex, AlternativesGraphEdge> layout;
 	private VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge> vv;
 	private DefaultModalGraphMouse<AlternativesGraphVertex, AlternativesGraphEdge> mouse;
 	
@@ -33,6 +36,27 @@ public class AlternativesGraphPanel extends JPanel {
 		this.vv.setGraphMouse(this.mouse);
 		
 		this.mouse.setMode(Mode.PICKING);
+		
+		
+	
+		this.vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<AlternativesGraphVertex, Paint>() {
+
+			@Override
+			public Paint transform(AlternativesGraphVertex v) {
+				if(vv.getPickedVertexState().isPicked(v)){
+					return Color.YELLOW;
+				}
+				else{
+					if(v.isSelected()){
+						return Color.GREEN;
+					}
+					else{
+						return Color.RED;
+					}
+				}
+				
+			}
+		});
 		
 		
 		this.vv.getRenderContext().setEdgeLabelTransformer(new Transformer<AlternativesGraphEdge, String>(){
@@ -58,7 +82,8 @@ public class AlternativesGraphPanel extends JPanel {
 	public void loadGraph(){
 		this.graph.load();
 		
-		this.layout = new  DAGLayout<AlternativesGraphVertex, AlternativesGraphEdge>(this.graph.getGraph());
+		this.layout = new  KKLayout<AlternativesGraphVertex, AlternativesGraphEdge>(this.graph.getGraph());
+		this.layout.setAdjustForGravity(true);
 		
 		if(this.vv != null){
 			this.remove(this.vv);

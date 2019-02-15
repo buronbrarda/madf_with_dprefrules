@@ -27,13 +27,16 @@ public class AlternativesGraphStrongEdge implements AlternativesGraphEdge{
 	public String toString(){
 		String toReturn = "{";
 		
-		int i;
-		
-		for(i=0; i<rules.size()-1;i++){
-			toReturn += rules.get(i)+", ";
+		if(!rules.isEmpty()){
+			int i;
+			
+			for(i=0; i<rules.size()-1;i++){
+				toReturn += rules.get(i)+", ";
+			}
+			
+			
+			toReturn += rules.get(i);	
 		}
-		
-		toReturn += rules.get(i);
 		
 		return toReturn +"}";
 	}

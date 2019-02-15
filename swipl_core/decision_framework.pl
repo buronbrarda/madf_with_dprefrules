@@ -10,7 +10,8 @@
 		equivalent/2,
 		incomparable/2,
 		
-		recommended_alternatives/1,
+		selected_alternative/1,
+		selected_alternatives/1,
 		justification_rules/3,
 		equivalent_groups_ranking/1
 	]).
@@ -33,7 +34,7 @@
 	run(Selection,Order,Args_Count,Reasoning_Time,Selection_Time):-
 		init(T1,T2),
 		
-		recommended_alternatives(Selection),
+		selected_alternatives(Selection),
 		
 		equivalent_groups_ranking(Order),
 			
@@ -206,33 +207,78 @@
 		justification_rules(?X,?Y,?Rules).
 		
 		Rules are all the cpref-rules that were used to genereates the arguments supporting
-		that X is strict preferred over Y. Note that it includes transitives conclusions. 
+		that X is strict preferred over Y. Note that it includes transitives conclusions.
+		
+		Both X and Y can be a list of alternatives.
 			
 	************************************************************************************/
 	justification_rules(X,Y,Rules):-
 		explicitly_preferred(X,Y),
-		Claim =.. [pref,X,Y],
-		findall(Arg_Rules, argument(_,Arg_Rules,_,Claim), Rules_List),
+		findall(Arg_Rules, argument(_,Arg_Rules,_,pref(X,Y)), Rules_List),
 		flatten(Rules_List, Aux),
-		list_to_set(Aux, Rules).
+		list_to_set(Aux, Rules),!.
+		
+	justification_rules(X,Y,[]):-
+		not(is_list(X)),
+		not(is_list(Y)),
+		not(explicitly_preferred(X,Y)),!.
+		
+	justification_rules(X,[Y|Group],Rules):-
+		explicitly_preferred(X,Y),
+		findall(Arg_Rules, argument(_,Arg_Rules,_,pref(X,Y)), Rules_List),
+		flatten(Rules_List, Rules_X),
+		justification_rules(X,Group,Rules_G),!,
+		append(Rules_X, Rules_G, Aux),
+		list_to_set(Aux,Rules).
+		
+	justification_rules(X,[Y|Group],Rules_G):-
+		not(explicitly_preferred(X,Y)),
+		justification_rules(X,Group,Rules_G),!.
+		
+	justification_rules(_,[],[]):-!.
+		
+	justification_rules([X|Group],Y,Rules):-
+		explicitly_preferred(X,Y),
+		findall(Arg_Rules, argument(_,Arg_Rules,_,pref(X,Y)), Rules_List),
+		flatten(Rules_List, Rules_X),
+		justification_rules(Group,Y,Rules_G),!,
+		append(Rules_X, Rules_G, Aux),
+		list_to_set(Aux,Rules).
+		
+	justification_rules([X|Group],Y,Rules_G):-
+		not(explicitly_preferred(X,Y)),
+		justification_rules(Group,Y,Rules_G),!.
+		
+	justification_rules([],_,[]):-!.
 	
+	
+	justification_rules(Group_X,Group_Y,Rules):-		
+		is_list(Group_X),
+		is_list(Group_Y),
+		
+		findall(Aux_Rules, (member(X,Group_X), justification_rules(X,Group_Y,Aux_Rules)), Aux_List),
+		
+		flatten(Aux_List, Aux_Flat),
+		
+		list_to_set(Aux_Flat,Rules).
 	
 	/***********************************************************************************
-		recommended_alternatives(?Alternatives).
+		selected_alternatives(?Alternatives).
 		
 		Define which Alternatives should be chosen by the decision maker.
 
 	************************************************************************************/
 		
 	
-	recommended_alternatives(Alternatives):-
-		findall(X,(
-			alternative(X),
-			not((alternative(Y), X \= Y, strict_preferred(Y,X)))
-		), Aux),  %Just choice those alternatives such that do not have a better one.
+	selected_alternatives(Alternatives):-
+		findall(X,selected_alternative(X), Aux),  
 		list_to_set(Aux,Alternatives).
-		
 	
+	
+	%Just choice those alternatives such that do not have a better one.
+	selected_alternative(X):-
+		alternative(X),
+		not((alternative(Y), X \= Y, strict_preferred(Y,X))).
 	
 	/***********************************************************************************
 		equivalent_groups_ranking(?Ranking).
