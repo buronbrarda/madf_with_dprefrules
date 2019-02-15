@@ -15,7 +15,7 @@ public class AlternativesGraphDialog extends JDialog {
 	
 	public AlternativesGraphDialog(){
 		
-		this.setTitle("Explanation Graph");
+		this.setTitle("Explanation Graph - (Prototype Version)");
 		this.setModalityType(ModalityType.MODELESS);
 		
 		this.setSize(defaultDimension);

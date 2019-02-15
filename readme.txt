@@ -2,9 +2,16 @@
      Argumentation-Based Multi-Criteria Decision Support System with Conditional Preference Rules
 ---------------------------------------------------------------------------------------------------------
 
-** WE HAVE ONLY RUN THIS APPLICATION ON 64 BITS MACHINES RUNNING
-WINDOWS 7/10 OS. SO, ALL INSTRUCTIONS ARE GIVEN CONSIDERING THIS
-ARQUITECTURE.
+** WE HAVE ONLY RUN THIS APPLICATION ON 64 BITS MACHINES RUNNING WINDOWS 7/10 OS. SO, ALL INSTRUCTIONS
+ARE GIVEN CONSIDERING THIS ARQUITECTURE.
+
+** WE SPECIALLY THANK THE DEVELOPERS OF THE LIBRARIES THAT WE HAVE USED TO CREATE THIS APPLICATION:
+
+		-- JPL7 (https://jpl7.org/)
+		-- JUNG (http://jung.sourceforge.net/)
+		-- APACHE.COMMONS.COLLECTIONS (http://commons.apache.org/)
+		
+	All these libraries are included into the folder "app_lib"
 
 
 ==========================================================================================================
@@ -24,3 +31,30 @@ https://docs.telerik.com/teststudio/features/test-runners/add-path-environment-v
 ==========================================================================================================
 
 TO LAUNCH THE APPLICATION EXECUTE app.jar.
+
+To try the examples explained along the paper, proceed as follows:
+
+Start the application, 
+1.At the top (left) you can select between Evidence Set 1 (Table 1 at the paper) or Evidence Set 2  (Table 2 at the paper). 
+2.For each evidence set, three different set of preference rules can be selected (Tim, August and Kate respectively).
+3.Once an evidence set and a set of preferences is selected (note Evidence set 1 and Tim’s preferences are selected by default), the “Load Example” button can be used, and the application will automatically check that the all the loaded data is correct. 
+4.You will see that the “status” of the 5 steps (left part) change to “OK”.
+5.Then the “Run” button (at the bottom) starts the computation of the selected alternatives.
+6.In the right part of the app’s window the assessment base (K in the paper) will appear.  
+7.At the right (bottom) the computed selected alternatives for the loaded example will be shown. 
+8.The “Explanation Graph” button open a window with the graph.
+9.Note that the “View” button shows the actual data of the loaded example for each item. 
+
+At the Explanation Graph window:
+•Vertices represent alternatives. 
+•Vertices are labelled with the alternative name.
+•Green vertices represent the computed selected alternatives (otherwise are red).
+•An arc from v1 to v2 labelled R, means that alternative v1 is preferred to v2 based on the preference rules R = {r1….}.
+•For zoom in/out: use mouse’s wheel.
+•Vertices can be dragged for your convenience. 
+•More than one vertex can be picked to be dragged (they will turn to yellow).
+
+To create a new example or modified an existing one:
+1. See the folder “Examples” for a reference of the format of the files that are needed.
+2. Then, the new files can be loaded using the “Edit” button for each of the 5 elements at the left.
+
