@@ -37,7 +37,7 @@ At the Explanation Graph window:
 
 To create a new example or modified an existing one:
 1. See the folder "examples" for a reference of the format of the files that are needed.
-2. Then, the new files can be loaded using the â€œEditâ€� button for each of the 5 elements at the left.
+2. Then, the new files can be loaded using the "Edit" button for each of the 5 elements at the left.
 
 # Thanks to..
 
