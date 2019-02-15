@@ -1,6 +1,5 @@
 package java_ui.graphs.alternatives;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public class AlternativesGraph {
 		
 	}
 	
-	
+	/*
 	private void loadVerteces(){
 		Query q = new Query("alternative(X)");
 		
@@ -48,7 +47,9 @@ public class AlternativesGraph {
 			buildVertex(solution.get("X").toString());
 		}
 	}
+	*/
 	
+	/*
 	private void loadStrongEdges(){
 		Query q = new Query("justification_rules(X,Y,Rules)");
 		
@@ -67,7 +68,9 @@ public class AlternativesGraph {
 			graph.addEdge(new AlternativesGraphStrongEdge(rules), v1, v2);
 		}
 	}
+	*/
 	
+	/*
 	private void loadWeakEdges(){
 		Query q = new Query("weakly_preferred(X,Y)");
 		
@@ -84,6 +87,8 @@ public class AlternativesGraph {
 			graph.addEdge(new AlternativesGraphWeakEdge(), v1, v2);
 		}
 	}
+	
+	*/
 	
 	private AlternativesGraphVertex buildVertex(String a1) {
 		AlternativesGraphVertex v = new AlternativesGraphVertex(a1);
@@ -165,6 +170,7 @@ public class AlternativesGraph {
 		return toReturn + "]";
 	}
 	
+	/*
 	private ArrayList<String> parseRules(Term [] rules){
 		ArrayList<String> toReturn = new ArrayList<String>();
 		
@@ -175,7 +181,7 @@ public class AlternativesGraph {
 		return toReturn;  
 		
 	}
-	
+	*/
 	
 	public void clearGraph(){
 		this.graph = new DirectedSparseGraph<AlternativesGraphVertex,AlternativesGraphEdge>();

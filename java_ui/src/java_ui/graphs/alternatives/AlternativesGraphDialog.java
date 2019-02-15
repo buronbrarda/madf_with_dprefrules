@@ -5,11 +5,6 @@ import java.awt.Dimension;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 
 public class AlternativesGraphDialog extends JDialog {
 	

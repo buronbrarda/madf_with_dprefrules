@@ -1,18 +1,14 @@
 package java_ui.graphs.alternatives;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 import javax.swing.JPanel;
 
 import org.apache.commons.collections15.Transformer;
 
-import com.sun.corba.se.impl.oa.poa.ActiveObjectMap.Key;
-
 import edu.uci.ics.jung.algorithms.layout.DAGLayout;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 
 public class AlternativesGraphPanel extends JPanel {
 	
@@ -35,6 +31,8 @@ public class AlternativesGraphPanel extends JPanel {
 		
 		
 		this.vv.setGraphMouse(this.mouse);
+		
+		this.mouse.setMode(Mode.PICKING);
 		
 		
 		this.vv.getRenderContext().setEdgeLabelTransformer(new Transformer<AlternativesGraphEdge, String>(){

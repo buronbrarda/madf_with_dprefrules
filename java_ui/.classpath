@@ -9,19 +9,25 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-api-2.0.1.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api/index.html"/>
+			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-graph-impl-2.0.1.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api/index.html"/>
+			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-visualization-2.0.1.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api/index.html"/>
+			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-algorithms-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-algorithms-2.0.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://jung.sourceforge.net/doc/api"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/mburon/git/cpref_decision_system/libs/jung-jai-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
