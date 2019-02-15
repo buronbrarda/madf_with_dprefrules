@@ -148,7 +148,7 @@
 	
 	%=============== JUST TO DEBUG ==============%
 	
-	
+	/*
 	
 	alternative(a1). 
     alternative(a2). 
@@ -195,7 +195,7 @@
 	fact(price, a12, 335).	fact(distance,a12,45).
 	fact(price, a13, 485).	fact(distance,a13,100).       
 	fact(price, a14, 260).	fact(distance,a14,45).
-	fact(price, a15, 490).	fact(distance,a15,490).
+	fact(price, a15, 490).	fact(distance,a15,20).
 	fact(price, a16, 290).	fact(distance,a16,15).
 	fact(price, a17, 250).	fact(distance,a17,180).
 	fact(price, a18, 570).	fact(distance,a18,40).
@@ -355,4 +355,4 @@
         better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
     )).
     
-    
+    */
