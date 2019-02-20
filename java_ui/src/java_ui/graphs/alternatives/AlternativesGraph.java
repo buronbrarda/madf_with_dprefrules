@@ -1,6 +1,7 @@
 package java_ui.graphs.alternatives;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -215,6 +216,68 @@ public class AlternativesGraph {
 	public void clearGraph(){
 		this.graph = new DirectedSparseGraph<AlternativesGraphVertex,AlternativesGraphEdge>();
 		this.alternativesVertexMap = new HashMap<String,AlternativesGraphVertex>();
+	}
+
+	public void expand(AlternativesGraphCompoundVertex v) {
+		Collection<AlternativesGraphEdge> in = this.graph.getInEdges(v);
+		Collection<AlternativesGraphEdge> out = this.graph.getOutEdges(v);
+		
+		ArrayList<AlternativesGraphVertex> predecessors = new ArrayList<AlternativesGraphVertex>();
+		ArrayList<AlternativesGraphVertex> successors = new ArrayList<AlternativesGraphVertex>();
+		
+		for(AlternativesGraphEdge e : in){
+			predecessors.add(this.graph.getSource(e));
+		}
+		
+		for(AlternativesGraphEdge e : out){
+			successors.add(this.graph.getDest(e));
+		}
+		
+		ArrayList<AlternativesGraphSimpleVertex> expandedVertices = new ArrayList<AlternativesGraphSimpleVertex>();
+		
+		this.graph.removeVertex(v);
+		
+		for(String id : v.getVertices()){
+			
+			AlternativesGraphSimpleVertex simpleVertex = new AlternativesGraphSimpleVertex(id);
+						
+			this.graph.addVertex(simpleVertex);
+			
+			expandedVertices.add(simpleVertex);
+			
+			for(AlternativesGraphVertex p : predecessors){
+				this.graph.addEdge(new AlternativesGraphStrongEdge(p.getJustificationRulesFor(simpleVertex)), p, simpleVertex);
+			}
+			
+			for(AlternativesGraphVertex s : successors){
+				this.graph.addEdge(new AlternativesGraphStrongEdge(simpleVertex.getJustificationRulesFor(s)), simpleVertex, s);
+			}
+		}
+		
+		this.loadExpandedEdges(expandedVertices);
+	}
+	
+	
+	private void loadExpandedEdges(ArrayList<AlternativesGraphSimpleVertex> expandedVertices) {
+		
+		
+		for(AlternativesGraphSimpleVertex v1 : expandedVertices){
+			for(AlternativesGraphSimpleVertex v2 : expandedVertices){
+				
+				if(v1 != v2){
+					
+					Query q = new Query("explicitly_preferred("+v1.getId()+","+v2.getId()+")");
+					
+					if(q.hasSolution()){
+						
+						this.graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
+					}
+					
+				}
+				
+			}
+		}
+		
 	}
 	
 	

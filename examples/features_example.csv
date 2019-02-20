@@ -1,4 +1,4 @@
-criteria;domain
+feature;domain
 price;real_numbers
 distance;real_numbers
 noise;[low, med, high]

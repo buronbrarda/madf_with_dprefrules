@@ -2,8 +2,11 @@ package java_ui.graphs.alternatives;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Paint;
 
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 import org.apache.commons.collections15.Transformer;
@@ -33,12 +36,21 @@ public class AlternativesGraphPanel extends JPanel {
 		this.vv = new VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge>(this.layout);
 		
 		
-		this.vv.setGraphMouse(this.mouse);
+		this.vv.setGraphMouse(this.mouse);	
+		
+		this.mouse.add(new AlternativesGraphPopupMenuMousePlugin(this.graph, this.vv));
+		
+		JMenu menu = this.mouse.getModeMenu();
+		menu.setText("MOUSE MODE");
+		menu.setPreferredSize(new Dimension(200, 20));
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(menu);
+		
+		this.add(menuBar, BorderLayout.NORTH);
 		
 		this.mouse.setMode(Mode.PICKING);
 		
-		
-	
 		this.vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<AlternativesGraphVertex, Paint>() {
 
 			@Override

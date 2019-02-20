@@ -1,0 +1,10 @@
+id;rule
+p1;c1 is 1 if f1 == 1
+p2;c1 is 2 if f1 == 2
+p3;c1 is 3 if f1 == 3
+p4;c2 is 1 if f2 == 1
+p5;c2 is 2 if f2 == 2
+p6;c2 is 3 if f2 == 3
+p7;c3 is 1 if f3 == 1
+p8;c3 is 2 if f3 == 2
+p9;c3 is 3 if f3 == 3

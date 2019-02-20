@@ -148,7 +148,7 @@
 	
 	%=============== JUST TO DEBUG ==============%
 	
-	/*
+	
 	
 	alternative(a1). 
     alternative(a2). 
@@ -355,4 +355,4 @@
         better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
     )).
     
-    */
+    

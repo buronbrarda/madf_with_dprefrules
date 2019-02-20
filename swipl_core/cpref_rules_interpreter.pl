@@ -33,6 +33,19 @@
 		assessment(C,X,Vx), assessment(C,Y,Vy),
 		Assessment_X =..[C,X,Vx], Assessment_Y =..[C,Y,Vy],
 		values(C,Domain), greater_value(Vy,Vx,Domain).
+		
+		
+	min_distance(X,Y,C,Min_D,[]):-
+		assessment(C,X,Vx), assessment(C,Y,Vy),
+		values(C,Domain),
+		distance(Vx,Vy,Domain,Distance),
+		Min_D =< Distance.
+		
+	max_distance(X,Y,C,Max_D,[]):-
+		assessment(C,X,Vx), assessment(C,Y,Vy),
+		values(C,Domain),
+		distance(Vx,Vy,Domain,Distance),
+		Max_D >= Distance.
 	
 	% ============================================================================================
 	% ============================================================================================
@@ -55,6 +68,11 @@
 		nth0(Index_1,Domain,V),
 		nth0(Index_2,Domain,U),
 		Index_1 >= Index_2.
+		
+	distance(V,U,Domain,Distance):-
+		nth0(Index_1,Domain,V),
+		nth0(Index_2,Domain,U),
+		is(Distance, abs(Index_1 - Index_2)).
 	
 	/**********************************************************************************/
 	
@@ -126,6 +144,24 @@
 		coherent_body(Body, [[C,max,Max_V]|Criteria], [X,Y], Criteria_Output).
 		
 	
+	coherent_body((min_distance(X,Y,C,D),Body), Criteria, [X,Y],Criteria_Output):-
+		!,criterion(C),
+		integer(D), D >= 1,
+		
+		not(member([C,min_distance,_],Criteria)),
+		
+		coherent_body(Body, [[C,min_distance,D]|Criteria], [X,Y], Criteria_Output).
+		
+	
+	coherent_body((max_distance(X,Y,C,D),Body), Criteria, [X,Y],Criteria_Output):-
+		!,criterion(C),
+		integer(D), D >= 1,
+		
+		not(member([C,max_distance,_],Criteria)),
+		
+		coherent_body(Body, [[C,max_distance,D]|Criteria], [X,Y], Criteria_Output).
+		
+	
 	%Check better, worse and equal clauses.	
 	coherent_body(Premise, Criteria, [X,Y], [[C,PType]]):-
 		premise_type(PType),
@@ -167,7 +203,19 @@
 		),!,
 		
 		not(member([C,max,_Value],Criteria)).		%Check non-duplicate max.
-
+	
+	
+	coherent_body(min_distance(X,Y,C,D), Criteria, [X,Y],[]):-
+		!,criterion(C),
+		integer(D), D >= 1,
+		
+		not(member([C,min_distance,_],Criteria)).
+		
+	coherent_body(max_distance(X,Y,C,D), Criteria, [X,Y],[]):-
+		!,criterion(C),
+		integer(D), D >= 1,
+		
+		not(member([C,max_distance,_],Criteria)).
 	
 	/***********************************************************************************
 		consult_cpref_rule(+CPrefRule, -Facts).
