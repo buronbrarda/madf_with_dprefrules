@@ -17,6 +17,8 @@
 	:-dynamic exhaustive_arg_line/2.
 	:-dynamic m_dialectical_tree/3.
 	
+	:-dynamic dtree_node/5.
+	
 	
 	/***********************************************************************************
 		premises(?Premises, ?Id, ?Argument).
@@ -363,3 +365,37 @@
 	
 	remove_warranted_conclusions:-
 		retractall(m_dialectical_tree(_,_,_)).
+		
+	
+	
+	generate_dtree_nodes:-
+		reset_id(dtree_node),
+		retractall(dtree_node(_,_,_,_)),
+		
+		forall(m_dialectical_tree(_,Tree,_), assert_dtree_nodes(Tree,null)).
+		
+	
+	
+	assert_dtree_nodes(Dtree,null):-
+		next_id(dtree_node,Node_Id),
+		Dtree = (Arg_Id,Subtrees), 
+		findall(Child_Id,(member(ST, Subtrees),assert_dtree_nodes(ST,Node_Id,Child_Id)),Children),
+		node_status(Children,Status),
+		assert(dtree_node(Node_Id,null,Children,Arg_Id,Status)).
+		
+	assert_dtree_nodes(Dtree,Father,Node_Id):-
+		next_id(dtree_node,Node_Id),
+		Dtree = (Arg_Id,Subtrees),
+		findall(Child_Id,(member(ST, Subtrees),assert_dtree_nodes(ST,Node_Id,Child_Id)),Children),
+		node_status(Children,Status),
+		assert(dtree_node(Node_Id,Father,Children,Arg_Id,Status)),!.
+		
+	
+	%If every child of a node N is marked as U, then N is marked as D.		
+	node_status(Children_Ids, 'D'):-
+		member(Child_Id,Children_Ids),
+		dtree_node(Child_Id,_,_,_,'U'),!.
+		
+	node_status(_,'U').
+		
+	
