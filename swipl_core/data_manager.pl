@@ -148,7 +148,24 @@
 	
 	%=============== JUST TO DEBUG ==============%
 	
+	/*
 	
+	%=============== Evidence Set 1 ==============%
+	
+	alternative(a1). 
+    alternative(a2). 
+    alternative(a3).
+    alternative(a4).
+	
+	fact(price,a1,500).    fact(price,a2, 400).     fact(price,a3, 300).     fact(price,a4, 550).
+    fact(distance,a1, 20). fact(distance,a2, 10).   fact(distance,a3, 60).   fact(distance,a4, 15).
+    fact(noise,a1, low).   fact(noise,a2, high).    fact(noise,a3, low).     fact(noise,a4, med).
+    fact(area,a1, 60).     fact(area,a2, 70).       fact(area,a3, 30).       fact(area,a4, 80).
+    fact(rooms,a1, 2).     fact(rooms,a2, 2).       fact(rooms,a3, 1).       fact(rooms,a4, 3).
+	
+	%=============================================%
+	
+	%=============== Evidence Set 2 ==============%
 	
 	alternative(a1). 
     alternative(a2). 
@@ -240,6 +257,10 @@
 	fact(rooms,a21,1).    fact(rooms,a22,3).    fact(rooms,a23,2).    fact(rooms,a24,1).
 	fact(rooms,a25,2).    fact(rooms,a26,2).    fact(rooms,a27,2).    fact(rooms,a28,1).
 	fact(rooms,a29,1).    fact(rooms,a30,2).
+    
+    
+    %=============================================%
+    
     
     feature(price).
     feature(distance).
@@ -355,4 +376,4 @@
         better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
     )).
     
-    
+    */

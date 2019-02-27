@@ -1,5 +1,6 @@
 :- module(argumentation_framework,[
 		generate_warranted_conclusions/0,
+		generate_dtree_nodes/0,
 		
 		rules/3,
 		premises/3,
@@ -291,34 +292,40 @@
 		BothClaim_D_Trees is the set of defeated dialectical trees, both, in favour and
 		against Claim.
 	************************************************************************************/
-	justification(Claim, Claim_U_Trees, NoClaim_U_Trees, BothClaim_D_Trees):-
-		argument(_,_,_,Claim),
+	justification(Claim, Claim_U_Trees, NoClaim_U_Trees, BothClaim_D_Trees):-		
+		findall(Node_Id, (
+			argument(Arg_Id,_,_,Claim),
+			dtree_node(Node_Id, null, _, Arg_Id, 'U')
+		), Aux_1),
 		
-		findall(C_U_Tree, (
-			argument(Id,_,_,Claim),
-			m_dialectical_tree(Id, C_U_Tree, undefeated)
-		), Claim_U_Trees),
+		list_to_set(Aux_1,Claim_U_Trees),
 		
-		findall(NC_U_Tree, (
-			claim(Claim,_,ArgA),
-			ArgB =.. [argument,_,_,_,_], call(ArgB),
-			in_conflict(ArgA,ArgB),
-			m_dialectical_tree(Id, NC_U_Tree, undefeated)
-		), NoClaim_U_Trees),
+		findall(Node_Id, (
+			complement(Claim,No_Claim),
+			ArgA =.. [argument,_,_,_,Claim], call(ArgA),
+			ArgB =.. [argument,Arg_Id_2,_,_,No_Claim], call(ArgB),
+			dtree_node(Node_Id, null, _, Arg_Id_2, 'U')
+		), Aux_2),
 		
-		findall(C_D_Tree, (
-			argument(Id,_,_,Claim),
-			m_dialectical_tree(Id, C_D_Tree, defeated)
+		list_to_set(Aux_2,NoClaim_U_Trees),
+		
+		findall(Node_Id, (
+			argument(Arg_Id,_,_,Claim),
+			dtree_node(Node_Id, null, _, Arg_Id, 'D')
 		), Claim_D_Trees),
 		
-		findall(NC_D_Tree, (
-			claim(Claim,_,ArgA),
-			ArgB =.. [argument,_,_,_,_], call(ArgB),
-			in_conflict(ArgA,ArgB),
-			m_dialectical_tree(Id, NC_D_Tree, defeated)
+		
+		findall(Node_Id, (
+			complement(Claim,No_Claim),
+			ArgA =.. [argument,_,_,_,Claim], call(ArgA),
+			ArgB =.. [argument,Arg_Id_2,_,_,No_Claim], call(ArgB),
+			dtree_node(Node_Id, null, _, Arg_Id_2, 'D')
 		), NoClaim_D_Trees),
 		
-		append(Claim_D_Trees, NoClaim_D_Trees, BothClaim_D_Trees).
+			
+		append(Claim_D_Trees, NoClaim_D_Trees, Aux_3),
+		
+		list_to_set(Aux_3,BothClaim_D_Trees).
 	
 	
 	% ============================================================================

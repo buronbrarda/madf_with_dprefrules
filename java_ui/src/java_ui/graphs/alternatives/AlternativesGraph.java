@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.jpl7.Query;
 import org.jpl7.Term;
@@ -233,7 +234,7 @@ public class AlternativesGraph {
 			successors.add(this.graph.getDest(e));
 		}
 		
-		ArrayList<AlternativesGraphSimpleVertex> expandedVertices = new ArrayList<AlternativesGraphSimpleVertex>();
+		ArrayList<AlternativesGraphVertex> expandedVertices = new ArrayList<AlternativesGraphVertex>();
 		
 		this.graph.removeVertex(v);
 		
@@ -258,13 +259,13 @@ public class AlternativesGraph {
 	}
 	
 	
-	private void loadExpandedEdges(ArrayList<AlternativesGraphSimpleVertex> expandedVertices) {
+	private void loadExpandedEdges(ArrayList<AlternativesGraphVertex> expandedVertices) {
 		
 		
-		for(AlternativesGraphSimpleVertex v1 : expandedVertices){
-			for(AlternativesGraphSimpleVertex v2 : expandedVertices){
+		for(AlternativesGraphVertex v1 : expandedVertices){
+			for(AlternativesGraphVertex v2 : expandedVertices){
 				
-				if(v1 != v2){
+				if(v1 != v2 && v1 instanceof AlternativesGraphSimpleVertex && v2 instanceof AlternativesGraphSimpleVertex){
 					
 					Query q = new Query("explicitly_preferred("+v1.getId()+","+v2.getId()+")");
 					
@@ -277,6 +278,12 @@ public class AlternativesGraph {
 				
 			}
 		}
+		
+	}
+
+	public void addExtraEdgesBetween(Set<AlternativesGraphVertex> picked) {
+		
+		loadExpandedEdges(new ArrayList<AlternativesGraphVertex>(picked));
 		
 	}
 	

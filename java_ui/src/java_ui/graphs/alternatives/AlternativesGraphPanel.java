@@ -56,14 +56,14 @@ public class AlternativesGraphPanel extends JPanel {
 			@Override
 			public Paint transform(AlternativesGraphVertex v) {
 				if(vv.getPickedVertexState().isPicked(v)){
-					return Color.YELLOW;
+					return Color.CYAN;
 				}
 				else{
 					if(v.isSelected()){
-						return Color.GREEN;
+						return Color.WHITE;
 					}
 					else{
-						return Color.RED;
+						return Color.DARK_GRAY;
 					}
 				}
 				

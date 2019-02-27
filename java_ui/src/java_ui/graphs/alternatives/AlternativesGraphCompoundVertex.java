@@ -1,7 +1,6 @@
 package java_ui.graphs.alternatives;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
 import org.jpl7.Query;
@@ -48,7 +47,7 @@ public class AlternativesGraphCompoundVertex implements AlternativesGraphVertex{
 	}
 	
 	
-	public Collection<String> getVertices(){
+	public ArrayList<String> getVertices(){
 		return this.verteces;
 	}
 	
