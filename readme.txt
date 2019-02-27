@@ -48,11 +48,26 @@ Start the application,
 At the Explanation Graph window:
 •Vertices represent alternatives. 
 •Vertices are labelled with the alternative name.
-•Green vertices represent the computed selected alternatives (otherwise are red).
+•White vertices represent the computed selected alternatives (otherwise are gray).
 •An arc from v1 to v2 labelled R, means that alternative v1 is preferred to v2 based on the preference rules R = {r1….}.
 •For zoom in/out: use mouse’s wheel.
 •Vertices can be dragged for your convenience. 
 •More than one vertex can be picked to be dragged (they will turn to yellow).
+•Right click on vertices will show a pop-up menu with two items: Expand and Add Extra-Edges.
+•Expand will transform a compund vertex with multiple alternatives into multiple vertices.
+•Add extra-edges will generate all edges among the selected vertices.
+•Right click on edges will show the explain option, if selected an Delta-Explanation Graph for the selected edge will be showed.
+
+
+At the Delta-Explanation Graph window:
+•Triangles represent arguments.
+•Arguments are labelled with their claim and cpref-rules.
+•Green arguments represent they were marked as undefeated (defeated arguments are red).
+•The relations among arguments display the diferent dialectical trees the justify the anwser of the framework.
+•Arguments can be dragged for your convenience. 
+•Arguments than one vertex can be picked to be dragged.
+
+At both Explanation Graph and Delta-Explanation Graph windows you can find in the top-left corner a menu to change the mouse mode from "picking" to "transforming" and vice-versa.
 
 To create a new example or modified an existing one:
 1. See the folder “Examples” for a reference of the format of the files that are needed.
