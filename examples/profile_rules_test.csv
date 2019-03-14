@@ -1,10 +1,16 @@
 id;rule
-p1;c1 is 1 if f1 == 1
-p2;c1 is 2 if f1 == 2
-p3;c1 is 3 if f1 == 3
-p4;c2 is 1 if f2 == 1
-p5;c2 is 2 if f2 == 2
-p6;c2 is 3 if f2 == 3
-p7;c3 is 1 if f3 == 1
-p8;c3 is 2 if f3 == 2
-p9;c3 is 3 if f3 == 3
+p11;c1 is 1 if f1 == 1
+p12;c1 is 2 if f1 == 2
+p13;c1 is 3 if f1 == 3
+p14;c1 is 4 if f1 == 4
+p15;c1 is 5 if f1 == 5
+p21;c2 is 1 if f2 == 1
+p22;c2 is 2 if f2 == 2
+p23;c2 is 3 if f2 == 3
+p24;c2 is 4 if f2 == 4
+p25;c2 is 5 if f2 == 5
+p31;c3 is 1 if f3 == 1
+p32;c3 is 2 if f3 == 2
+p33;c3 is 3 if f3 == 3
+p34;c3 is 4 if f3 == 4
+p35;c3 is 5 if f3 == 5

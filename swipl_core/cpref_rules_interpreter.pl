@@ -27,25 +27,47 @@
 		
 	equal(X,Y,C,[Assessment_X, Assessment_Y]):-
 		assessment(C,X,V), assessment(C,Y,V), Assessment_X=..[C,X,V], Assessment_Y=..[C,Y,V], alternative(X), alternative(Y).
-	
-	
+		
 	worse(X,Y,C,[Assessment_X, Assessment_Y]):-
 		assessment(C,X,Vx), assessment(C,Y,Vy),
 		Assessment_X =..[C,X,Vx], Assessment_Y =..[C,Y,Vy],
 		values(C,Domain), greater_value(Vy,Vx,Domain).
 		
-		
-	min_distance(X,Y,C,Min_D,[]):-
+	dont_care(X,Y,C,[Assessment_X, Assessment_Y]):-
+		assessment(C,X,Vx), assessment(C,Y,Vy),
+		Assessment_X =..[C,X,Vx], Assessment_Y =..[C,Y,Vy].
+	
+	min_distance(X,Y,C,Min_D,[Assessment_X,Assessment_Y]):-
 		assessment(C,X,Vx), assessment(C,Y,Vy),
 		values(C,Domain),
 		distance(Vx,Vy,Domain,Distance),
-		Min_D =< Distance.
+		Min_D =< Distance,
+		Assessment_X =..[C,X,Vx], Assessment_Y =..[C,Y,Vy].	
+	
+	min_d_difference(X,Y,C1,C2,Min_Difference,[AssessmentX1, AssessmentX2, AssessmentY1, AssessmentY2]):-
+		assessment(C1,X,Vx1), assessment(C1,Y,Vy1),
+		values(C1,Domain1),
+		distance(Vx1,Vy1,Domain1,Distance1),
+		assessment(C2,X,Vx2), assessment(C2,Y,Vy2),
+		values(C2,Domain2),
+		distance(Vx2,Vy2,Domain2,Distance2),
+		is(Difference, abs(Distance1 - Distance2)),
+		Min_Difference =< Difference,
+		AssessmentX1 =.. [C1,X,Vx1], AssessmentX2 =.. [C2,X,Vx2],
+		AssessmentY1 =.. [C1,Y,Vy1], AssessmentY2 =.. [C2,Y,Vy2].
 		
-	max_distance(X,Y,C,Max_D,[]):-
-		assessment(C,X,Vx), assessment(C,Y,Vy),
-		values(C,Domain),
-		distance(Vx,Vy,Domain,Distance),
-		Max_D >= Distance.
+	min_d_factor(X,Y,C1,C2,Min_Factor,[AssessmentX1, AssessmentX2, AssessmentY1, AssessmentY2]):-
+		assessment(C1,X,Vx1), assessment(C1,Y,Vy1),
+		values(C1,Domain1),
+		distance(Vx1,Vy1,Domain1,Distance1),
+		assessment(C2,X,Vx2), assessment(C2,Y,Vy2),
+		values(C2,Domain2),
+		distance(Vx2,Vy2,Domain2,Distance2),
+		is(Factor, Distance1/Distance2),
+		Min_Factor =< Factor,
+		AssessmentX1 =.. [C1,X,Vx1], AssessmentX2 =.. [C2,X,Vx2],
+		AssessmentY1 =.. [C1,Y,Vy1], AssessmentY2 =.. [C2,Y,Vy2].
+		
 	
 	% ============================================================================================
 	% ============================================================================================
@@ -81,7 +103,75 @@
 	% 		These predicates define an interpreter of cpref-rules
 	% =================================================================================
 	
-	premise_type(better). premise_type(worse). premise_type(equal).	
+	%Check "better", "worse", "equal" and "dont_care" clauses conditions.	
+	clause_conditions(Premise,Previous_Clauses,[Criterion,Clause]):-
+		Premise =.. [Clause,_X,_Y,Criterion],
+		member(Clause, [better,worse,equal,dont_care]),!,
+		
+		criterion(Criterion),
+		not(member([Criterion,_],Previous_Clauses)).
+		
+	
+	%Check "min" clauses conditions	
+	clause_conditions(min(_X,Criterion,Min_V),Previous_Clauses,[Criterion,min,Min_V]):-
+		!,criterion(Criterion),								%Check criterion existence.
+		values(Criterion,Domain), member(Min_V,Domain),		%Check criterion domain.
+		/*member([Criterion,_Clause],Previous_Clauses),		%Check previous b_premise, w_premise or e_premise.
+		
+		(%Check that Min_V < Max_V when there exists a previous max clause.
+			(member([Criterion,max,Max_V],Previous_Clauses), greater_value(Max_V,Min_V,Domain));
+			(not(member([Criterion,max,_],Previous_Clauses)))
+		),!,
+		*/
+		
+		not(member([Criterion,min,_Value],Previous_Clauses)).		%Check non-duplicate min.
+		
+	
+	%Check "max" clauses conditions
+	clause_conditions(max(_Y,Criterion,Max_V),Previous_Clauses,[Criterion,max,Max_V]):-
+		!,criterion(Criterion),								%Check criterion existence.
+		values(Criterion,Domain), member(Max_V,Domain),		%Check criterion domain.
+		/*member([Criterion,worse],Previous_Clauses),			%Check previous w_premise.
+		
+		
+		(%Check that Min_V < Max_V when there exists a previous min clause.
+			(member([Criterion,min,Min_V],Previous_Clauses), greater_value(Max_V,Min_V,Domain));
+			(not(member([Criterion,min,_],Previous_Clauses)))
+		),!,
+		*/
+		
+		not(member([Criterion,max,_Value],Previous_Clauses)).		%Check non-duplicate max.
+	
+	
+	clause_conditions(min_distance(_X,_Y,Criterion,Min_V),Previous_Clauses,[Criterion,min_distance,Min_V]):-
+		!,criterion(Criterion),								%Check criterion existence.
+		number(Min_V), Min_V >= 2,							%Check Min_V is number and discard trivial cases with distance < 2.
+		
+		member([Criterion,better],Previous_Clauses),		%Check previous w_premise.
+		
+		not(member([Criterion,min_distance,_],Previous_Clauses)).		%Check non-duplicate min_distance.
+		
+	
+	
+	clause_conditions(min_d_difference(_X,_Y,C1,C2,Min_V),Previous_Clauses,[[C1,C2],min_d_difference,Min_V]):-
+		!,criterion(C1),criterion(C2),						%Check criterion existence.
+		number(Min_V), Min_V > 0,							%Check Min_V is number and discard trivial cases with min_difference = 0.
+		
+		member([C1,better],Previous_Clauses),				%Check previous b_premise.
+		member([C2,worse],Previous_Clauses),				%Check previous w_premise.
+		
+		not(member([[C1,C2],min_d_difference,_],Previous_Clauses)).		%Check non-duplicate min_distance.
+		
+	
+	clause_conditions(min_d_factor(_X,_Y,C1,C2,Min_V),Previous_Clauses,[[C1,C2],min_d_factor,Min_V]):-
+		!,criterion(C1),criterion(C2),						%Check criterion existence.
+		number(Min_V), Min_V > 1,							%Check Min_V is number and discard imposible cases with min_factor > 1.
+		
+		member([C1,better],Previous_Clauses),				%Check previous b_premise.
+		member([C2,worse],Previous_Clauses),				%Check previous w_premise.
+		
+		not(member([[C1,C2],min_d_factor,_],Previous_Clauses)).		%Check non-duplicate min_distance.
+	
 	
 	/***********************************************************************************
 		coherent_cpref_rule(+CPrefRule).
@@ -91,131 +181,20 @@
 		Also, check CPrefRule syntax errors.
 	************************************************************************************/
 	coherent_cpref_rule(Body ==> pref(X,Y)):-
-		coherent_body(Body, [], [X,Y], Criteria_Output),
-		member([_Criterion, better], Criteria_Output),!,	%Check whether it has a b_premise.
+		coherent_body(Body, [], [X,Y], Clause_Output),
+		member([_Criterion, better], Clause_Output),!,	%Check whether it has a b_premise.
 		X \== Y.											%Check X and Y are different variables.
 	
-	%Check better, worse and equal clauses.	
-	coherent_body((Premise, Body), Criteria, [X,Y], [[C,PType]|Criteria_Output]):-
-		premise_type(PType),
-		Premise =.. [PType,X,Y,C],!,
+	
+	coherent_body((Premise, Body), Previous_Clauses, [X,Y], [Clause|Clause_Output]):-
+		!,clause_conditions(Premise,Previous_Clauses,Clause),
 		
-		criterion(C),								%Check criterion existence.
-		not(member([C,_PType],Criteria)),			%Check non-duplicate criterion.
-		
-		coherent_body(Body, [[C,PType]|Criteria], [X,Y], Criteria_Output).
+		coherent_body(Body, [Clause|Previous_Clauses], [X,Y], Clause_Output).
 		
 	
-	%Check min(X,C,V) clauses.
-	coherent_body((Premise, Body), Criteria, [X,Y], Criteria_Output):-
-		Premise =.. [min,X,C,Min_V],!,
+	coherent_body(Premise, Previous_Clauses, [_X,_Y], [Clause]):-
+		clause_conditions(Premise,Previous_Clauses,Clause).
 		
-		criterion(C),								%Check criterion existence.
-		values(C,Domain), member(Min_V,Domain),			%Check criterion domain.
-		member([C,_PType],Criteria),				%Check previous b_premise, w_premise or e_premise.
-		
-		(%Check that Min_V < Max_V when there exists a previous max clause.
-			(member([C,max,Max_V],Criteria), greater_value(Max_V,Min_V,Domain));
-			(not(member([C,max,_],Criteria)))
-		),!,
-		
-		not(member([C,min,_Value],Criteria)),		%Check non-duplicate min.
-		
-		coherent_body(Body, [[C,min,Min_V]|Criteria], [X,Y], Criteria_Output).
-	
-	
-	
-	%Check max(Y,C,V) clauses.
-	coherent_body((Premise, Body), Criteria, [X,Y], Criteria_Output):-
-		Premise =.. [max,Y,C,Max_V],!,
-		
-		criterion(C),								%Check criterion existence.
-		values(C,Domain), member(Max_V,Domain),		%Check criterion domain.
-		member([C,worse],Criteria),					%Check previous w_premise.
-		
-		
-		(%Check that Min_V < Max_V when there exists a previous min clause.
-			(member([C,min,Min_V],Criteria), greater_value(Max_V,Min_V,Domain));
-			(not(member([C,min,_],Criteria)))
-		),!,
-		
-		not(member([C,max,_Value],Criteria)),		%Check non-duplicate max.
-		
-		coherent_body(Body, [[C,max,Max_V]|Criteria], [X,Y], Criteria_Output).
-		
-	
-	coherent_body((min_distance(X,Y,C,D),Body), Criteria, [X,Y],Criteria_Output):-
-		!,criterion(C),
-		integer(D), D >= 1,
-		
-		not(member([C,min_distance,_],Criteria)),
-		
-		coherent_body(Body, [[C,min_distance,D]|Criteria], [X,Y], Criteria_Output).
-		
-	
-	coherent_body((max_distance(X,Y,C,D),Body), Criteria, [X,Y],Criteria_Output):-
-		!,criterion(C),
-		integer(D), D >= 1,
-		
-		not(member([C,max_distance,_],Criteria)),
-		
-		coherent_body(Body, [[C,max_distance,D]|Criteria], [X,Y], Criteria_Output).
-		
-	
-	%Check better, worse and equal clauses.	
-	coherent_body(Premise, Criteria, [X,Y], [[C,PType]]):-
-		premise_type(PType),
-		Premise =.. [PType,X,Y,C],!,
-		
-		criterion(C),								%Check criterion existence.
-		not(member([C,_PremiseType],Criteria)).		%Check non-duplicate criterion.
-		
-		
-	%Check min(X,C,V) clauses.
-	coherent_body(Premise, Criteria, [X,_Y], []):-
-		Premise =.. [min,X,C,Min_V],!,
-		
-		criterion(C),								%Check criterion existence.
-		values(C,Domain), member(Min_V,Domain),			%Check criterion domain.
-		member([C,_PType],Criteria),				%Check previous b_premise, w_premise or e_premise.
-		
-		(%Check that Min_V < Max_V when there exists a previous max clause.
-			(member([C,max,Max_V],Criteria), greater_value(Max_V,Min_V,Domain));
-			(not(member([C,max,_],Criteria)))
-		),!,
-		
-		not(member([C,min,_Value],Criteria)).		%Check non-duplicate min.
-	
-	
-	
-	%Check max(Y,C,V) clauses.
-	coherent_body(Premise, Criteria, [_X,Y], []):-
-		Premise =.. [max,Y,C,Max_V],!,
-		
-		criterion(C),								%Check criterion existence.
-		values(C,Domain), member(Max_V,Domain),		%Check criterion domain.
-		member([C,worse],Criteria),					%Check previous w_premise.
-		
-		
-		(%Check that Min_V < Max_V when there exists a previous min clause.
-			(member([C,min,Min_V],Criteria), greater_value(Max_V,Min_V,Domain));
-			(not(member([C,min,_],Criteria)))
-		),!,
-		
-		not(member([C,max,_Value],Criteria)).		%Check non-duplicate max.
-	
-	
-	coherent_body(min_distance(X,Y,C,D), Criteria, [X,Y],[]):-
-		!,criterion(C),
-		integer(D), D >= 1,
-		
-		not(member([C,min_distance,_],Criteria)).
-		
-	coherent_body(max_distance(X,Y,C,D), Criteria, [X,Y],[]):-
-		!,criterion(C),
-		integer(D), D >= 1,
-		
-		not(member([C,max_distance,_],Criteria)).
 	
 	/***********************************************************************************
 		consult_cpref_rule(+CPrefRule, -Facts).

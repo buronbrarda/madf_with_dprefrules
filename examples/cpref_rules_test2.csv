@@ -1,0 +1,4 @@
+id;rule
+r1;better(X,Y,c1) ==> pref(X,Y)
+r2;better(X,Y,c3),equal(X,Y,c1) ==> pref(X,Y)
+r3;worse(X,Y,c1), better(X,Y,c3), min_d_difference(X,Y,c3,c1,2) ==> pref(X,Y)

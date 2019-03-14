@@ -82,8 +82,8 @@
 	acceptable_value(Value,Domain):-
 		member(Value,Domain),!.
 		
-	acceptable_value(Value,real_numbers):-
-		number(Value).		
+	acceptable_value(Value,interval(Vi,Vf)):-
+		Vi =< Value, Value =< Vf.
 	
 	
 	eval_profile_rule((Criterion is Assessment if Condition), Alternative):-
@@ -164,7 +164,7 @@
 		
 		
 	
-	evidence_greater_value(V1,V2,real_numbers):-
+	evidence_greater_value(V1,V2,interval(_,_)):-
 		!,V1 > V2.
 	
 	evidence_greater_value(V1,V2,Domain):-
@@ -173,7 +173,7 @@
 		Index_1 > Index_2.
 		
 	
-	evidence_geq_value(V1,V2,real_numbers):-
+	evidence_geq_value(V1,V2,interval(_,_)):-
 		!,V1 >= V2.
 	
 	evidence_geq_value(V1,V2,Domain):-

@@ -1,3 +1,4 @@
 id;rule
 r1;better(X,Y,c1) ==> pref(X,Y)
-r2;worse(X,Y,c1), better(X,Y,c3), min_distance(X,Y,c3,2) ==> pref(X,Y)
+r2;better(X,Y,c2),equal(X,Y,c1) ==> pref(X,Y)
+r3;worse(X,Y,c1), min(X,c1,2), better(X,Y,c2), min(X,c2,1), max(Y,c2,5) ==> pref(X,Y)

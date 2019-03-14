@@ -27,7 +27,9 @@
 		
 		add_cpref_rule/2,
 		remove_cpref_rule/1,
-		remove_cpref_rules/0
+		remove_cpref_rules/0,
+		
+		generate_random_evidence/1
 	]).
 
 
@@ -101,7 +103,7 @@
 	
 	add_feature(Feature, Domain):-
 		not(feature(Feature)),
-		(Domain = real_numbers; is_set(Domain)),!,
+		((Domain = interval(Vi,Vf),number(Vi),number(Vf)); is_set(Domain)),!,
 		
 		assert(feature(Feature)),
 		assert(feature_domain(Feature,Domain)).
@@ -144,6 +146,31 @@
 		retractall(cpref_rule(_,_)).
 	
 	
+	
+	generate_random_evidence(Alternatives_Amount):-
+		integer(Alternatives_Amount),!,
+		remove_alternatives,
+		forall(between(1,Alternatives_Amount,Index), (atom_concat('a',Index,Id), assert(alternative(Id)))),
+		forall(feature(Feature),generate_random_evidence(Feature)).
+		
+	
+	generate_random_evidence(Feature):-
+		feature_domain(Feature,Domain),
+		forall(alternative(Id),(
+			random_value(V,Domain),
+			assert(fact(Feature,Id,V))
+		)).
+		
+		
+		
+		
+	
+	random_value(V,interval(Vi, Vf)):-
+		!,random_between(Vi,Vf,V).
+		
+	
+	random_value(V,List):-
+		random_member(V,List).
 	
 	
 	%=============== JUST TO DEBUG ==============%
@@ -268,11 +295,11 @@
 	feature(area).
 	feature(rooms).
 	
-	feature_domain(price, real_numbers).
-	feature_domain(distance, real_numbers).
+	feature_domain(price, interval(0,2000)).
+	feature_domain(distance, interval(1,200)).
 	feature_domain(noise, [low,med,high]).
-	feature_domain(area, real_numbers).
-	feature_domain(rooms, real_numbers).
+	feature_domain(area, interval(10,500)).
+	feature_domain(rooms, interval(1,2000)).
 	
 	% ========================================
     %       Criteria

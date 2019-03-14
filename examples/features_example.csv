@@ -1,6 +1,6 @@
 feature;domain
-price;real_numbers
-distance;real_numbers
+price;interval(0,2000)
+distance;interval(1,200)
 noise;[low, med, high]
-area;real_numbers
-rooms;real_numbers
+area;interval(10,500)
+rooms;interval(1,2000)

@@ -1,4 +1,4 @@
 feature;domain
-f1;real_numbers
-f2;real_numbers
-f3;real_numbers
+f1;[1,2,3,4,5]
+f2;[1,2,3,4,5]
+f3;[1,2,3,4,5]

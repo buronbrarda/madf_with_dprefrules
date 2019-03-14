@@ -10,6 +10,7 @@ import java_ui.prolog_loader.CriteriaPrologLoader;
 import java_ui.prolog_loader.EvidencePrologLoader;
 import java_ui.prolog_loader.FeaturesPrologLoader;
 import java_ui.prolog_loader.ProfileRulesPrologLoader;
+import java_ui.steps.DefineEvidenceStepPanel;
 import java_ui.steps.DefineStepPanel;
 import java_ui.steps.ResultsPanel;
 import java_ui.steps.RunStepPanel;
@@ -32,7 +33,7 @@ import java.io.IOException;
 
 public class AllStepsPanel extends JPanel{
 	
-	DefineStepPanel step_1, step_2, step_3, step_4, step_5;
+	StepPanel step_1, step_2, step_3, step_4, step_5;
 	RunStepPanel run_step;
 	
 	public AllStepsPanel(ResultsPanel resultsPanel) throws IOException{
@@ -66,7 +67,7 @@ public class AllStepsPanel extends JPanel{
 				new FeaturesPrologLoader()
 		);
 		
-		step_2 = new DefineStepPanel(
+		step_2 = new DefineEvidenceStepPanel(
 				"2. Define the set of evidence.",
 				"Evidence",
 				new EvidenceTableEditorPanel(),
@@ -155,11 +156,11 @@ public class AllStepsPanel extends JPanel{
 		TableModel cprefRulesModel = new RulesTableModelBuilder(new CSVTableReader(cpref_rules_file)).getTableModel();
 		TableModel profileRulesModel = new RulesTableModelBuilder(new CSVTableReader(profile_rules_file)).getTableModel();
 		
-		step_1.setTableModel(featuresModel);
-		step_2.setTableModel(evidenceModel);
-		step_3.setTableModel(criteriaModel);
-		step_4.setTableModel(profileRulesModel);
-		step_5.setTableModel(cprefRulesModel);
+		((DefineStepPanel) step_1).setTableModel(featuresModel);
+		((DefineEvidenceStepPanel) step_2).setTableModel(evidenceModel);
+		((DefineStepPanel)step_3).setTableModel(criteriaModel);
+		((DefineStepPanel)step_4).setTableModel(profileRulesModel);
+		((DefineStepPanel)step_5).setTableModel(cprefRulesModel);
 		
 		
 		run_step.enableStep();
