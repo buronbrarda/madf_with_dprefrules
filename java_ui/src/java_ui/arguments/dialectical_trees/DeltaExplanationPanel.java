@@ -88,7 +88,14 @@ public class DeltaExplanationPanel extends JPanel {
 
 			@Override
 			public String transform(DTreeNode vertex) {
-				return vertex.getArgumentClaim()+" // "+vertex.getArgumentRules();
+				
+				String label = "";
+				
+				if(vertex != null){
+					label += vertex.getArgumentClaim()+" // "+vertex.getArgumentRules();
+				}
+				
+				return label;
 			}
 			
 		});

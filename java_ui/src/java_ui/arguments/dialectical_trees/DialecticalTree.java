@@ -146,6 +146,8 @@ public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> i
 			this.removeVertex(v);
 		}
 		
+		this.root = null;
+		
 	}
 
 	

@@ -14,6 +14,7 @@ import org.jpl7.Util;
 
 import java_ui.arguments.Argument;
 import java_ui.arguments.dialectical_trees.DeltaExplanationDialog;
+import java_ui.prolog_loader.PrologLoadException;
 
 public class AlternativesGraphEdgePopupMenu extends JPopupMenu{
 	
@@ -39,13 +40,19 @@ public class AlternativesGraphEdgePopupMenu extends JPopupMenu{
 					
 					Map<String, Term> s = q.next();
 					
-					ArrayList<Argument> list = getArgumentsFromDtreeList(Util.listToTermArray(s.get("Claim_U_Trees")));
+					try{
+						ArrayList<Argument> list = getArgumentsFromDtreeList(Util.listToTermArray(s.get("Claim_U_Trees")));
+						
+						list.addAll(getArgumentsFromDtreeList(Util.listToTermArray(s.get("NoClaim_U_Trees"))));
+						
+						list.addAll(getArgumentsFromDtreeList(Util.listToTermArray(s.get("BothClaim_D_Trees"))));
+						
+						new DeltaExplanationDialog(list).setVisible(true);
+					}
+					catch(PrologLoadException exception){
+						exception.printStackTrace();
+					}
 					
-					list.addAll(getArgumentsFromDtreeList(Util.listToTermArray(s.get("NoClaim_U_Trees"))));
-					
-					list.addAll(getArgumentsFromDtreeList(Util.listToTermArray(s.get("BothClaim_D_Trees"))));
-					
-					new DeltaExplanationDialog(list).setVisible(true);
 				}
 				
 			}
@@ -60,7 +67,7 @@ public class AlternativesGraphEdgePopupMenu extends JPopupMenu{
 	}
 	
 	
-	private ArrayList<Argument> getArgumentsFromDtreeList(Term [] list){
+	private ArrayList<Argument> getArgumentsFromDtreeList(Term [] list) throws PrologLoadException{
 		
 		ArrayList<Argument> arguments = new ArrayList<Argument>();
 		
@@ -74,6 +81,9 @@ public class AlternativesGraphEdgePopupMenu extends JPopupMenu{
 				Argument arg = new Argument(s.get("Arg_Id").toString());
 				
 				arguments.add(arg);
+			}
+			else{
+				throw new PrologLoadException("No dtree_node has been found for Id "+t.toString());			
 			}
 			
 		}

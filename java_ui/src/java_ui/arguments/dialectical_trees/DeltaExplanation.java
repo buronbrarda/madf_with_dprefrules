@@ -561,6 +561,8 @@ public class DeltaExplanation implements Forest<DTreeNode,DTreeEdge>{
 		for(Tree<DTreeNode, DTreeEdge> t : dtrees){
 			((DialecticalTree)t).clear();
 		}
+		
+		dtrees.clear();
 	}
 	
 }

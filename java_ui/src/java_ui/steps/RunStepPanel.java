@@ -89,7 +89,7 @@ public class RunStepPanel extends StepPanel {
 	
 	
 	private void runButtonAction(ActionEvent e){
-		cleanStepAction();
+		this.cleanStep();
 		
 		Query q = new Query("run(Selection,Order,Args_Count,Reasoning_Time,Selection_Time)");
 		
@@ -152,6 +152,8 @@ public class RunStepPanel extends StepPanel {
 	@Override
 	protected void cleanStepAction() {
 		resultsPanel.cleanAssessmentsBase();
+		resultsPanel.cleanGraph();
+		
 		resultsPanel.setSelectedAlternatives("");
 		resultsPanel.setAlternativesRelation("");
 		resultsPanel.setArgumentsCount("");
