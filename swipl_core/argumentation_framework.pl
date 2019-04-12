@@ -377,7 +377,7 @@
 	
 	generate_dtree_nodes:-
 		reset_id(dtree_node),
-		retractall(dtree_node(_,_,_,_)),
+		retractall(dtree_node(_,_,_,_,_)),
 		
 		forall(m_dialectical_tree(_,Tree,_), assert_dtree_nodes(Tree,null)).
 		
