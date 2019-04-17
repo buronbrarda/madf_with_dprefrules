@@ -2,6 +2,4 @@ id;rule
 r1;better(X,Y,c1) ==> pref(X,Y)
 r2;equal(X,Y,c1), better(X,Y,c2) ==> pref(X,Y)
 r3;equal(X,Y,c1), equal(X,Y,c2), better(X,Y,c3) ==> pref(X,Y)
-r4;worse(X,Y,c1), better(X,Y,c2), min(X,c2,4) ==> pref(X,Y)
-r5;equal(X,Y,c1), worse(X,Y,c2), max(Y,c2,3), better(X,Y,c3), min(X,c3,3) ==> pref(X,Y)
-r6;dont_care(X,Y,c1), dont_care(X,Y,c2), better(X,Y,c3), min(X,c3,5) ==> pref(X,Y)
+r4;worse(X,Y,c1), better(X,Y,c3), min(X,c3,4) ==> pref(X,Y)
