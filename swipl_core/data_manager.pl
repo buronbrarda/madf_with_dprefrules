@@ -29,6 +29,8 @@
 		remove_cpref_rule/1,
 		remove_cpref_rules/0,
 		
+		define_cpref_rules_order/1,
+		
 		generate_random_evidence/1
 	]).
 
@@ -46,6 +48,7 @@
 	:-use_module(cpref_rules_interpreter, [coherent_cpref_rule/1, op(1101, xfx, ==>)]).
 	:-use_module(profile_rules_interpreter).
 	:-use_module(translator, [assessment/3, remove_assessments/1, remove_assessments/0]).
+	:-use_module(argumentation_framework, [set_comparison_criterion/1, set_rules_order/1, reset_comparison_criterion/0]).
 	
 	add_alternative(Id,Evidence):-
 		not(alternative(Id)),!,
@@ -143,9 +146,30 @@
 		retract(cpref_rule(Id,_)).
 	
 	remove_cpref_rules:-
-		retractall(cpref_rule(_,_)).
+		retractall(cpref_rule(_,_)),
+		reset_comparison_criterion.
 	
+		
+	define_cpref_rules_order(Order):-
+		is_set(Order),
+		forall(cpref_rule(Id,_), check_cpref_rule_existence(Id,Order)),
+		set_comparison_criterion(rules_lexicographic),
+		set_rules_order(Order).
+		
+	check_cpref_rule_existence(Rule,[Rule|_]):-!.
 	
+	check_cpref_rule_existence(Rule,[Element|Order]):-
+		not(is_list(Element)),!,
+		check_cpref_rule_existence(Rule,Order),!.
+		
+	check_cpref_rule_existence(Rule,[Element|_]):-
+		is_set(Element),
+		member(Rule,Element),!.
+		
+	check_cpref_rule_existence(Rule,[Element|Order]):-
+		is_set(Element),
+		check_cpref_rule_existence(Rule,Order),!.
+		
 	
 	generate_random_evidence(Alternatives_Amount):-
 		integer(Alternatives_Amount),!,

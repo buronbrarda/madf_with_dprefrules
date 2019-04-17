@@ -13,7 +13,7 @@ public class AlternativesGraphPopupMenuMousePlugin extends AbstractPopupGraphMou
 	private VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv;
 	
 	public AlternativesGraphPopupMenuMousePlugin(AlternativesGraph graph, VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv){
-		this(MouseEvent.BUTTON3_MASK, graph, vv);
+		this(MouseEvent.BUTTON3, graph, vv);
 	}
 	
 	public AlternativesGraphPopupMenuMousePlugin(int modifiers,AlternativesGraph graph, VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv){

@@ -10,6 +10,7 @@ import java_ui.prolog_loader.CriteriaPrologLoader;
 import java_ui.prolog_loader.EvidencePrologLoader;
 import java_ui.prolog_loader.FeaturesPrologLoader;
 import java_ui.prolog_loader.ProfileRulesPrologLoader;
+import java_ui.steps.DefineCprefRulesStepPanel;
 import java_ui.steps.DefineEvidenceStepPanel;
 import java_ui.steps.DefineStepPanel;
 import java_ui.steps.ResultsPanel;
@@ -88,7 +89,7 @@ public class AllStepsPanel extends JPanel{
 				new ProfileRulesPrologLoader()
 		);
 		
-		step_5 = new DefineStepPanel(
+		step_5 = new DefineCprefRulesStepPanel(
 				"5. Define the set of CPref-Rules.",
 				"CPref-Rules",
 				new CPrefRulesTableEditorPanel(),

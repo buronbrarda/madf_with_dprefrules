@@ -2,6 +2,10 @@
 		generate_warranted_conclusions/0,
 		generate_dtree_nodes/0,
 		
+		set_comparison_criterion/1,
+		set_rules_order/1,
+		reset_comparison_criterion/0,
+		
 		rules/3,
 		premises/3,
 		
@@ -19,6 +23,20 @@
 	:-dynamic m_dialectical_tree/3.
 	
 	:-dynamic dtree_node/5.
+	
+	:-dynamic comparison_criterion/1.
+	:-dynamic rules_order/1.
+	
+	
+	%Default comparison criterion.
+	
+	reset_comparison_criterion:-
+		retractall(comparison_criterion(_)),
+		assert(comparison_criterion(specificity)),
+		retractall(rules_order(_)).
+	
+	%===================================================================================
+	
 	
 	
 	/***********************************************************************************
@@ -85,11 +103,44 @@
 		
 		Defines whether ArgA is stronger than Argb.
 	************************************************************************************/
+	stronger(ArgA,ArgB):-
+		comparison_criterion(rules_lexicographic),!,
+		rules(RulesA,_,ArgA),
+		rules(RulesB,_,ArgB),
+		member(RA,RulesA),
+		forall(member(RB,RulesB), r_stronger(RA,RB)).
+	
 	stronger(ArgA, ArgB):-
+		comparison_criterion(specificity),!,
 		premises(PremisesA,_,ArgA),
 		premises(PremisesB,_,ArgB),
 		strict_contained(PremisesB,PremisesA).
 	
+	
+	set_comparison_criterion(Criterion):-
+		retractall(comparison_criterion(_)),
+		assert(comparison_criterion(Criterion)).
+	
+	
+	set_rules_order(Order):-
+		retractall(rules_order(_)),
+		assert(rules_order(Order)).
+	
+	
+	r_stronger(RuleA,RuleB):-
+		rules_order(Order),
+		r_index(N,RuleA,Order),
+		r_index(M,RuleB,Order),
+		N < M.
+		
+	r_index(0,Rule,[Rule|_]):-!.
+	
+	r_index(0,Rule,[Element|_]):-
+		member(Rule,Element),!.
+	
+	r_index(Index,Rule,[_|Order]):-
+		r_index(Aux,Rule,Order),!,
+		Index is Aux + 1.
 	
 	/***********************************************************************************
 		defeats(?Defeater, ?Defeated).

@@ -37,36 +37,11 @@
 		assessment(C,X,Vx), assessment(C,Y,Vy),
 		Assessment_X =..[C,X,Vx], Assessment_Y =..[C,Y,Vy].
 	
-	min_distance(X,Y,C,Min_D,[Assessment_X,Assessment_Y]):-
-		assessment(C,X,Vx), assessment(C,Y,Vy),
-		values(C,Domain),
-		distance(Vx,Vy,Domain,Distance),
-		Min_D =< Distance,
-		Assessment_X =..[C,X,Vx], Assessment_Y =..[C,Y,Vy].	
+	not_better(X,Y,C,[Assessment_X, Assessment_Y]):-
+		(equal(X,Y,C,[Assessment_X, Assessment_Y]); worse(X,Y,C,[Assessment_X, Assessment_Y])).
 	
-	min_d_difference(X,Y,C1,C2,Min_Difference,[AssessmentX1, AssessmentX2, AssessmentY1, AssessmentY2]):-
-		assessment(C1,X,Vx1), assessment(C1,Y,Vy1),
-		values(C1,Domain1),
-		distance(Vx1,Vy1,Domain1,Distance1),
-		assessment(C2,X,Vx2), assessment(C2,Y,Vy2),
-		values(C2,Domain2),
-		distance(Vx2,Vy2,Domain2,Distance2),
-		is(Difference, abs(Distance1 - Distance2)),
-		Min_Difference =< Difference,
-		AssessmentX1 =.. [C1,X,Vx1], AssessmentX2 =.. [C2,X,Vx2],
-		AssessmentY1 =.. [C1,Y,Vy1], AssessmentY2 =.. [C2,Y,Vy2].
-		
-	min_d_factor(X,Y,C1,C2,Min_Factor,[AssessmentX1, AssessmentX2, AssessmentY1, AssessmentY2]):-
-		assessment(C1,X,Vx1), assessment(C1,Y,Vy1),
-		values(C1,Domain1),
-		distance(Vx1,Vy1,Domain1,Distance1),
-		assessment(C2,X,Vx2), assessment(C2,Y,Vy2),
-		values(C2,Domain2),
-		distance(Vx2,Vy2,Domain2,Distance2),
-		is(Factor, Distance1/Distance2),
-		Min_Factor =< Factor,
-		AssessmentX1 =.. [C1,X,Vx1], AssessmentX2 =.. [C2,X,Vx2],
-		AssessmentY1 =.. [C1,Y,Vy1], AssessmentY2 =.. [C2,Y,Vy2].
+	not_worse(X,Y,C,[Assessment_X, Assessment_Y]):-
+		(equal(X,Y,C,[Assessment_X, Assessment_Y]); better(X,Y,C,[Assessment_X, Assessment_Y])).
 		
 	
 	% ============================================================================================
@@ -106,7 +81,7 @@
 	%Check "better", "worse", "equal" and "dont_care" clauses conditions.	
 	clause_conditions(Premise,Previous_Clauses,[Criterion,Clause]):-
 		Premise =.. [Clause,_X,_Y,Criterion],
-		member(Clause, [better,worse,equal,dont_care]),!,
+		member(Clause, [better,worse,equal,dont_care,not_better,not_worse]),!,
 		
 		criterion(Criterion),
 		not(member([Criterion,_],Previous_Clauses)).
