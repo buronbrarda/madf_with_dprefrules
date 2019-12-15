@@ -161,7 +161,7 @@ public class AllStepsPanel extends JPanel{
 		((DefineEvidenceStepPanel) step_2).setTableModel(evidenceModel);
 		((DefineStepPanel)step_3).setTableModel(criteriaModel);
 		((DefineStepPanel)step_4).setTableModel(profileRulesModel);
-		((DefineStepPanel)step_5).setTableModel(cprefRulesModel);
+		((DefineCprefRulesStepPanel)step_5).setTableModel(cprefRulesModel);
 		
 		
 		run_step.enableStep();
