@@ -10,7 +10,7 @@
     ]).
     
     
-    :-use_module(data_manager, [alternative/1, criterion/1, profile_rule/2]).
+    :-use_module(data_manager, [alternative/1, criterion/2]).
     :-use_module(profile_rules_interpreter).
     
     

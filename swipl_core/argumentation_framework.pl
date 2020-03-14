@@ -2,10 +2,6 @@
 		generate_warranted_conclusions/0,
 		generate_dtree_nodes/0,
 		
-		set_comparison_criterion/1,
-		set_rules_order/1,
-		reset_comparison_criterion/0,
-		
 		rules/3,
 		premises/3,
 		
@@ -17,40 +13,34 @@
 	
 	
 	:-use_module(utils).
-	:-use_module(arg_generator, [argument/4, generate_arguments/0]).
-		
+	:-use_module(data_manager, [stronger_rule/2]).
+	:-use_module(arg_generator, [argument/3, generate_arguments/0]).
+	
+	:-dynamic d_in_conflict/2.
+	:-dynamic d_properly_defeat/2.
+	:-dynamic d_blocks/2.
+	
 	:-dynamic exhaustive_arg_line/2.
 	:-dynamic m_dialectical_tree/3.
 	
 	:-dynamic dtree_node/5.
 	
-	:-dynamic comparison_criterion/1.
-	:-dynamic rules_order/1.
-	
-	
-	%Default comparison criterion.
-	
-	reset_comparison_criterion:-
-		retractall(comparison_criterion(_)),
-		assert(comparison_criterion(specificity)),
-		retractall(rules_order(_)).
 	
 	%===================================================================================
-	
 	
 	
 	/***********************************************************************************
 		premises(?Premises, ?Id, ?Argument).
 		
-		True when Premises are the premises of the argument Argument identified with Id.
+		True when Premises are the premises of Argument identified with Id.
 	************************************************************************************/
 	premises(Premises, Id, Arg):-
 		argument_id(Id, Arg),
 		Arg = argument(Id,_Rules,Premises,_Claim).
-	
+		
 	
 	/***********************************************************************************
-		premises(?Rules, ?Id, ?Argument).
+		rules(?Rules, ?Id, ?Argument).
 		
 		True when Rules are the rules of the argument Argument identified with Id.
 	************************************************************************************/
@@ -60,7 +50,7 @@
 		
 	
 	/***********************************************************************************
-		premises(?Claim, ?Id, ?Argument).
+		claim(?Claim, ?Id, ?Argument).
 		
 		True when Claim is the claim of the argument Argument identified with Id.
 	************************************************************************************/
@@ -70,15 +60,13 @@
 	
 	
 	/***********************************************************************************
-		defeats(?Id, ?Arg).
+		argument_id(?Id, ?Arg).
 		
 		True iff Id is the id of an argument Arg.
 	************************************************************************************/
 	argument_id(Id,Arg):-
 		Arg =.. [argument,Id,_,_,_],
 		call(Arg).
-	
-	
 	
 	
 	/***********************************************************************************
@@ -102,73 +90,65 @@
 		stronger(+ArgA, +ArgB).
 		
 		Defines whether ArgA is stronger than Argb.
-	************************************************************************************/
-	stronger(ArgA,ArgB):-
-		comparison_criterion(rules_lexicographic),!,
-		rules(RulesA,_,ArgA),
-		rules(RulesB,_,ArgB),
+	************************************************************************************/	
+	stronger(argument(_,RulesA,_,_),argument(_,RulesB,_,_)):-
+		forall(member(RB_2,RulesB), not(member(RA_2,RulesA), stronger_rule(RB_2,RA_2))),
 		member(RA,RulesA),
-		forall(member(RB,RulesB), r_stronger(RA,RB)).
+		member(RB,RulesB),
+		stronger_rule(RA,RB),!.
 	
-	stronger(ArgA, ArgB):-
-		comparison_criterion(specificity),!,
-		premises(PremisesA,_,ArgA),
-		premises(PremisesB,_,ArgB),
-		strict_contained(PremisesB,PremisesA).
-	
-	
-	set_comparison_criterion(Criterion):-
-		retractall(comparison_criterion(_)),
-		assert(comparison_criterion(Criterion)).
-	
-	
-	set_rules_order(Order):-
-		retractall(rules_order(_)),
-		assert(rules_order(Order)).
-	
-	
-	r_stronger(RuleA,RuleB):-
-		rules_order(Order),
-		r_index(N,RuleA,Order),
-		r_index(M,RuleB,Order),
-		N < M.
-		
-	r_index(0,Rule,[Rule|_]):-!.
-	
-	r_index(0,Rule,[Element|_]):-
-		member(Rule,Element),!.
-	
-	r_index(Index,Rule,[_|Order]):-
-		r_index(Aux,Rule,Order),!,
-		Index is Aux + 1.
 	
 	/***********************************************************************************
-		defeats(?Defeater, ?Defeated).
+		defeats(+ArgA, +ArgB).
 		
-		Defines whether an argument defeats another one. 
+		An argument A defeats an argument B, either if A properly defeats, or blocks B.
+		It is defined in term of dynamic facts to improve performance. 
 	************************************************************************************/
-	defeats(Defeater_Id,Defeated_Id):-
-		argument_id(Defeater_Id,Defeater),
-		argument_id(Defeated_Id,Defeated),
-		
-		in_conflict(Defeater,Defeated),
-		stronger(Defeater,Defeated).
-		
+	defeats(ArgA_Id,ArgB_Id):-
+		d_properly_defeats(ArgA_Id,ArgB_Id),!.
+	
+	defeats(ArgA_Id,ArgB_Id):-
+		d_blocks(ArgA_Id,ArgB_Id).
+	
 	
 	/***********************************************************************************
-		blocks(?Blocker, ?Blocked).
+		proper_defeats(+ArgA, +ArgB).
 		
-		Defines whether an argument blocks another one. 
+		An argument A properly defeats an argument B iff they are in conflict and
+		A is stronger than B.
 	************************************************************************************/
-	blocks(Blocker_Id, Blocked_Id):-
-		argument_id(Blocker_Id,Blocker),
-		argument_id(Blocked_Id,Blocked),
+	properly_defeats(ArgA,ArgB):-
+		in_conflict(ArgA,ArgB),
+		stronger(ArgA,ArgB).	
+	
+	
+	/***********************************************************************************
+		blocks(+ArgA, +ArgB).
 		
-		in_conflict(Blocker,Blocked),
-		not(stronger(Blocker, Blocked)), 
-		not(stronger(Blocked,Blocker)).	
+		An argument A blocks an argument B iff they are in conflict and A is not
+		stronger than B and vice-versa. 
+	************************************************************************************/
+	blocks(ArgA, ArgB):-
+		in_conflict(ArgA,ArgB),
+		not(stronger(ArgA, ArgB)), 
+		not(stronger(ArgB, ArgA)).	
 	
 	
+	% Arguments relation in_conflic, properly_defeats and blocks must be pre-calculated
+	% in order to improve performace.
+	generate_arguments_relation:-
+		ArgA = argument(IdA,_,_,_),
+		ArgB = argument(IdB,_,_,_),
+		forall((call(ArgA),call(ArgB), properly_defeat(ArgA,ArgB)), (
+			assert(d_in_conflict(IdA,IdB)),
+			assert(d_in_conflict(IdB,IdA)),
+			assert(d_properly_defeat(IdA,IdB))
+		)),
+		
+		forall((call(ArgA),call(ArgB), blocks(ArgA,ArgB)), (
+			assert(d_in_conflict(IdA,IdB)),  % Just in one direction cause block is symmetric
+			assert(d_blocks(IdA,IdB))
+		)).
 	
 	
 	/*===================================================================================
@@ -178,8 +158,6 @@
 		
 		
 	===================================================================================*/
-	
-	
 	
 	
 	/***********************************************************************************

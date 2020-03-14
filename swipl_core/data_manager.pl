@@ -1,15 +1,18 @@
+/* =================================================================================
+	MODULE : Data Manager
+	It provides an interface to manipulate the program data base.
+	It allows to add and remove elements and associate them with different values.
+
+=================================================================================== */	
+
 :- module(data_manager,[
-		feature/1,
-		feature_domain/2,
-		criterion/1,
-		values/2,
+		criterion/2,
 		alternative/1,
-		profile_rule/2,
 		cpref_rule/2,
-		fact/3,
+		stronger_rule/2,
+		evidence/3,
 		
-		add_alternative/2,
-		
+		add_alternative/2,	
 		remove_alternative/1,
 		remove_alternatives/0,
 		
@@ -17,189 +20,236 @@
 		remove_criterion/1,
 		remove_criteria/0,
 		
-		add_feature/2,
-		remove_feature/1,
-		remove_features/0,
-		
-		add_profile_rule/2,
-		remove_profile_rule/1,
-		remove_profile_rules/0,
-		
 		add_cpref_rule/2,
 		remove_cpref_rule/1,
 		remove_cpref_rules/0,
 		
-		define_cpref_rules_order/1,
+		add_rule_comparison/1,
+		remove_rule_comparisons/0,
 		
 		generate_random_evidence/1
 	]).
 
-
-	:- dynamic feature/1.
-	:- dynamic feature_domain/2.
-	:- dynamic criterion/1.
-	:- dynamic values/2.
 	:- dynamic alternative/1.
-	:- dynamic profile_rule/2.
+	:- dynamic criterion/2.
+	:- dynamic stronger_rule/2.
 	:- dynamic cpref_rule/2.
-	:- dynamic fact/3.
+	:- dynamic evidence/3.
 	
 	
 	:-use_module(cpref_rules_interpreter, [coherent_cpref_rule/1, op(1101, xfx, ==>)]).
-	:-use_module(profile_rules_interpreter).
-	:-use_module(translator, [assessment/3, remove_assessments/1, remove_assessments/0]).
-	:-use_module(argumentation_framework, [set_comparison_criterion/1, set_rules_order/1, reset_comparison_criterion/0]).
-	
-	add_alternative(Id,Evidence):-
-		not(alternative(Id)),!,
-		assert(alternative(Id)),
-		forall(member([Feature,Value], Evidence),(
-			feature(Feature),
-			assert(fact(Feature, Id, Value))
-		)).
-	
-	% If fails, execute contingency plan and fail.	
-	add_alternative(Id,_Evidence):-
-		alternative(Id),
-		retract(alternative(Id)),
-		false.
 	
 	
-	remove_alternative(Id):-
-		retract(alternative(Id)),
+	/***********************************************************************************
+		add_alternative(+D, +Evidence).
+		
+		Adds a new alternative named D associated with the values expressed in Evidence.
+		Evidence is a list of tuples of the form [C,V] where C must be a declared
+		criterion and V is a legal value for C.
+	************************************************************************************/
+	add_alternative(D,Evidence):-
+		not(alternative(D)),
+		forall(member([C,V], Evidence),(
+			criterion(C,Values),
+			legal_value(V,Values),
+			assert(evidence(D, C, V))
+		)),
+		assert(alternative(D)).
+		
+	
+	/***********************************************************************************
+		remove_alternative(+D).
+		
+		Removes the alternatives identified with D and all its related values.
+	************************************************************************************/
+	remove_alternative(D):-
+		retract(alternative(D)),
 		
 		%Remove related evidence.
-		forall(feature(Feature),(
-			retract(fact(Feature,Id,_))
-		)),
-		
-		%Remove related assessments.
-		remove_assessments(Id).
+		forall(criterion(C),(
+			retract(evidence(D,C,_))
+		)).
 		
 	
+	/***********************************************************************************
+		remove_alternative(+D).
+		
+		Removes all the alternatives with all their values.
+	************************************************************************************/
 	remove_alternatives:-
 		retractall(alternative(_)),
 		
 		%Remove related evidence.
-		retractall(fact(_,_,_)),
-		
-		%Remove assessments.
-		remove_assessments.
-		
+		retractall(evidence(_,_,_)).	
 	
 	
-	add_criterion(Criterion, Domain):-
+	
+	%===================================================================================
+	%===================================================================================
+	
+	
+	
+	/***********************************************************************************
+		add_criterion(+Criterion,+Values).
+		
+		Adds a new criterion Criterion assigning Values for its legal range of values.
+		Values can be:
+	 		-An ordered set (ordered from worse-to-better);
+	 		-'number', to indicate that any numeber is valid. Lower numbers will be
+	 		considered worse than higher ones; or well
+	 		-'-number', to indicate that any numeber is valid, but higher number will be
+	 		considered worse than lower numbers
+	 		-'between(Min,Max)' to indicate that any integer between Min and Max is
+	 		valid. When Min <= Max, lower numbers will be considered worse than higher,
+	 		otherwise, when Min > Max, higher number will be considered worse than lower
+	 		numbers.
+	 		
+	************************************************************************************/
+	
+	add_criterion(Criterion, Values):-
 		not(criterion(Criterion)),
-		is_set(Domain),
 		
-		assert(criterion(Criterion)),
-		assert(values(Criterion,Domain)).
+		%Verifies Values integrity
+		(is_set(Values); Values = number; (Values = between(Min,Max), Min < Max)),!,
+		
+		assert(criterion(Criterion,Values)).
 	
+	
+	/***********************************************************************************
+		remove_creterion(+Criterion).
+		
+		Removes the criterion Criterion.
+	************************************************************************************/
 	remove_criterion(Criterion):-
-		retract(criterion(Criterion)),
-		retract(values(Criterion,_)).
-	
-	remove_criteria:-
-		retractall(criterion(_)),
-		retractall(values(_,_)).
+		retract(criterion(Criterion,_Values)).
 	
 	
-	add_feature(Feature, Domain):-
-		not(feature(Feature)),
-		((Domain = interval(Vi,Vf),number(Vi),number(Vf)); is_set(Domain)),!,
+	/***********************************************************************************
+		remove_criterias.
 		
-		assert(feature(Feature)),
-		assert(feature_domain(Feature,Domain)).
-	
-	remove_feature(Feature):-
-		retract(feature(Feature)),
-		retract(feature_domain(Feature,_)).
-	
-	remove_features:-
-		retractall(feature(_)),
-		retractall(feature_domain(_,_)).
+		Removes all criteria.
+	************************************************************************************/
+	remove_criteria:-
+		retractall(criterion(_,_)).
 	
 	
-	add_profile_rule(Id,Atom_Rule):-
-		atom(Atom_Rule),!,
-		term_to_atom(Rule,Atom_Rule),
-		check_profile_rule(Rule),
-		assert(profile_rule(Id, Rule)).
-	
-	add_profile_rule(Id, Rule):-
-		check_profile_rule(Rule),
-		assert(profile_rule(Id, Rule)).
-	
-	remove_profile_rule(Id):-
-		retract(profile_rule(Id,_)).
-	
-	remove_profile_rules:-
-		retractall(profile_rule(_,_)).
+	%===================================================================================
+	%===================================================================================
 	
 	
+	/***********************************************************************************
+		legal_value(+V,+Values).
+		
+		True iff V is a legal value of the range Values.
+	************************************************************************************/
+	legal_value(V,Values):-
+		Values = 'number'; Values = '-number',!,
+		number(V).
+		
+	legal_value(V,between(Min,Max)):-
+		!,(between(Min,Max,V);between(Max,Min,V)),!.
 	
+	legal_value(V,Values):-
+		member(V,Values).
+		
+	
+	
+	%===================================================================================
+	%===================================================================================
+	
+	
+	/***********************************************************************************
+		add_cpref_rule(+Id,+Rule).
+		
+		Adds a new cpref_rule Rule associated with Id.
+		Rule must be coherent and sintactically correct.
+		
+		See coherent_cpref_rule/1 in Cpref-rules Interpreter Module. 
+	************************************************************************************/
 	add_cpref_rule(Id, Rule):-
 		coherent_cpref_rule(Rule),
 		assert(cpref_rule(Id, Rule)).
 	
+	/***********************************************************************************
+		remove_cpref_rule(+Id).
+		
+		Removes the cpref_rule associated with Id.
+	************************************************************************************/
 	remove_cpref_rule(Id):-
 		retract(cpref_rule(Id,_)).
 	
+	/***********************************************************************************
+		remove_cpref_rules.
+		
+		Removes all cpref_rules.
+	************************************************************************************/
 	remove_cpref_rules:-
 		retractall(cpref_rule(_,_)),
 		reset_comparison_criterion.
 	
 		
-	define_cpref_rules_order(Order):-
-		is_set(Order),
-		forall(cpref_rule(Id,_), check_cpref_rule_existence(Id,Order)),
-		set_comparison_criterion(rules_lexicographic),
-		set_rules_order(Order).
-		
-	check_cpref_rule_existence(Rule,[Rule|_]):-!.
+	%===================================================================================
+	%===================================================================================
 	
-	check_cpref_rule_existence(Rule,[Element|Order]):-
-		not(is_list(Element)),!,
-		check_cpref_rule_existence(Rule,Order),!.
+	
+	/***********************************************************************************
+		add_rule_comparison(+R1 > +R2)  .
 		
-	check_cpref_rule_existence(Rule,[Element|_]):-
-		is_set(Element),
-		member(Rule,Element),!.
+		Asserts that the rule with id R1 is stronger than that one with id R2.
+	************************************************************************************/
+	add_rule_comparison(R1 > R2):-
+		assert(stronger_rule(R1,R2)).
+	
+	/***********************************************************************************
+		remove_rule_comparisons.
 		
-	check_cpref_rule_existence(Rule,[Element|Order]):-
-		is_set(Element),
-		check_cpref_rule_existence(Rule,Order),!.
+		Removes all rules comparisons.
+	************************************************************************************/
+	remove_rule_comparisons:-
+		retractall(stronger_rule(_,_)).
+	
 		
 	
+	/***********************************************************************************
+		generate_random_evidence(+Alterantives_Amount).
+		
+		Generates a random data base where Alternatives_Amount is the number of
+		alternatives considered to create the data base.
+		It assigns random values to all the alternatives according to criteria already
+		defined.
+	************************************************************************************/
 	generate_random_evidence(Alternatives_Amount):-
 		integer(Alternatives_Amount),!,
 		remove_alternatives,
-		forall(between(1,Alternatives_Amount,Index), (atom_concat('a',Index,Id), assert(alternative(Id)))),
-		forall(feature(Feature),generate_random_evidence(Feature)).
+		forall(between(1,Alternatives_Amount,Index), (atom_concat('d',Index,Id), assert(alternative(Id)))),
+		forall(criterion(C),generate_random_evidence(C)).
 		
 	
-	generate_random_evidence(Feature):-
-		feature_domain(Feature,Domain),
-		forall(alternative(Id),(
-			random_value(V,Domain),
-			assert(fact(Feature,Id,V))
+	generate_random_evidence(C):-
+		criterion(C,Values),
+		forall(alternative(D),(
+			random_value(V,Values),
+			assert(evidence(D,C,V))
 		)).
 		
-		
-		
-		
 	
-	random_value(V,interval(Vi, Vf)):-
-		!,random_between(Vi,Vf,V).
+	random_value(V,Domain):-
+		(Domain = 'number'; Domain = '-number'),!,
+		random(V).
 		
-	
+	random_value(V,between(Min,Max)):-
+		Min =< Max,!,
+		random_between(Min,Max,V).
+		
+	random_value(V,between(Min,Max)):-
+		!,random_between(Max,Min,V).
+		
 	random_value(V,List):-
 		random_member(V,List).
 	
 	
 	%=============== JUST TO DEBUG ==============%
 	
-	/*
 	
 	%=============== Evidence Set 1 ==============%
 	
@@ -208,156 +258,19 @@
     alternative(a3).
     alternative(a4).
 	
-	fact(price,a1,500).    fact(price,a2, 400).     fact(price,a3, 300).     fact(price,a4, 550).
-    fact(distance,a1, 20). fact(distance,a2, 10).   fact(distance,a3, 60).   fact(distance,a4, 15).
-    fact(noise,a1, low).   fact(noise,a2, high).    fact(noise,a3, low).     fact(noise,a4, med).
-    fact(area,a1, 60).     fact(area,a2, 70).       fact(area,a3, 30).       fact(area,a4, 80).
-    fact(rooms,a1, 2).     fact(rooms,a2, 2).       fact(rooms,a3, 1).       fact(rooms,a4, 3).
+	evidence(a1,cost,bad).    	evidence(a2,cost,reg).     	evidence(a3,cost,vgood).	evidence(a4,cost,bad).
+    evidence(a1,location,good). evidence(a2,location,good).	evidence(a3,location,reg).	evidence(a4,location,vgood).
+    evidence(a1,size,reg).   	evidence(a2,size,good).     evidence(a3,size,good).		evidence(a4,size,bad).
 	
 	%=============================================%
 	
-	%=============== Evidence Set 2 ==============%
-	
-	alternative(a1). 
-    alternative(a2). 
-    alternative(a3).
-    alternative(a4).
-	alternative(a5). 
-    alternative(a6). 
-    alternative(a7). 
-    alternative(a8).
-	alternative(a9). 
-    alternative(a10). 
-    alternative(a11). 
-    alternative(a12). 
-    alternative(a13). 
-    alternative(a14).
-	alternative(a15). 
-    alternative(a16). 
-    alternative(a17). 
-    alternative(a18).
-	alternative(a19). 
-    alternative(a20).
-	alternative(a21). 
-    alternative(a22). 
-    alternative(a23). 
-    alternative(a24).
-	alternative(a25). 
-    alternative(a26). 
-    alternative(a27). 
-    alternative(a28).
-	alternative(a29). 
-    alternative(a30).
-    
-    fact(price, a1, 615).	fact(distance, a1, 135).              
-    fact(price, a2, 360).	fact(distance, a2, 55).
-    fact(price, a3, 250).	fact(distance, a3, 80).
-    fact(price, a4, 370).	fact(distance, a4, 15).
-	fact(price, a5, 430).	fact(distance,a5,5).      		     
-	fact(price, a6, 375).	fact(distance,a6,90).
-	fact(price, a7, 390).	fact(distance,a7,10).
-	fact(price, a8, 600).	fact(distance,a8,90).
-	fact(price, a9, 320).	fact(distance,a9,10).
-	fact(price, a10, 630).	fact(distance,a10,140).
-	fact(price, a11, 700).	fact(distance,a11,80).
-	fact(price, a12, 335).	fact(distance,a12,45).
-	fact(price, a13, 485).	fact(distance,a13,100).       
-	fact(price, a14, 260).	fact(distance,a14,45).
-	fact(price, a15, 490).	fact(distance,a15,20).
-	fact(price, a16, 290).	fact(distance,a16,15).
-	fact(price, a17, 250).	fact(distance,a17,180).
-	fact(price, a18, 570).	fact(distance,a18,40).
-	fact(price, a19, 495).	fact(distance,a19,160).
-	fact(price, a20, 690).	fact(distance,a20,130).
-	fact(price, a21, 280).	fact(distance,a21,50).         
-	fact(price, a22, 300).	fact(distance,a22,150).
-	fact(price, a23, 500).	fact(distance,a23,120).
-	fact(price, a24, 665).	fact(distance,a24,150).
-	fact(price, a25, 565).	fact(distance,a25,70).
-	fact(price, a26, 360).	fact(distance,a26,150).
-	fact(price, a27, 475).	fact(distance,a27,90).
-	fact(price, a28, 420).	fact(distance,a28,35).
-	fact(price, a29, 480).	fact(distance,a29,60).
-	fact(price, a30, 430).	fact(distance,a30,110).
-	
-	
-	
-	fact(noise,a1,med).    	fact(noise,a2,med).    fact(noise,a3,high).     fact(noise,a4,med).
-	fact(noise,a5,med).    	fact(noise,a6,high).	fact(noise,a7,high).     fact(noise,a8,low).
-	fact(noise,a9,high).    fact(noise,a10,med).    fact(noise,a11,low).    fact(noise,a12,high).
-	fact(noise,a13,low).    fact(noise,a14,low).    fact(noise,a15,low).    fact(noise,a16,high).
-	fact(noise,a17,med).    fact(noise,a18,high).   fact(noise,a19,med).    fact(noise,a20,med).
-	fact(noise,a21,low).   fact(noise,a22,high).   fact(noise,a23,med).    fact(noise,a24,low).
-	fact(noise,a25,low).    fact(noise,a26,low).    fact(noise,a27,low).    fact(noise,a28,high).
-	fact(noise,a29,med).    fact(noise,a30,low).
-	
-	fact(area,a1,75).     fact(area,a2,85).   	fact(area,a3,30).     fact(area,a4,80).
-	fact(area,a5,60).     fact(area,a6,90).		fact(area,a7,75).     fact(area,a8,65).
-	fact(area,a9,55).     fact(area,a10,50).  	fact(area,a11,60).    fact(area,a12,70).
-	fact(area,a13,70).    fact(area,a14,40).    fact(area,a15,65).    fact(area,a16,30).
-	fact(area,a17,50).    fact(area,a18,90).    fact(area,a19,45).    fact(area,a20,50).
-	fact(area,a21,30).    fact(area,a22,80).    fact(area,a23,75).    fact(area,a24,30).
-	fact(area,a25,60).    fact(area,a26,50).    fact(area,a27,50).    fact(area,a28,60).
-	fact(area,a29,50).    fact(area,a30,60).
-	
-	fact(rooms,a1,2).     fact(rooms,a2,2).     fact(rooms,a3,1).     fact(rooms,a4,3).
-	fact(rooms,a5,1).     fact(rooms,a6,3).		fact(rooms,a7,2).     fact(rooms,a8,3).
-	fact(rooms,a9,2).     fact(rooms,a10,1).    fact(rooms,a11,2).    fact(rooms,a12,2).
-	fact(rooms,a13,2).    fact(rooms,a14,1).    fact(rooms,a15,2).    fact(rooms,a16,1).
-	fact(rooms,a17,2).    fact(rooms,a18,3).    fact(rooms,a19,1).    fact(rooms,a20,1).
-	fact(rooms,a21,1).    fact(rooms,a22,3).    fact(rooms,a23,2).    fact(rooms,a24,1).
-	fact(rooms,a25,2).    fact(rooms,a26,2).    fact(rooms,a27,2).    fact(rooms,a28,1).
-	fact(rooms,a29,1).    fact(rooms,a30,2).
-    
-    
-    %=============================================%
-    
-    
-    feature(price).
-    feature(distance).
-	feature(noise).
-	feature(area).
-	feature(rooms).
-	
-	feature_domain(price, interval(0,2000)).
-	feature_domain(distance, interval(1,200)).
-	feature_domain(noise, [low,med,high]).
-	feature_domain(area, interval(10,500)).
-	feature_domain(rooms, interval(1,2000)).
 	
 	% ========================================
     %       Criteria
     % ========================================
-    criterion(cost).
-    criterion(location).
-    criterion(size).
-    
-    % ========================================
-    %       Values
-    % ========================================
-    values(cost,[vbad,bad,reg,good,vgood]).
-    values(location,[vbad,bad,reg,good,vgood]).
-    values(size,[vbad,bad,reg,good,vgood]).
-    
-    % ========================================
-    %       Profile - Rules
-    % ========================================
-    
-    profile_rule(p1, location is vgood if noise == low and distance =< 15).
-	profile_rule(p2, location is good if noise == low and 15 < distance and distance =< 20).
-	profile_rule(p3, location is reg if (noise == med and distance =< 15) or (noise == high and distance =< 10)).
-	profile_rule(p4, location is bad if ((noise == high and 10 < distance) or (noise == med and 15 < distance) or (noise == low and 20 < distance)) and distance =< 60).
-	profile_rule(p5, location is vbad if 60 < distance).
-	profile_rule(p6, cost is vgood if price =< 300).
-	profile_rule(p7, cost is good if 300 < price and price =< 400).
-	profile_rule(p8, cost is reg if 400 < price and price =< 450).
-	profile_rule(p9, cost is bad if 450 < price and price =< 600).
-	profile_rule(p10, cost is vbad if 600 < price).
-	profile_rule(p11, size is vgood if 100 =< area and 3 =< rooms).
-	profile_rule(p12, size is good if (70 =< area and area < 100 and 2 =< rooms) or (100 =< area and rooms < 3)).
-	profile_rule(p13, size is reg if (50 =< area and area < 70 and 2 =< rooms) or (70 < area and rooms == 1)).
-	profile_rule(p14, size is bad if (35 =< area and area < 50 and rooms =< 3) or (35 =< area and area < 70 and rooms == 1) ).
-	profile_rule(p15, size is vbad if area < 35).
+    criterion(cost,[vbad,bad,reg,good,vgood]).
+    criterion(location,[vbad,bad,reg,good,vgood]).
+    criterion(size,[vbad,bad,reg,good,vgood]).
     
     
     % ========================================
@@ -427,4 +340,4 @@
         better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
     )).
     
-    */
+    

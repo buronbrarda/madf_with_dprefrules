@@ -1,5 +1,5 @@
 :- module(arg_generator,[
-		argument/4,			%argument(Id,Rules,Premises,Claim)					
+		argument/3,			%argument(Id,Rules,Claim)					
 		
 		generate_arguments/0,
 		count_args/1,
@@ -15,8 +15,7 @@
 	:-use_module(utils, [next_id/2, reset_id/1, equals_sets/2]).
 	
 	
-	:-dynamic argument/4.
-	:-dynamic raw_argument/4.
+	:-dynamic argument/3.
 	
 	
 	
@@ -28,9 +27,7 @@
 	************************************************************************************/
 	remove_arguments:-
 		reset_id(arguments),
-		reset_id(raw_arguments),
-		retractall(argument(_,_,_,_)),
-		retractall(raw_argument(_,_,_,_)).	
+		retractall(argument(_,_,_)).	
 		
 		
 	
@@ -45,46 +42,12 @@
 		
 		remove_arguments,
 					
-		% Generates raw_arguments from grules
-		forall(cpref_rule(RuleId, Premises ==> Claim),
-			forall(consult_cpref_rule(Premises ==> Claim, Facts),(
-				next_id(raw_arguments,RawId),
-				assert(raw_argument(RawId,RuleId,Facts,Claim))
-			))
-		),
-
-		% Generates arguments from raw_arguments. (Aggregate rules and assigns Ids)
-		forall(argument(Rules, Facts, Claim),(
-			gen_arg(Rules,Facts,Claim)
-		)),
-		
-		%Finally, clears all raw_arguments.
-		retractall(raw_argument(_,_,_,_)).
-	
-	
-	% Generates arguments from raw_arguments. (Aggregate rules and assigns Ids)
-	argument([Rule|Rules], Facts, Claim):-
-		raw_argument(Id,Rule,Facts,Claim),
-		argument_rules(Rules,[Id],Facts,Claim).
-	
-	
-	argument_rules([Rule|Rules],Ids,OtherFacts,Claim):-
-		raw_argument(Id,Rule,Facts,Claim), not(member(Id,Ids)),
-		equals_sets(Facts,OtherFacts),!,
-		argument_rules(Rules,[Id|Ids],OtherFacts,Claim).
-	
-	argument_rules([],_Ids,_Facts,_Claim):-!.
-	
-	
-	% Assings id to arguments and avoids argument replication.
-	gen_arg(Rules,Facts,Claim):-
-		not((argument(_,OtherRules,OtherFacts,Claim), equals_sets(Rules,OtherRules), equals_sets(Facts,OtherFacts))),!,
-		next_id(arguments,Id),
-		assert(argument(Id,Rules,Facts,Claim)).
-	
-	
-	gen_arg(_Rules,_Facts,_Claim).
-	
+		% Generates arguments from cpref_rules
+		forall(consult_cpref_rule(RuleId,Premises,Claim),(
+				next_id(arguments,ArgId),
+				assert(argument(ArgId,[cpref_rule(RuleId,Premises ==> Claim)],Claim))
+			)
+		).
 	
 	/***********************************************************************************
 		print_args.
@@ -103,33 +66,19 @@
 			
 	************************************************************************************/
 	print_args(RuleId):-
-		forall((argument(ArgId,Rules,_Facts,_Claim), member(RuleId, Rules)), print_arg(ArgId)).
+		forall((argument(ArgId,Rules,_Facts,_Claim), member(cpref_rule(RuleId,_), Rules)), print_arg(ArgId)).
 	
 	
 	
 	print_arg(Id):-
-		argument(Id,Rules,Facts,Claim),
+		argument(Id,Rules,Claim),
 		writeln('<'),
 			write('\tId: '), writeln(Id),
-			write('\tRules: '), writeln(Rules),
+			writeln('\tRules: {'),
+				forall(member(R,Rules),(write('\t\t'),write(R),wrteln(','))),
+			writeln('\t}'),
 			write('\tClaim: '), writeln(Claim),
-			writeln('\tPremises:'), do_print_facts(Facts),
-		writeln('>').
-		
-	
-	do_print_facts(Facts):-
-		writeln('\t{'),
-			print_facts(Facts),
-		writeln('\t}').
-		
-	
-	print_facts([Fx,Fy]):-
-		!,write('\t\t'),write(Fx),write(', '),writeln(Fy).
-		
-	print_facts([Fx,Fy|Facts]):-
-		write('\t\t'),write(Fx),write(', '),writeln(Fy),
-		print_facts(Facts).
-		
+		writeln('>').	
 	
 	/***********************************************************************************
 		count_args(?N).
@@ -149,8 +98,8 @@
 			
 	************************************************************************************/
 	print_rule(RuleId):-
-		grule(RuleId,Premises ==> Claim),
-		Claim =.. [_Head,x,y],
+		cpref_rule(RuleId,Premises ==> Claim),
+		Claim =.. [_Head,'X','Y'],
 		write(Premises),write(' ==> '),writeln(Claim).
 	
 		
