@@ -1,8 +1,10 @@
 :- module(decision_framework,[
 		run/5,
 		
-		assessments/2,
 		dtree_node/5,
+		
+		rules/2,
+		claim/2,
 		
 		explicitly_preferred/2,
 		weakly_preferred/2,
@@ -21,12 +23,8 @@
 	
 	:-reexport(data_manager).
 	
-	:-reexport(arg_generator, [argument/4]).
-	:-use_module(translator, [assessments/2, generate_assessments/0]).
-	:-use_module(argumentation_framework, [warranted/1, justification/4, generate_warranted_conclusions/0, generate_dtree_nodes/0, dtree_node/5]).
-	:-use_module(utils).
-	
-	:-reexport(profile_rules_interpreter, [op(1020, xfy, is), op(1010, xfy, if), op(1000, xfy, or), op(900, xfy, and), op(800, xfy, in)]).
+	:-use_module(arg_generator, [argument/3, args_count/1]).
+	:-use_module(argumentation_framework, [warranted_conclusion/1, justification/4, generate_warranted_conclusions/0, dtree_node/5]).
 	
 	:-dynamic explicitly_preferred/2.
 	:-dynamic reaches/2.
@@ -42,21 +40,16 @@
 		equivalent_groups_ranking(Order),
 			
 		get_time(T3),
-		
-		generate_dtree_nodes,
 			
 		is(Reasoning_Time, round((T2 - T1)*1000)),
 		is(Selection_Time, round((T3 - T2)*1000)),
 		
-		findall(Id,argument(Id,_,_,_),Args),
-		length(Args,Args_Count).
+		args_count(Args_Count).
 		
 	
 	init(T1,T2):-
 		
 		get_time(T1),
-		
-		generate_assessments,
 		
 		generate_warranted_conclusions,
 		
@@ -77,7 +70,7 @@
 	generate_preferences:-
 		%generate explicit preferences.
 		retractall(explicitly_preferred(_,_)),
-		forall(warranted(pref(X,Y)), assert_preference(X,Y)),
+		forall(warranted_conclusion(pref(X,Y)), assert_preference(X,Y)),
 		
 		generate_transitive_preferences.
 	

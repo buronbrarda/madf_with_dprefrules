@@ -273,6 +273,13 @@
     criterion(size,[vbad,bad,reg,good,vgood]).
     
     
+    stronger_rule(r4,r1).
+    stronger_rule(r5,r1).
+    stronger_rule(r6,r2).
+    stronger_rule(r7,r2).
+    stronger_rule(r8,r1). 
+    
+    
     % ========================================
     %       CP - Rules
     % ========================================

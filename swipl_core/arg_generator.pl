@@ -2,7 +2,7 @@
 		argument/3,			%argument(Id,Rules,Claim)					
 		
 		generate_arguments/0,
-		count_args/1,
+		args_count/1,
 		
 		print_arg/1,
 		print_args/0,
@@ -12,7 +12,7 @@
 	
 	:-use_module(data_manager, [cpref_rule/2]).
 	:-use_module(cpref_rules_interpreter).
-	:-use_module(utils, [next_id/2, reset_id/1, equals_sets/2]).
+	:-use_module(ids_manager).
 	
 	
 	:-dynamic argument/3.
@@ -39,8 +39,10 @@
 			
 	************************************************************************************/
 	generate_arguments:-
-		
+	 
 		remove_arguments,
+		
+		generate_pre_comparisons,
 					
 		% Generates arguments from cpref_rules
 		forall(consult_cpref_rule(RuleId,Premises,Claim),(
@@ -56,7 +58,7 @@
 			
 	************************************************************************************/
 	print_args:-
-		forall(argument(Id,_Rules,_Facts,_Claim), print_arg(Id)).
+		forall(argument(Id,_Rules,_Claim), print_arg(Id)).
 		
 	
 	/***********************************************************************************
@@ -66,7 +68,7 @@
 			
 	************************************************************************************/
 	print_args(RuleId):-
-		forall((argument(ArgId,Rules,_Facts,_Claim), member(cpref_rule(RuleId,_), Rules)), print_arg(ArgId)).
+		forall((argument(ArgId,Rules,_Claim), member(cpref_rule(RuleId,_), Rules)), print_arg(ArgId)).
 	
 	
 	
@@ -81,13 +83,13 @@
 		writeln('>').	
 	
 	/***********************************************************************************
-		count_args(?N).
+		args_count(?N).
 		
 		N is the number of generated arguments.
 			
 	************************************************************************************/
-	count_args(N):-
-		findall(_,argument(_,_),Args),
+	args_count(N):-
+		findall(_,argument(_,_,_),Args),
 		length(Args,N).
 	
 

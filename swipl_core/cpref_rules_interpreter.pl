@@ -9,7 +9,6 @@
 	]).
 	
 	:-use_module(data_manager).
-	:-use_module(translator, [assessment/3]).
 	
 	:-dynamic c_relation/4.
 	
@@ -17,6 +16,8 @@
 	
 	
 	generate_pre_comparisons:-
+		retractall(c_relation(_,_,_,_)),
+		
 		forall((
 			alternative(X),alternative(Y),Y\=X,
 			criterion(C,_),

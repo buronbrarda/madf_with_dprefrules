@@ -1,72 +1,48 @@
 :- module(argumentation_framework,[
 		generate_warranted_conclusions/0,
-		generate_dtree_nodes/0,
+
+		claim/2,
+		rules/2,
 		
-		rules/3,
-		premises/3,
+		warranted_conclusion/1,
 		
-		dialectical_tree/2,
-		
-		warranted/1,
 		justification/4
 	]).
 	
-	
-	:-use_module(utils).
+	:-use_module(ids_manager).
 	:-use_module(data_manager, [stronger_rule/2]).
 	:-use_module(arg_generator, [argument/3, generate_arguments/0]).
 	
 	:-dynamic d_in_conflict/2.
-	:-dynamic d_properly_defeat/2.
+	:-dynamic d_properly_defeats/2.
 	:-dynamic d_blocks/2.
-	
-	:-dynamic exhaustive_arg_line/2.
-	:-dynamic m_dialectical_tree/3.
-	
+	:-dynamic d_arg_line/2.
 	:-dynamic dtree_node/5.
 	
 	
 	%===================================================================================
+	generate_warranted_conclusions:-
+		generate_arguments,
+		generate_argument_relations,
+		generate_dtree_nodes.
 	
-	
-	/***********************************************************************************
-		premises(?Premises, ?Id, ?Argument).
 		
-		True when Premises are the premises of Argument identified with Id.
-	************************************************************************************/
-	premises(Premises, Id, Arg):-
-		argument_id(Id, Arg),
-		Arg = argument(Id,_Rules,Premises,_Claim).
-		
-	
 	/***********************************************************************************
-		rules(?Rules, ?Id, ?Argument).
+		rules(?Arg_Id, ?Rules).
 		
 		True when Rules are the rules of the argument Argument identified with Id.
 	************************************************************************************/
-	rules(Rules, Id, Arg):-
-		argument_id(Id, Arg),
-		Arg = argument(Id,Rules,_Premises,_Claim).
+	rules(Arg_Id,Rules):-
+		argument(Arg_Id, Rules,_Claim).
 		
 	
 	/***********************************************************************************
-		claim(?Claim, ?Id, ?Argument).
+		claim(?Arg_Id?, Claim).
 		
 		True when Claim is the claim of the argument Argument identified with Id.
 	************************************************************************************/
-	claim(Claim, Id, Arg):-
-		argument_id(Id, Arg),
-		Arg = argument(Id,_Rules,_Premises,Claim).
-	
-	
-	/***********************************************************************************
-		argument_id(?Id, ?Arg).
-		
-		True iff Id is the id of an argument Arg.
-	************************************************************************************/
-	argument_id(Id,Arg):-
-		Arg =.. [argument,Id,_,_,_],
-		call(Arg).
+	claim(Arg_Id, Claim):-
+		argument(Arg_Id, _Rules, Claim).
 	
 	
 	/***********************************************************************************
@@ -82,8 +58,10 @@
 		
 		Define whether two arguments ArgA and Argb are in conflict.
 	************************************************************************************/
-	in_conflict(argument(_,_,_,ClaimA), argument(_,_,_,ClaimB)):-
-		complement(ClaimA,ClaimB).
+	in_conflict(Arg_Id_A, Arg_Id_B):-
+		claim(Arg_Id_A, Claim_A),
+		claim(Arg_Id_B, Claim_B),
+		complement(Claim_A,Claim_B).
 
 	
 	/***********************************************************************************
@@ -91,10 +69,12 @@
 		
 		Defines whether ArgA is stronger than Argb.
 	************************************************************************************/	
-	stronger(argument(_,RulesA,_,_),argument(_,RulesB,_,_)):-
-		forall(member(RB_2,RulesB), not(member(RA_2,RulesA), stronger_rule(RB_2,RA_2))),
-		member(RA,RulesA),
-		member(RB,RulesB),
+	stronger(Arg_Id_A,Arg_Id_B):-
+		rules(Arg_Id_A, Rules_A),
+		rules(Arg_Id_B, Rules_B),
+		forall(member(cpref_rule(RB,_),Rules_B), not((member(cpref_rule(RA,_),Rules_A), stronger_rule(RB,RA)))),
+		member(cpref_rule(RA,_),Rules_A),
+		member(cpref_rule(RB,_),Rules_B),
 		stronger_rule(RA,RB),!.
 	
 	
@@ -104,11 +84,11 @@
 		An argument A defeats an argument B, either if A properly defeats, or blocks B.
 		It is defined in term of dynamic facts to improve performance. 
 	************************************************************************************/
-	defeats(ArgA_Id,ArgB_Id):-
-		d_properly_defeats(ArgA_Id,ArgB_Id),!.
+	defeats(Arg_Id_A,Arg_Id_B):-
+		d_properly_defeats(Arg_Id_A,Arg_Id_B).
 	
-	defeats(ArgA_Id,ArgB_Id):-
-		d_blocks(ArgA_Id,ArgB_Id).
+	defeats(Arg_Id_A,Arg_Id_B):-
+		d_blocks(Arg_Id_A,Arg_Id_B).
 	
 	
 	/***********************************************************************************
@@ -117,115 +97,84 @@
 		An argument A properly defeats an argument B iff they are in conflict and
 		A is stronger than B.
 	************************************************************************************/
-	properly_defeats(ArgA,ArgB):-
-		in_conflict(ArgA,ArgB),
-		stronger(ArgA,ArgB).	
+	properly_defeats(Arg_Id_A,Arg_Id_B):-
+		in_conflict(Arg_Id_A,Arg_Id_B),
+		stronger(Arg_Id_A,Arg_Id_B).	
 	
 	
 	/***********************************************************************************
 		blocks(+ArgA, +ArgB).
 		
 		An argument A blocks an argument B iff they are in conflict and A is not
-		stronger than B and vice-versa. 
+		stronger than B and vice-versa.
 	************************************************************************************/
-	blocks(ArgA, ArgB):-
-		in_conflict(ArgA,ArgB),
-		not(stronger(ArgA, ArgB)), 
-		not(stronger(ArgB, ArgA)).	
-	
+	blocks(Arg_Id_A, Arg_Id_B):-
+		in_conflict(Arg_Id_A,Arg_Id_B),
+		not(stronger(Arg_Id_A, Arg_Id_B)), 
+		not(stronger(Arg_Id_B, Arg_Id_A)).	
+		
 	
 	% Arguments relation in_conflic, properly_defeats and blocks must be pre-calculated
 	% in order to improve performace.
-	generate_arguments_relation:-
-		ArgA = argument(IdA,_,_,_),
-		ArgB = argument(IdB,_,_,_),
-		forall((call(ArgA),call(ArgB), properly_defeat(ArgA,ArgB)), (
-			assert(d_in_conflict(IdA,IdB)),
-			assert(d_in_conflict(IdB,IdA)),
-			assert(d_properly_defeat(IdA,IdB))
+	generate_argument_relations:-
+		retractall(d_in_conflict(_,_)),
+		retractall(d_properly_defeats(_,_)),
+		retractall(d_blocks(_,_)),
+		
+		forall((properly_defeats(Arg_Id_A,Arg_Id_B)), (
+			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),
+			assert(d_in_conflict(Arg_Id_B,Arg_Id_A)),
+			assert(d_properly_defeats(Arg_Id_A,Arg_Id_B))
 		)),
 		
-		forall((call(ArgA),call(ArgB), blocks(ArgA,ArgB)), (
-			assert(d_in_conflict(IdA,IdB)),  % Just in one direction cause block is symmetric
-			assert(d_blocks(IdA,IdB))
+		forall((blocks(Arg_Id_A,Arg_Id_B)), (
+			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),  % Just in one direction cause block is symmetric
+			assert(d_blocks(Arg_Id_A,Arg_Id_B))
 		)).
 	
 	
-	/*===================================================================================
+	/***********************************************************************************
+		concordant_with(+Arg_A, +Line).
 		
-		
-		THE FOLLOWING PREDEICATES DEFINES THE ARGUMENTATION FRAMEWORK SEMANTIC
-		
-		
-	===================================================================================*/
+		An argument A is concordant with an argumentation line L iff A is not in
+		conflict with any argument in L.
+	************************************************************************************/
+	concordant_with(Arg_A,Arg_List):-
+		not((member(Arg_B,Arg_List), d_in_conflict(Arg_A,Arg_B))).	
 	
 	
 	/***********************************************************************************
-		arg_line(?Arg_Id, ?Line).
+		acceptable_arg_line(?Arg_Id, ?Line).
 		
-		Is true when Line is an argumentation line for the argument identified
+		Is true when Line is an acceptable argumentation line for the argument identified
 		with Arg_Id.
+		An argumentation line L is acceptable iff:
+			- Every argument in L defeats its predecessor,
+			- No argument appears twice in L, and
+			- pros(L) and cons(L) are concordant, where pros(L) are the arguments in
+			odd positions and cons(L) are the arguments in even positions.
+			
+		NOTE: In the way it is defined, Line is exhaustive.
+		An argumentation line L is exhaustive when it is not possible to obtain a longer
+		line that remains acceptable.
 	************************************************************************************/
 	
-	arg_lines(Arg_Id,Lines):-
-		findall([Arg_Id|L],(
-			arg_lines([],[Arg_Id],Lines),
-			member(L,Lines)
-		),Lines).
+	acceptable_arg_line(Arg_Id,[Arg_Id|Line]):-
+		acceptable_arg_line([],[Arg_Id],Line).
+		
+	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line]):-
+		defeats(Defeater,E),
+		not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
+		concordant_with(Defeater,Allies),
+		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line).
 	
-	arg_lines(Friends,Enemies,Lines):-
-		defeating_arg_lines(Friends, Enemies, Lines).
-	
-	arg_lines(Friends,Enemies,Lines):-
-		blocking_arg_lines(Friends, Enemies, Lines).
-	
-	is_coherent_with(Defeater, Friends):-
-		forall(member(F,Friends),(
-			Defeater \= F,
-			not((
-				argument_id(F,Arg_F),
-				argument_id(Defeater, Arg_D),
-				in_conflict(Arg_F,Arg_D)
-			))
+	acceptable_arg_line(Allies,[E|Enemies],[]):-
+		not(( 
+			defeats(Defeater,E),
+			not((append(Allies,Enemies,Union), member(Defeater,Union))),
+			concordant_with(Defeater,Allies)
 		)).
 	
-	defeating_arg_lines(Friends,[Enemy|Enemies],Lines_List):-
-		setof([Defeater|L],(
-			defeats(Defeater,Enemy),
-			is_coherent_with(Defeater,Friends),
-			arg_lines([Enemy|Enemies], [Defeater|Friends], Lines),
-			member(L,Lines)
-		),Lines_List).
-	
-	defeating_arg_lines(Friends,[Enemy|_],[[]]):-
-		not((defeats(Defeater,Enemy), is_coherent_with(Defeater,Friends))),
-		not((blocks(Defeater,Enemy), is_coherent_with(Defeater,Friends))).
-		
-		
-	blocking_arg_lines(Friends,[Enemy|Enemies],Lines_List):-
-		setof([Defeater|L],(
-			blocks(Defeater,Enemy),
-			is_coherent_with(Defeater,Friends),
-			defeating_arg_lines([Enemy|Enemies], [Defeater|Friends], Lines),
-			member(L,Lines)
-		),Lines_List).
-		
-	
-	blocking_arg_lines(Friends,[Enemy|_],[[]]):-
-		not((blocks(Defeater,Enemy), is_coherent_with(Defeater,Friends))).
-	
-	
-	/***********************************************************************************
-		is_exhaustive(+Line, +Lines).
-		
-		Is true when Line is an exhaustive argumentation line w.r.t. the other lines in
-		Lines.
-	************************************************************************************/
-	
-	is_exhaustive(Line,Lines):-
-		not((member(OtherLine, Lines), OtherLine \= Line, prefix(Line,OtherLine))).
-	
-		
 	
 	/***********************************************************************************
 		dialectical_tree(?Arg_Id, ?Tree).
@@ -238,179 +187,60 @@
 	
 	
 	dialectical_tree(Arg_Id,Tree):-
-		argument(Arg_Id,_,_,_),
-		dialectical_tree(Arg_Id,Arg_Id,[Arg_Id],Tree).
+		argument(Arg_Id,_,_),
+		forall(acceptable_arg_line(Arg_Id,Line), assert(d_arg_line(Arg_Id,Line))),
+		argumentation_tree(Arg_Id,Arg_Id,[Arg_Id],Tree),
+		retractall(d_arg_line(Arg_Id,_)).
 	
 	
-	dialectical_tree(Arg_Id,Root_Id,Root_Line,(Arg_Id,SubTrees)):-
+	% Recursively, build an argumentation tree that consider all the 
+	% all the argumentation lines builds for Root_Id
+	argumentation_tree(Arg_Id,Root_Id,Root_Line,(Arg_Id,SubTrees)):-
 		dtree_node_children(Root_Id,Root_Line,Children),
 		findall(Tree,(
 			member(C_Id,Children),
 			append(Root_Line,[C_Id],New_Line),
-			dialectical_tree(C_Id,Root_Id,New_Line,Tree)
+			argumentation_tree(C_Id,Root_Id,New_Line,Tree)
 		),SubTrees).
 		
 		
-	
-	%Search for the children of a node according to the current Root_Line.
+	% Search for the children of a node according to the current Root_Line.
+	% It consider all the exhaustive argumentation lines for Root_Id
 	dtree_node_children(Root_Id,Root_Line,Children):-
 		findall(Child_Id,(
-			exhaustive_arg_line(Root_Id,Line),
+			d_arg_line(Root_Id,Line),
 			append(Root_Line,[Child_Id|_],Line)		% if append(L1,L2,L3) then prefix(L1,L3)
 		), Aux),
 		list_to_set(Aux,Children).
-		
+	
 	
 	
 	/***********************************************************************************
-		defeated(?Structure, +Tree).
+		In order to improve performance, the marking procedure for dialectical trees
+		will be executed during the generation of the linked version of dialectical
+		trees that will be used to export the data to other programs.
+		Recall that marking procedure is necesary to determine wheter a conclusion is
+		warranted within the current instance of the argumentation framework.
 		
-		Defines wheter an argumental structure Structure is defeated contemplating
-		its dialectival tree. For us, Structure is defeated when all its defeaters
-		are undefeated.
+		===============================================================================
+		
+		Every node within a linked dialectical tree is a tuple 
+		dtree_node(Id, Parent, Children, Arg_Id, Status), where:
+		  - Id is the node id.
+		  - Parent is the node's parent id
+		  - Children is the list of node's children ids
+		  - Arg_Id is the node's argument id.
+		  - Status is the result of the marking procedure.
+			  Status is 'U' (undefeated) when every child of the node is marked 'D'
+		      Status is 'D' (defeated) when the node has at least one child marked 'U'.
 	************************************************************************************/
-	defeated(Arg_Id,(Arg_Id,SubTrees)):-
-		children(Defeaters,Arg_Id,(Arg_Id,SubTrees)),
-		Arg_Id \= null,
-		member(Defeater,Defeaters),
-		subtree((Defeater,DefeaterTrees),(Arg_Id, SubTrees)),
-		undefeated(Defeater,(Defeater, DefeaterTrees)),!.
-	
-	
-	/***********************************************************************************
-		undefeated(?Structure, +Tree).
-		
-		Defines wheter an argumental structure Structure is undefeated contemplating 
-		its dialectival tree. For us, Structure is undefeated when all its defeaters
-		are defeated.
-	************************************************************************************/
-	undefeated(Arg_Id,(Arg_Id,[])):-!.
-	
-	undefeated(Arg_Id,(Arg_Id,SubTrees)):-
-		children(Defeaters,Arg_Id,(Arg_Id,SubTrees)),
-		Arg_Id \= null,
-		forall(member(Defeater,Defeaters),(
-			subtree((Defeater,DefeaterTrees),(Arg_Id, SubTrees)),
-			defeated(Defeater,(Defeater, DefeaterTrees))
-		)).
-	
-	
-	marked_dtree(Arg_Id, Tree, undefeated):-
-		undefeated(Arg_Id, Tree),!.
-	
-	
-	marked_dtree(_, _, defeated).
-	
-	
-	/***********************************************************************************
-		warranted(?Claim).
-		
-		Defines wheter Claim is warranted.
-	************************************************************************************/
-	warranted(Claim):-
-		argument(Id,_,_,Claim),
-		m_dialectical_tree(Id, _Tree, undefeated).
-
-	
-	/***********************************************************************************
-		justification(?Claim, ?Claim_U_Trees, ?NoClaim_U_Trees, ?BothClaim_D_Trees).
-		
-		Defines the set of dialectical that justify the warranty status of the claim
-		Claim. Claim_U_Trees is the set of undefeated dialectical in favour of Claim.
-		NoClaim_U_Trees is the set of undefeated dialectical against Claim.
-		BothClaim_D_Trees is the set of defeated dialectical trees, both, in favour and
-		against Claim.
-	************************************************************************************/
-	justification(Claim, Claim_U_Trees, NoClaim_U_Trees, BothClaim_D_Trees):-		
-		findall(Node_Id, (
-			argument(Arg_Id,_,_,Claim),
-			dtree_node(Node_Id, null, _, Arg_Id, 'U')
-		), Aux_1),
-		
-		list_to_set(Aux_1,Claim_U_Trees),
-		
-		findall(Node_Id, (
-			complement(Claim,No_Claim),
-			ArgA =.. [argument,_,_,_,Claim], call(ArgA),
-			ArgB =.. [argument,Arg_Id_2,_,_,No_Claim], call(ArgB),
-			dtree_node(Node_Id, null, _, Arg_Id_2, 'U')
-		), Aux_2),
-		
-		list_to_set(Aux_2,NoClaim_U_Trees),
-		
-		findall(Node_Id, (
-			argument(Arg_Id,_,_,Claim),
-			dtree_node(Node_Id, null, _, Arg_Id, 'D')
-		), Claim_D_Trees),
-		
-		
-		findall(Node_Id, (
-			complement(Claim,No_Claim),
-			ArgA =.. [argument,_,_,_,Claim], call(ArgA),
-			ArgB =.. [argument,Arg_Id_2,_,_,No_Claim], call(ArgB),
-			dtree_node(Node_Id, null, _, Arg_Id_2, 'D')
-		), NoClaim_D_Trees),
-		
-			
-		append(Claim_D_Trees, NoClaim_D_Trees, Aux_3),
-		
-		list_to_set(Aux_3,BothClaim_D_Trees).
-	
-	
-	% ============================================================================
-	%				Predicates to execute the framework.		
-	% ============================================================================	
-	
-	
-	generate_warranted_conclusions:-
-		remove_warranted_conclusions,
-		
-		generate_arguments,
-		
-		generate_argumentation_lines,
-		generate_marked_dialectical_trees,
-		
-		%warranted_conclusion(Claim) is defined above and it is dynamic.
-		
-		retractall(exhaustive_arg_line(_,_)).
-		
-		
-		
-	generate_argumentation_lines:-
-		forall((
-			argument(Id,_,_,_),
-			arg_lines(Id,Lines),
-			member(L,Lines),
-			is_exhaustive(L,Lines)
-		),assert(exhaustive_arg_line(Id, L))).
-	
-	
-	
-	generate_marked_dialectical_trees:-
-		retractall(m_dialectical_tree(_,_,_)),
-		
-		forall((
-			argument(Id,_,_,_),
-			dialectical_tree(Id,Tree)
-		),(
-			marked_dtree(Id, Tree, Status),
-			assert(m_dialectical_tree(Id, Tree, Status))
-		)).
-		
-	
-	
-	remove_warranted_conclusions:-
-		retractall(m_dialectical_tree(_,_,_)).
-		
-	
 	
 	generate_dtree_nodes:-
 		reset_id(dtree_node),
 		retractall(dtree_node(_,_,_,_,_)),
 		
-		forall(m_dialectical_tree(_,Tree,_), assert_dtree_nodes(Tree,null)).
-		
-	
+		forall((dialectical_tree(_Arg_Id,Tree)), assert_dtree_nodes(Tree,null)).
+			
 	
 	assert_dtree_nodes(Dtree,null):-
 		next_id(dtree_node,Node_Id),
@@ -433,5 +263,62 @@
 		dtree_node(Child_Id,_,_,_,'U'),!.
 		
 	node_status(_,'U').
+	
+	
+	/***********************************************************************************
+		warranted(?Claim).
+		
+		Defines wheter Claim is warranted.
+	************************************************************************************/
+	warranted_conclusion(Claim):-
+		claim(Arg_Id, Claim),
+		dtree_node(_, null, _, Arg_Id, 'U'),!.
+	
+	
+	/***********************************************************************************
+		justification(?Claim, ?Claim_U_Trees, ?NoClaim_U_Trees, ?BothClaim_D_Trees).
+		
+		Defines the set of dialectical that justify the warranty status of the claim
+		Claim. Claim_U_Trees is the set of undefeated dialectical in favour of Claim.
+		NoClaim_U_Trees is the set of undefeated dialectical against Claim.
+		BothClaim_D_Trees is the set of defeated dialectical trees, both, in favour and
+		against Claim.
+	************************************************************************************/
+	justification(Claim, Claim_U_Trees, NoClaim_U_Trees, BothClaim_D_Trees):-		
+		findall(Node_Id, (
+			claim(Arg_Id, Claim),
+			dtree_node(Node_Id, null, _, Arg_Id, 'U')
+		), Aux_1),
+		
+		list_to_set(Aux_1,Claim_U_Trees),
+		
+		findall(Node_Id, (
+			complement(Claim,No_Claim),
+			claim(Arg_Id,No_Claim),
+			dtree_node(Node_Id, null, _, Arg_Id, 'U')
+		), Aux_2),
+		
+		list_to_set(Aux_2,NoClaim_U_Trees),
+		
+		findall(Node_Id, (
+			claim(Arg_Id,Claim),
+			dtree_node(Node_Id, null, _, Arg_Id, 'D')
+		), Claim_D_Trees),
+		
+		
+		findall(Node_Id, (
+			complement(Claim,No_Claim),
+			claim(Arg_Id,No_Claim),
+			dtree_node(Node_Id, null, _, Arg_Id, 'D')
+		), NoClaim_D_Trees),
+		
+			
+		append(Claim_D_Trees, NoClaim_D_Trees, Aux_3),
+		
+		list_to_set(Aux_3,BothClaim_D_Trees).
+		
+	
+	
+	
 		
 	
