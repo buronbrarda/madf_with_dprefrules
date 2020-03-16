@@ -58,35 +58,28 @@ public class DSJavaUI{
 			JPanel panel = new JPanel();
 			frame.getContentPane().add(panel);
 			GridBagLayout gbl_panel = new GridBagLayout();
-			gbl_panel.columnWidths = new int[]{352, 27, 592, 0};
+			gbl_panel.columnWidths = new int[]{450, 10, 470, 0};
 			gbl_panel.rowHeights = new int[]{562, 0};
-			gbl_panel.columnWeights = new double[]{0.0, 1.0, 1.0, Double.MIN_VALUE};
+			gbl_panel.columnWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 			gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 			panel.setLayout(gbl_panel);
 			stepsView = new AllStepsPanel(resultsView);
 			
 			GridBagConstraints gbc_stepsView = new GridBagConstraints();
-			gbc_stepsView.anchor = GridBagConstraints.WEST;
-			gbc_stepsView.fill = GridBagConstraints.VERTICAL;
+			gbc_stepsView.fill = GridBagConstraints.BOTH;
 			gbc_stepsView.insets = new Insets(0, 0, 0, 5);
 			gbc_stepsView.gridx = 0;
 			gbc_stepsView.gridy = 0;
 			panel.add(stepsView, gbc_stepsView);
 			{
-				JPanel panel_1 = new JPanel();
-				GridBagConstraints gbc_panel_1 = new GridBagConstraints();
-				gbc_panel_1.anchor = GridBagConstraints.WEST;
-				gbc_panel_1.insets = new Insets(0, 0, 0, 5);
-				gbc_panel_1.fill = GridBagConstraints.VERTICAL;
-				gbc_panel_1.gridx = 1;
-				gbc_panel_1.gridy = 0;
-				panel.add(panel_1, gbc_panel_1);
-				panel_1.setLayout(new BorderLayout(0, 0));
-				{
-					JSeparator separator = new JSeparator();
-					separator.setOrientation(SwingConstants.VERTICAL);
-					panel_1.add(separator);
-				}
+				JSeparator separator = new JSeparator();
+				separator.setOrientation(SwingConstants.VERTICAL);
+				GridBagConstraints gbc_separator = new GridBagConstraints();
+				gbc_separator.fill = GridBagConstraints.VERTICAL;
+				gbc_separator.insets = new Insets(0, 0, 0, 5);
+				gbc_separator.gridx = 1;
+				gbc_separator.gridy = 0;
+				panel.add(separator, gbc_separator);
 			}
 			
 			GridBagConstraints gbc_resultsView = new GridBagConstraints();
@@ -105,7 +98,8 @@ public class DSJavaUI{
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 1100, 600);
+		frame.setResizable(false);
+		frame.setBounds(100, 100, 959, 430);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		frame.setTitle("Argumentation-Based Multi-Criteria Decision Support System With Conditional Preferences - (Prototype Version)");

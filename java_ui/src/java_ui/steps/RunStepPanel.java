@@ -82,7 +82,7 @@ public class RunStepPanel extends StepPanel {
 		resultsPanel.setReasoningTime("");
 		resultsPanel.setSelectionTime("");
 		
-		resultsPanel.disableGraphButton();
+		resultsPanel.disableGraphButtons();
 	}
 	
 	
@@ -102,7 +102,7 @@ public class RunStepPanel extends StepPanel {
 			resultsPanel.setArgumentsCount(solution.get("Args_Count").toString());
 			resultsPanel.setReasoningTime(solution.get("Reasoning_Time").toString()+" ms");
 			resultsPanel.setSelectionTime(solution.get("Selection_Time").toString()+" ms");
-			resultsPanel.enableGraphButton();
+			resultsPanel.enableGraphButtons();
 		}
 		
 		if(!q.hasSolution()){
@@ -149,7 +149,7 @@ public class RunStepPanel extends StepPanel {
 
 	@Override
 	protected void cleanStepAction() {
-		resultsPanel.cleanGraph();
+		resultsPanel.cleanGraphs();
 		
 		resultsPanel.setSelectedAlternatives("");
 		resultsPanel.setAlternativesRelation("");
@@ -157,6 +157,6 @@ public class RunStepPanel extends StepPanel {
 		resultsPanel.setReasoningTime("");
 		resultsPanel.setSelectionTime("");
 		
-		resultsPanel.disableGraphButton();
+		resultsPanel.disableGraphButtons();
 	}
 }

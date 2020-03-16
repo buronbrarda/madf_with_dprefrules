@@ -1,8 +1,6 @@
 package java_ui.steps;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagLayout;
@@ -12,13 +10,12 @@ import java.awt.Font;
 import javax.swing.JTextArea;
 
 import java_ui.arguments.dialectical_trees.ArgumentsGraphDialog;
-import java_ui.graphs.alternatives.AlternativesGraphPanel;
-
+import java_ui.graphs.alternatives.AlternativesGraphDialog;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.JSeparator;
 
 
 public class ResultsPanel extends JPanel {
@@ -27,11 +24,11 @@ public class ResultsPanel extends JPanel {
 	private JTextField reasoningTimeText;
 	private JTextField selectionTimeText;
 	private JTextField argumentsCountText;
-	private JButton graphButton;
+	private JButton alternativesGraphButton;
+	private JButton argumentsGraphButton;
 	
-	private ArgumentsGraphDialog graphDialog;
-	private AlternativesGraphPanel graphPanel;
-	private JScrollPane scrollPane;
+	private AlternativesGraphDialog alternativesGraphDialog;
+	private ArgumentsGraphDialog argumentsGraphDialog;
 
 	public ResultsPanel() {
 		setLayout(new BorderLayout(0, 0));
@@ -39,79 +36,58 @@ public class ResultsPanel extends JPanel {
 		JPanel mainResults = new JPanel();
 		add(mainResults, BorderLayout.CENTER);
 		GridBagLayout gbl_mainResults = new GridBagLayout();
-		gbl_mainResults.columnWidths = new int[]{84, 65, 56, 136, 0};
-		gbl_mainResults.rowHeights = new int[]{30, 382, 0, 38, 0, 28, 0, 0};
-		gbl_mainResults.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		gbl_mainResults.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_mainResults.columnWidths = new int[]{75, 130, 54, 130, 38, 0};
+		gbl_mainResults.rowHeights = new int[]{30, 20, 20, 12, 0, 28, 0, 13, 0, 0, 0};
+		gbl_mainResults.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_mainResults.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		mainResults.setLayout(gbl_mainResults);
 		
 		JLabel titleLabel = new JLabel("Results");
 		titleLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_titleLabel = new GridBagConstraints();
-		gbc_titleLabel.gridwidth = 4;
-		gbc_titleLabel.insets = new Insets(5, 5, 5, 0);
+		gbc_titleLabel.gridwidth = 5;
+		gbc_titleLabel.insets = new Insets(5, 5, 5, 5);
 		gbc_titleLabel.anchor = GridBagConstraints.WEST;
 		gbc_titleLabel.gridx = 0;
 		gbc_titleLabel.gridy = 0;
 		mainResults.add(titleLabel, gbc_titleLabel);
 		
-		this.scrollPane = new JScrollPane();
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridwidth = 4;
-		gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 1;
-		mainResults.add(scrollPane, gbc_scrollPane);
-		
-		this.graphPanel = new AlternativesGraphPanel();
-		scrollPane.setViewportView(graphPanel);
-		
 		JLabel selectedAlternativesLabel = new JLabel("Selected Alternatives:");
 		GridBagConstraints gbc_selectedAlternativesLabel = new GridBagConstraints();
-		gbc_selectedAlternativesLabel.gridwidth = 4;
-		gbc_selectedAlternativesLabel.anchor = GridBagConstraints.WEST;
-		gbc_selectedAlternativesLabel.insets = new Insets(0, 5, 5, 0);
+		gbc_selectedAlternativesLabel.gridwidth = 5;
+		gbc_selectedAlternativesLabel.anchor = GridBagConstraints.NORTHWEST;
+		gbc_selectedAlternativesLabel.insets = new Insets(0, 5, 5, 5);
 		gbc_selectedAlternativesLabel.gridx = 0;
-		gbc_selectedAlternativesLabel.gridy = 2;
+		gbc_selectedAlternativesLabel.gridy = 1;
 		mainResults.add(selectedAlternativesLabel, gbc_selectedAlternativesLabel);
 		
 		selectedAlternativesText = new JTextField();
 		selectedAlternativesText.setEditable(false);
 		GridBagConstraints gbc_selectedAlternativesText = new GridBagConstraints();
 		gbc_selectedAlternativesText.fill = GridBagConstraints.HORIZONTAL;
-		gbc_selectedAlternativesText.gridwidth = 3;
+		gbc_selectedAlternativesText.gridwidth = 4;
+		gbc_selectedAlternativesText.anchor = GridBagConstraints.NORTH;
 		gbc_selectedAlternativesText.insets = new Insets(0, 5, 5, 5);
 		gbc_selectedAlternativesText.gridx = 0;
-		gbc_selectedAlternativesText.gridy = 3;
+		gbc_selectedAlternativesText.gridy = 2;
 		mainResults.add(selectedAlternativesText, gbc_selectedAlternativesText);
 		selectedAlternativesText.setColumns(10);
 		
-		graphButton = new JButton("Arguments Graph");
-		graphButton.setEnabled(false);
-		graphButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if(graphDialog == null){
-					graphDialog = new ArgumentsGraphDialog();
-				}
-				graphDialog.setVisible(true);
-				graphDialog.requestFocus();
-				
-			}
-		});
-		GridBagConstraints gbc_btnExplanationGraph = new GridBagConstraints();
-		gbc_btnExplanationGraph.insets = new Insets(0, 0, 5, 0);
-		gbc_btnExplanationGraph.gridx = 3;
-		gbc_btnExplanationGraph.gridy = 3;
-		mainResults.add(graphButton, gbc_btnExplanationGraph);
+		JSeparator separator = new JSeparator();
+		GridBagConstraints gbc_separator = new GridBagConstraints();
+		gbc_separator.fill = GridBagConstraints.BOTH;
+		gbc_separator.gridwidth = 5;
+		gbc_separator.insets = new Insets(0, 0, 5, 5);
+		gbc_separator.gridx = 0;
+		gbc_separator.gridy = 3;
+		mainResults.add(separator, gbc_separator);
 		
 		JLabel lblStats = new JLabel("Stats");
 		lblStats.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblStats = new GridBagConstraints();
-		gbc_lblStats.gridwidth = 4;
+		gbc_lblStats.gridwidth = 5;
 		gbc_lblStats.anchor = GridBagConstraints.WEST;
-		gbc_lblStats.insets = new Insets(0, 5, 5, 0);
+		gbc_lblStats.insets = new Insets(0, 5, 5, 5);
 		gbc_lblStats.gridx = 0;
 		gbc_lblStats.gridy = 4;
 		mainResults.add(lblStats, gbc_lblStats);
@@ -146,7 +122,7 @@ public class ResultsPanel extends JPanel {
 		selectionTimeText.setEditable(false);
 		GridBagConstraints gbc_selectionTimeText = new GridBagConstraints();
 		gbc_selectionTimeText.fill = GridBagConstraints.HORIZONTAL;
-		gbc_selectionTimeText.insets = new Insets(0, 0, 5, 0);
+		gbc_selectionTimeText.insets = new Insets(0, 0, 5, 5);
 		gbc_selectionTimeText.gridx = 3;
 		gbc_selectionTimeText.gridy = 5;
 		mainResults.add(selectionTimeText, gbc_selectionTimeText);
@@ -155,7 +131,7 @@ public class ResultsPanel extends JPanel {
 		JLabel lblArguments = new JLabel("Arguments:");
 		GridBagConstraints gbc_lblArguments = new GridBagConstraints();
 		gbc_lblArguments.anchor = GridBagConstraints.WEST;
-		gbc_lblArguments.insets = new Insets(0, 5, 0, 5);
+		gbc_lblArguments.insets = new Insets(0, 5, 5, 5);
 		gbc_lblArguments.gridx = 0;
 		gbc_lblArguments.gridy = 6;
 		mainResults.add(lblArguments, gbc_lblArguments);
@@ -163,12 +139,72 @@ public class ResultsPanel extends JPanel {
 		argumentsCountText = new JTextField();
 		argumentsCountText.setEditable(false);
 		GridBagConstraints gbc_argumentsAmountText = new GridBagConstraints();
-		gbc_argumentsAmountText.insets = new Insets(0, 5, 0, 5);
+		gbc_argumentsAmountText.insets = new Insets(0, 5, 5, 5);
 		gbc_argumentsAmountText.fill = GridBagConstraints.HORIZONTAL;
 		gbc_argumentsAmountText.gridx = 1;
 		gbc_argumentsAmountText.gridy = 6;
 		mainResults.add(argumentsCountText, gbc_argumentsAmountText);
 		argumentsCountText.setColumns(10);
+		
+		JSeparator separator_1 = new JSeparator();
+		GridBagConstraints gbc_separator_1 = new GridBagConstraints();
+		gbc_separator_1.gridwidth = 5;
+		gbc_separator_1.fill = GridBagConstraints.BOTH;
+		gbc_separator_1.insets = new Insets(0, 0, 5, 5);
+		gbc_separator_1.gridx = 0;
+		gbc_separator_1.gridy = 7;
+		mainResults.add(separator_1, gbc_separator_1);
+		
+		JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.gridwidth = 5;
+		gbc_panel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 8;
+		mainResults.add(panel, gbc_panel);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[]{0, 0, 0};
+		gbl_panel.rowHeights = new int[]{0, 0};
+		gbl_panel.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		alternativesGraphButton = new JButton("Alternatives Graph");
+		alternativesGraphButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if(alternativesGraphDialog == null){
+					alternativesGraphDialog = new AlternativesGraphDialog();
+				}
+				alternativesGraphDialog.setVisible(true);
+				alternativesGraphDialog.requestFocus();
+				
+			}
+		});
+		GridBagConstraints gbc_btnAlternatives = new GridBagConstraints();
+		gbc_btnAlternatives.insets = new Insets(0, 0, 0, 5);
+		gbc_btnAlternatives.gridx = 0;
+		gbc_btnAlternatives.gridy = 0;
+		panel.add(alternativesGraphButton, gbc_btnAlternatives);
+		alternativesGraphButton.setEnabled(false);
+		
+		argumentsGraphButton = new JButton("Arguments Graph");
+		GridBagConstraints gbc_graphButton = new GridBagConstraints();
+		gbc_graphButton.gridx = 1;
+		gbc_graphButton.gridy = 0;
+		panel.add(argumentsGraphButton, gbc_graphButton);
+		argumentsGraphButton.setEnabled(false);
+		argumentsGraphButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(argumentsGraphDialog == null){
+					argumentsGraphDialog = new ArgumentsGraphDialog();
+				}
+				argumentsGraphDialog.setVisible(true);
+				argumentsGraphDialog.requestFocus();
+				
+			}
+		});
 		
 		relationResults = new JTextArea();
 		relationResults.setLineWrap(true);
@@ -189,29 +225,35 @@ public class ResultsPanel extends JPanel {
 	}
 	
 	public void loadAlternativesGraph() {
-		this.graphPanel.loadGraph();
-		this.scrollPane.setViewportView(this.graphPanel);
-		
-	}
-	
-	public void enableGraphButton(){
-		graphButton.setEnabled(true);
-	}
-	
-	public void disableGraphButton(){
-		graphButton.setEnabled(false);
-		
-		cleanGraph();
-	}
-	
-	public void cleanGraph(){
-		if(graphDialog != null){
-			graphDialog.setVisible(false);
-			graphDialog.dispose();
-			graphDialog = null;
+		if(alternativesGraphDialog == null){
+			alternativesGraphDialog = new AlternativesGraphDialog();
 		}
-		if(this.graphPanel != null) {
-			this.graphPanel.clearGraph();
+		alternativesGraphDialog.setVisible(true);
+		alternativesGraphDialog.requestFocus();	
+	}
+	
+	public void enableGraphButtons(){
+		alternativesGraphButton.setEnabled(true);
+		argumentsGraphButton.setEnabled(true);
+	}
+	
+	public void disableGraphButtons() {
+		alternativesGraphButton.setEnabled(false);
+		argumentsGraphButton.setEnabled(false);
+		
+		cleanGraphs();
+	}
+	
+	public void cleanGraphs(){
+		if(alternativesGraphDialog != null){
+			alternativesGraphDialog.setVisible(false);
+			alternativesGraphDialog.dispose();
+			alternativesGraphDialog = null;
+		}
+		if(argumentsGraphDialog != null){
+			argumentsGraphDialog.setVisible(false);
+			argumentsGraphDialog.dispose();
+			argumentsGraphDialog = null;
 		}
 	}
 

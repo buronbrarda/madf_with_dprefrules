@@ -47,7 +47,7 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		this.loader = loader;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{45, 320, 110, 0};
+		gridBagLayout.columnWidths = new int[]{45, 293, 110, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
@@ -101,8 +101,8 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 			}
 		});
 		GridBagConstraints gbc_stepButton = new GridBagConstraints();
-		gbc_stepButton.anchor = GridBagConstraints.NORTH;
 		gbc_stepButton.fill = GridBagConstraints.HORIZONTAL;
+		gbc_stepButton.anchor = GridBagConstraints.NORTH;
 		gbc_stepButton.insets = new Insets(5, 5, 5, 5);
 		gbc_stepButton.gridx = 2;
 		gbc_stepButton.gridy = 0;
@@ -150,7 +150,7 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		});
 		GridBagConstraints gbc_orderButton = new GridBagConstraints();
 		gbc_orderButton.fill = GridBagConstraints.HORIZONTAL;
-		gbc_orderButton.anchor = GridBagConstraints.SOUTH;
+		gbc_orderButton.anchor = GridBagConstraints.NORTH;
 		gbc_orderButton.insets = new Insets(0, 5, 5, 5);
 		gbc_orderButton.gridx = 2;
 		gbc_orderButton.gridy = 1;
@@ -189,8 +189,8 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 			}
 		});
 		GridBagConstraints gbc_viewButton = new GridBagConstraints();
-		gbc_viewButton.insets = new Insets(0, 5, 5, 5);
 		gbc_viewButton.fill = GridBagConstraints.HORIZONTAL;
+		gbc_viewButton.insets = new Insets(0, 5, 5, 5);
 		gbc_viewButton.anchor = GridBagConstraints.NORTH;
 		gbc_viewButton.gridx = 2;
 		gbc_viewButton.gridy = 2;

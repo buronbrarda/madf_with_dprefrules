@@ -7,14 +7,39 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JSeparator;
+import javax.swing.table.TableModel;
+
+import java_ui.steps.DefineCprefRulesStepPanel;
+import java_ui.steps.DefineEvidenceStepPanel;
+import java_ui.steps.DefineStepPanel;
+import java_ui.steps.RunStepPanel;
+import java_ui.table_editor.model_builder.CriteriaTableModelBuilder;
+import java_ui.table_editor.model_builder.EvidenceTableModelBuilder;
+import java_ui.table_editor.model_builder.RulesTableModelBuilder;
+import java_ui.table_editor.table_reader.CSVTableReader;
+
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 
 public class ExamplesLoadPanel extends JPanel {
 	
-	public ExamplesLoadPanel(AllStepsPanel stepsPanel) {
+	
+	private DefineStepPanel criteriaStep;
+	private DefineEvidenceStepPanel evidenceStep;
+	private DefineCprefRulesStepPanel rulesStep;
+	private RunStepPanel runStep;
+
+
+	public ExamplesLoadPanel(DefineStepPanel criteriaStep, DefineEvidenceStepPanel evidenceStep, DefineCprefRulesStepPanel rulesStep, RunStepPanel runStep) {
+		this.criteriaStep = criteriaStep;
+		this.evidenceStep = evidenceStep;
+		this.rulesStep = rulesStep;
+		this.runStep = runStep;
+		
+		
 		setLayout(new BorderLayout(0, 0));
 		
 		JPanel container = new JPanel();
@@ -35,7 +60,7 @@ public class ExamplesLoadPanel extends JPanel {
 		loadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					stepsPanel.loadExample();
+					loadExample();
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -50,6 +75,8 @@ public class ExamplesLoadPanel extends JPanel {
 		gbc_instructionLabel.gridx = 0;
 		container.add(instructionLabel, gbc_instructionLabel);
 		GridBagConstraints gbc_loadButton = new GridBagConstraints();
+		gbc_loadButton.anchor = GridBagConstraints.WEST;
+		gbc_loadButton.insets = new Insets(0, 0, 0, 5);
 		gbc_loadButton.gridx = 1;
 		gbc_loadButton.gridy = 0;
 		container.add(loadButton, gbc_loadButton);
@@ -58,5 +85,33 @@ public class ExamplesLoadPanel extends JPanel {
 		add(separator, BorderLayout.SOUTH);
 	
 	}
+	
+	
+	private void loadExample() throws IOException{
+			
+			String criteria_example_path = "criteria_example.csv";
+			String evidence_example_path = "evidence_example.csv";
+			String cpref_rules_example_path = "cpref_rules_example.csv";
+			String rules_strength_example_path = "rules_strength_example.csv";
+			
+			File criteria_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+criteria_example_path);
+			File evidence_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+evidence_example_path);
+			File cpref_rules_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+cpref_rules_example_path);
+			File rules_strength_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+rules_strength_example_path);
+			
+			TableModel criteriaModel = new CriteriaTableModelBuilder(new CSVTableReader(criteria_file)).getTableModel();
+			TableModel evidenceModel = new EvidenceTableModelBuilder(new CSVTableReader(evidence_file)).getTableModel();
+			TableModel cprefRulesModel = new RulesTableModelBuilder(new CSVTableReader(cpref_rules_file)).getTableModel();
+			
+			
+			criteriaStep.setTableModel(criteriaModel);
+			evidenceStep.setTableModel(evidenceModel);
+			rulesStep.setTableModel(cprefRulesModel);
+			
+			rulesStep.defineRulesStrenght(rules_strength_file);
+			
+			runStep.enableStep();
+			
+		}
 
 }
