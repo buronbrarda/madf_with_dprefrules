@@ -6,7 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class CSVTableReader implements Iterator<String[]>{
+public class CSVTableReader implements Iterator<String[]>, Iterable<String[]>{
 	
 	private BufferedReader reader = null;
 	private String line = null;
@@ -65,6 +65,11 @@ public class CSVTableReader implements Iterator<String[]>{
 	@Override
 	public String[] next() {
 		return this.line.split(this.splitter);
+	}
+
+	@Override
+	public Iterator<String[]> iterator() {
+		return this;
 	}
 
 }

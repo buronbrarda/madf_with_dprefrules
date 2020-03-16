@@ -75,8 +75,6 @@ public class RunStepPanel extends StepPanel {
 	public void disableStepAction() {
 		this.runButton.setEnabled(false);
 		
-		resultsPanel.cleanAssessmentsBase();
-		
 		resultsPanel.setSelectedAlternatives("");
 		resultsPanel.setAlternativesRelation("");
 		
@@ -116,7 +114,7 @@ public class RunStepPanel extends StepPanel {
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		
-		resultsPanel.loadAssessmentBase();
+		resultsPanel.loadAlternativesGraph();
 	}
 	
 	
@@ -151,7 +149,6 @@ public class RunStepPanel extends StepPanel {
 
 	@Override
 	protected void cleanStepAction() {
-		resultsPanel.cleanAssessmentsBase();
 		resultsPanel.cleanGraph();
 		
 		resultsPanel.setSelectedAlternatives("");

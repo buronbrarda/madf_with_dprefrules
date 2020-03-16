@@ -1,4 +1,4 @@
-criteria;domain
-cost;[vbad, bad, reg, good, vgood]
-location;[vbad, bad, reg, good, vgood]
-size;[vbad, bad, reg, good, vgood]
+criterion;values
+price;between(2000,0)
+duration;between(10,1)
+security;[vbad,bad,reg,good,vgood]

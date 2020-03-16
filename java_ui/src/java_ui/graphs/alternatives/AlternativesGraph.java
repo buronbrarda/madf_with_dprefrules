@@ -272,6 +272,8 @@ public class AlternativesGraph {
 					if(q.hasSolution()){
 						
 						this.graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
+						
+						q.close();
 					}
 					
 				}

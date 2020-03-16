@@ -86,7 +86,7 @@
 	greater_value(V,U,number):-
 		!, V > U.
 		
-	greater_value(V,U,'-number'):-
+	greater_value(V,U,-number):-
 		!, V < U.
 		
 	greater_value(V,U,between(X1,X2)):-

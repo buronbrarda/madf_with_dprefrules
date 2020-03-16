@@ -5,21 +5,19 @@ import java.util.Map;
 
 import org.jpl7.Query;
 import org.jpl7.Term;
-import org.jpl7.Util;
 
 public class Argument {
 
 	
 	private int id;
 	private String claim;
-	private ArrayList<String> facts;
 	private ArrayList<String> rules;
+	private boolean accepted;
 	
 	
-	public Argument(int id, String claim, ArrayList<String> facts, ArrayList<String> rules){
+	public Argument(int id, String claim, ArrayList<String> rules){
 		this.id = id;
 		this.claim = claim;
-		this.facts = facts;
 		this.rules = rules;		
 	}
 	
@@ -27,27 +25,23 @@ public class Argument {
 	public Argument(String id) {
 		this.id = Integer.parseInt(id);
 		
-		Query q = new Query("argument("+this.id+",Rules,Facts,Claim)");
+		Query q_claim = new Query("claim("+this.id+",Claim)");
 		
-		if(q.hasNext()){
-			Map<String, Term> s = q.next();
+		if(q_claim.hasNext()){
 			
-			this.rules = termArrayToArrayList(Util.listToTermArray(s.get("Rules")));
-			this.facts = termArrayToArrayList(Util.listToTermArray(s.get("Facts")));
-			
-			this.claim = s.get("Claim").toString();
-		}
-	}
-
-
-	private ArrayList<String> termArrayToArrayList(Term[] terms) {
-		ArrayList<String> toReturn = new ArrayList<String>();
-		
-		for(Term t : terms){
-			toReturn.add(t.toString());
+			this.claim = q_claim.next().get("Claim").toString();
 		}
 		
-		return toReturn;
+		
+		this.rules = new ArrayList<String>();
+		for ( Map<String,Term> solution : new Query("rules("+this.id+",Rules), member(cpref_rule(Id,_), Rules)")) {
+			this.rules.add(solution.get("Id").toString());	
+		}
+		
+		Query q = new Query("dtree_node(_,null,_,"+this.id+",'U')");
+		this.accepted = q.hasNext();
+		while(q.hasNext())
+			q.next();
 	}
 
 
@@ -59,11 +53,11 @@ public class Argument {
 		return this.claim;
 	}
 	
-	public ArrayList<String> getFacts(){
-		return this.facts;
-	}
-	
 	public ArrayList<String> getRules(){
 		return this.rules;
+	}
+	
+	public boolean isAccepted() {
+		return this.accepted;
 	}
 }

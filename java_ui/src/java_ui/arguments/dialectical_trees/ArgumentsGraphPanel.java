@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Shape;
-import java.util.ArrayList;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -19,25 +17,24 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import java_ui.arguments.Argument;
-import java_ui.arguments.dialectical_trees.DTreeNode.Status;
 
-public class DeltaExplanationPanel extends JPanel {
+public class ArgumentsGraphPanel extends JPanel {
 	
-	private DeltaExplanation graph;
-	private DAGLayout<DTreeNode, DTreeEdge> layout;
-	private VisualizationViewer<DTreeNode, DTreeEdge> vv;
-	private DefaultModalGraphMouse<DTreeNode, DTreeEdge> mouse;
+	private ArgumentsGraph graph;
+	private DAGLayout<Argument, DTreeEdge> layout;
+	private VisualizationViewer<Argument, DTreeEdge> vv;
+	private DefaultModalGraphMouse<Argument, DTreeEdge> mouse;
 	
-	public DeltaExplanationPanel(){
+	public ArgumentsGraphPanel(){
 		setLayout(new BorderLayout());
 		
-		this.mouse = new DefaultModalGraphMouse<DTreeNode, DTreeEdge>();
+		this.mouse = new DefaultModalGraphMouse<Argument, DTreeEdge>();
 		
 	}
 	
 	
 	private void initVisualizerViewer(){
-		this.vv = new VisualizationViewer<DTreeNode, DTreeEdge>(this.layout);
+		this.vv = new VisualizationViewer<Argument, DTreeEdge>(this.layout);
 		
 		
 		this.vv.setGraphMouse(this.mouse);
@@ -54,22 +51,11 @@ public class DeltaExplanationPanel extends JPanel {
 		
 		this.mouse.setMode(Mode.PICKING);
 		
-		this.vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<DTreeNode, Paint>() {
+		this.vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<Argument, Paint>() {
 
 			@Override
-			public Paint transform(DTreeNode v) {
-				if(v.getStatus() == Status.DEFEATED){
-					return Color.RED;
-				}
-				else{
-					if(v.getStatus() == Status.UNDEFEATED){
-						return Color.GREEN;
-					}
-					else{
-						return null;
-					}
-				}
-				
+			public Paint transform(Argument v) {
+				return v.isAccepted()? Color.GREEN : Color.RED;				
 			}
 		});
 		
@@ -84,15 +70,15 @@ public class DeltaExplanationPanel extends JPanel {
 		});
 	
 	
-		this.vv.getRenderContext().setVertexLabelTransformer(new Transformer<DTreeNode, String>(){
+		this.vv.getRenderContext().setVertexLabelTransformer(new Transformer<Argument, String>(){
 
 			@Override
-			public String transform(DTreeNode vertex) {
+			public String transform(Argument vertex) {
 				
 				String label = "";
 				
 				if(vertex != null){
-					label += vertex.getArgumentClaim()+"//"+vertex.getArgumentRules();
+					label += vertex.getClaim()+"//"+vertex.getRules().toString();
 				}
 				
 				return label;
@@ -100,22 +86,15 @@ public class DeltaExplanationPanel extends JPanel {
 			
 		});
 		
-		this.vv.getRenderContext().setVertexShapeTransformer(new DTreeNodeShapeTransformer());
+		this.vv.getRenderContext().setVertexShapeTransformer(new ArgumentShapeTransformer());
 	}
 	
-	public void loadGraph(ArrayList<Argument> arguments){
+	public void loadGraph(){
 		
-		ArrayList<DialecticalTree> dtrees = new ArrayList<DialecticalTree>();
+		this.graph = new ArgumentsGraph();
+		this.graph.load();
 		
-		for(Argument arg : arguments){
-			DialecticalTree t = new DialecticalTree();
-			t.load(arg);
-			dtrees.add(t);
-		}
-		
-		this.graph = new DeltaExplanation(dtrees);
-		
-		this.layout = new  DAGLayout<DTreeNode, DTreeEdge>(this.graph);
+		this.layout = new  DAGLayout<Argument, DTreeEdge>(this.graph.getGraph());
 		
 		if(this.vv != null){
 			this.remove(this.vv);
@@ -132,18 +111,18 @@ public class DeltaExplanationPanel extends JPanel {
 	}
 	
 	
-	private class DTreeNodeShapeTransformer extends EllipseVertexShapeTransformer<DTreeNode>{
+	private class ArgumentShapeTransformer extends EllipseVertexShapeTransformer<Argument>{
 		
-		DTreeNodeShapeTransformer() {
-            setSizeTransformer(new Transformer<DTreeNode, Integer>() {
+		ArgumentShapeTransformer() {
+            setSizeTransformer(new Transformer<Argument, Integer>() {
             	
-            	public Integer transform(DTreeNode v){
+            	public Integer transform(Argument v){
             		return 30;
             	}
 			});
         }
 		
-		public Shape transform(DTreeNode v) {
+		public Shape transform(Argument v) {
             return factory.getRegularPolygon(v, 3);
         }
 	}

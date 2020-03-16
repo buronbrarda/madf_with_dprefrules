@@ -107,10 +107,10 @@
 	************************************************************************************/
 	
 	add_criterion(Criterion, Values):-
-		not(criterion(Criterion)),
+		not(criterion(Criterion,_)),
 		
 		%Verifies Values integrity
-		(is_set(Values); Values = number; (Values = between(Min,Max), Min < Max)),!,
+		(is_set(Values); member(Values,[number,-number,between(_,_)])),!,
 		
 		assert(criterion(Criterion,Values)).
 	
@@ -143,7 +143,7 @@
 		True iff V is a legal value of the range Values.
 	************************************************************************************/
 	legal_value(V,Values):-
-		Values = 'number'; Values = '-number',!,
+		Values = number; Values = -number,!,
 		number(V).
 		
 	legal_value(V,between(Min,Max)):-
@@ -167,7 +167,7 @@
 		See coherent_cpref_rule/1 in Cpref-rules Interpreter Module. 
 	************************************************************************************/
 	add_cpref_rule(Id, Rule):-
-		coherent_cpref_rule(Rule),
+		%coherent_cpref_rule(Rule),
 		assert(cpref_rule(Id, Rule)).
 	
 	/***********************************************************************************
@@ -185,7 +185,7 @@
 	************************************************************************************/
 	remove_cpref_rules:-
 		retractall(cpref_rule(_,_)),
-		reset_comparison_criterion.
+		retractall(stronger_rule(_,_)).
 	
 		
 	%===================================================================================
@@ -222,7 +222,7 @@
 		integer(Alternatives_Amount),!,
 		remove_alternatives,
 		forall(between(1,Alternatives_Amount,Index), (atom_concat('d',Index,Id), assert(alternative(Id)))),
-		forall(criterion(C),generate_random_evidence(C)).
+		forall(criterion(C,_),generate_random_evidence(C)).
 		
 	
 	generate_random_evidence(C):-
@@ -234,7 +234,7 @@
 		
 	
 	random_value(V,Domain):-
-		(Domain = 'number'; Domain = '-number'),!,
+		(Domain = number; Domain = -number),!,
 		random(V).
 		
 	random_value(V,between(Min,Max)):-

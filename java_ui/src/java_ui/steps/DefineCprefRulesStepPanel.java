@@ -3,12 +3,17 @@ package java_ui.steps;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import org.jpl7.Compound;
 import org.jpl7.Query;
+import org.jpl7.Term;
+import org.jpl7.Util;
+
 import java_ui.prolog_loader.PrologLoadException;
 import java_ui.prolog_loader.PrologLoader;
 import java_ui.table_editor.TableEditorDialog;
 import java_ui.table_editor.panel.TableEditorPanel;
 import java_ui.table_editor.panel.TableViewer;
+import java_ui.table_editor.table_reader.CSVTableReader;
 
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -18,7 +23,10 @@ import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 
 public class DefineCprefRulesStepPanel extends StepPanel{
@@ -100,22 +108,40 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		gbc_stepButton.gridy = 0;
 		add(stepButton, gbc_stepButton);
 		
-		orderButton = new JButton("Set Order");
+		orderButton = new JButton("Rules Strength");
 		orderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				String input = (String) JOptionPane.showInputDialog(null, "Please, define the strength of Cpref-Rules from the strongest to weakest (left-to-right), separe each rule with \',\'.", "Define Cpref-Rules Strength", JOptionPane.QUESTION_MESSAGE, null, null, null);
+				
+				String helpText = "Please, define the strength of Cpref-Rules using their Ids and the \">\" operator.\n";
+				helpText += "Use \";\" to separe each statement. Example: r1 > r2; r1 > r3.";
+				
+				String input = (String) JOptionPane.showInputDialog(null, helpText, "Define Cpref-Rules Strength", JOptionPane.QUESTION_MESSAGE, null, null, getCurrentRulesStrength());
 				
 				if(input != null){
 					
-					try{				
-						Query q = new Query("define_cpref_rules_order(["+input+"])");
+					try{
 						
-						if(q.hasNext()){
-							q.next();
+						input.replaceAll("\\s", "");
+						String [] statements = input.split(";");
+						
+						Query cleaning_query = new Query("remove_rule_comparisons");
+						if (cleaning_query.hasNext()) {cleaning_query.next();}
+						
+						for (String s : statements) {
+							String [] splited = s.split(">");
+							Compound comp = new Compound(">", new Term[] {Util.textToTerm(splited[0]), Util.textToTerm(splited[1])} );
+							
+							Query q = new Query("add_rule_comparison", new Term [] {comp});
+							
+							if(q.hasNext()){
+								q.next();
+							}
 						}
 						
-					}catch(NumberFormatException e){
+						
+						
+					}catch(Exception e){
 						JOptionPane.showMessageDialog(null, "You have not specified a correct order", "Error", JOptionPane.ERROR_MESSAGE);
 						getFollowingStep().disableStep();
 					}
@@ -196,7 +222,19 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		}
 	}
 	
-
+	
+	private String getCurrentRulesStrength() {
+		
+		Query q = new Query("stronger_rule(RA,RB)");
+		
+		ArrayList<String> statements = new ArrayList<String>();
+		for (Map<String, Term> solution : q) {
+			statements.add(solution.get("RA").toString() + " > "+solution.get("RB").toString());			
+		}
+		
+		return String.join("; ", statements);
+	}
+	
 	public PrologLoader.StatusCode getLoaderStatus(){
 		return this.loader.getStatus();
 	}
@@ -213,5 +251,23 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 			getFollowingStep().disableStep();
 			throw e;
 		}
+	}
+
+	public void defineRulesStrenght(File file) {
+		try {
+			CSVTableReader reader = new CSVTableReader(file);
+			
+			for(String[] row : reader) {
+				Query q = new Query("add_rule_comparison("+row[0]+")");
+				while(q.hasNext()) {q.next();}
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 	}
 }

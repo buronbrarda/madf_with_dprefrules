@@ -41,7 +41,7 @@ public class EvidenceTableModelBuilder implements TableModelBuilder{
 	
 	static public DefaultTableModel loadEvidence(){
 		
-		Query q = new Query("feature(F)");
+		Query q = new Query("criterion(C,_)");
 		
 		ArrayList<String> colums = new ArrayList<String>();
 		colums.add("alternative");
@@ -49,12 +49,12 @@ public class EvidenceTableModelBuilder implements TableModelBuilder{
 		while(q.hasNext()){
 			Map<String, Term> s = q.next();
 			
-			colums.add(s.get("F").toString());
+			colums.add(s.get("C").toString());
 		}
 		
 		DefaultTableModel toReturn = new DefaultTableModel(colums.toArray(), 0);
 		
-		Query q2 = new Query("alternative(A),findall([Feature,Value],fact(Feature,A,Value),Values)");
+		Query q2 = new Query("alternative(A),findall([Criterion,Value],evidence(A,Criterion,Value),Values)");
 		
 		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 		

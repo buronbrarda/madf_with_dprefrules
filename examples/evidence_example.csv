@@ -1,0 +1,5 @@
+alternative;price;duration;security
+car;330;5;vbad
+bus;250;7;bad
+train;350;3;good
+plane;500;2;good

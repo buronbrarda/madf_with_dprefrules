@@ -1,8 +1,11 @@
 :- module(argumentation_framework,[
 		generate_warranted_conclusions/0,
-
+	
+		defeats/2,
 		claim/2,
 		rules/2,
+		
+		dtree_node/5,
 		
 		warranted_conclusion/1,
 		
@@ -185,9 +188,7 @@
 		Child_N_Subtree = (Child_N, [Child_N1_Subtree, .. ,Child_NN_Subtree])
 	************************************************************************************/
 	
-	
 	dialectical_tree(Arg_Id,Tree):-
-		argument(Arg_Id,_,_),
 		forall(acceptable_arg_line(Arg_Id,Line), assert(d_arg_line(Arg_Id,Line))),
 		argumentation_tree(Arg_Id,Arg_Id,[Arg_Id],Tree),
 		retractall(d_arg_line(Arg_Id,_)).
@@ -239,7 +240,7 @@
 		reset_id(dtree_node),
 		retractall(dtree_node(_,_,_,_,_)),
 		
-		forall((dialectical_tree(_Arg_Id,Tree)), assert_dtree_nodes(Tree,null)).
+		forall((argument(Arg_Id,_,_),dialectical_tree(Arg_Id,Tree)), assert_dtree_nodes(Tree,null)).
 			
 	
 	assert_dtree_nodes(Dtree,null):-

@@ -1,8 +1,10 @@
-:- module(decision_framework,[
+:- module(decision_framework,[		
 		run/5,
 		
+		argument/3,
 		dtree_node/5,
 		
+		defeats/2,
 		rules/2,
 		claim/2,
 		
@@ -22,9 +24,9 @@
 	]).
 	
 	:-reexport(data_manager).
-	
+	:-reexport(cpref_rules_interpreter,[op(1101, xfx, ==>)]).
 	:-use_module(arg_generator, [argument/3, args_count/1]).
-	:-use_module(argumentation_framework, [warranted_conclusion/1, justification/4, generate_warranted_conclusions/0, dtree_node/5]).
+	:-use_module(argumentation_framework).
 	
 	:-dynamic explicitly_preferred/2.
 	:-dynamic reaches/2.
@@ -70,7 +72,10 @@
 	generate_preferences:-
 		%generate explicit preferences.
 		retractall(explicitly_preferred(_,_)),
-		forall(warranted_conclusion(pref(X,Y)), assert_preference(X,Y)),
+		forall((
+			alternative(X), alternative(Y), X \= Y,
+			warranted_conclusion(pref(X,Y))
+		), assert_preference(X,Y)),
 		
 		generate_transitive_preferences.
 	
@@ -151,7 +156,7 @@
 		True iff there not exist any preference relation between X and Y.			
 	************************************************************************************/
 	incomparable(X,Y):-
-		alternative(X), alternative(Y), X \= Y,
+		alternative(X), alternative(Y),
 		not(transitively_preferred(X,Y)),
 		not(transitively_preferred(Y,X)).
 
@@ -212,7 +217,11 @@
 	************************************************************************************/
 	justification_rules(X,Y,Rules):-
 		explicitly_preferred(X,Y),
-		findall(Arg_Rules, argument(_,Arg_Rules,_,pref(X,Y)), Rules_List),
+		findall(R_Id, (
+			claim(Arg_Id,pref(X,Y)),
+			rules(Arg_Id,Arg_Rules),
+			member(cpref_rule(R_Id,_),Arg_Rules)
+		),Rules_List),
 		flatten(Rules_List, Aux),
 		list_to_set(Aux, Rules),!.
 		
@@ -223,7 +232,11 @@
 		
 	justification_rules(X,[Y|Group],Rules):-
 		explicitly_preferred(X,Y),
-		findall(Arg_Rules, argument(_,Arg_Rules,_,pref(X,Y)), Rules_List),
+		findall(R_Id, (
+			claim(Arg_Id,pref(X,Y)),
+			rules(Arg_Id,Arg_Rules),
+			member(cpref_rule(R_Id,_),Arg_Rules)
+		),Rules_List),
 		flatten(Rules_List, Rules_X),
 		justification_rules(X,Group,Rules_G),!,
 		append(Rules_X, Rules_G, Aux),
@@ -237,7 +250,11 @@
 		
 	justification_rules([X|Group],Y,Rules):-
 		explicitly_preferred(X,Y),
-		findall(Arg_Rules, argument(_,Arg_Rules,_,pref(X,Y)), Rules_List),
+		findall(R_Id, (
+			claim(Arg_Id,pref(X,Y)),
+			rules(Arg_Id,Arg_Rules),
+			member(cpref_rule(R_Id,_),Arg_Rules)
+		),Rules_List),
 		flatten(Rules_List, Rules_X),
 		justification_rules(Group,Y,Rules_G),!,
 		append(Rules_X, Rules_G, Aux),
@@ -326,9 +343,9 @@
 	aggregate_sorted_groups(In_Process,Aux,Aggregated_Set):-
 		In_Process = [(_,N)|_],
 		
-		findall((E,N), (member((E,N),In_Process)), Substract_Equivalent_Set),
+		findall((Y,N), (member((Y,N),In_Process)), Substract_Equivalent_Set),
 		
-		findall(E, member((E,N),Substract_Equivalent_Set), Equivalent_Set),
+		findall(Y, member((Y,N),Substract_Equivalent_Set), Equivalent_Set),
 		
 		subtract(In_Process,Substract_Equivalent_Set,Substracted_List),
 		

@@ -9,7 +9,7 @@ import java_ui.table_editor.table_reader.CSVTableReader;
 public class CriteriaTableModelBuilder implements TableModelBuilder{
 	
 	private CSVTableReader reader;
-	private final String [] headers = {"Criterion", "Domain (Assessment Values)"};
+	private final String [] headers = {"Criterion", "Domain (Values)"};
 
 	public CriteriaTableModelBuilder(CSVTableReader reader) {
 		this.reader = reader;

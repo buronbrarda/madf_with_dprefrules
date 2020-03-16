@@ -108,8 +108,15 @@ public class AlternativesGraphPanel extends JPanel {
 	}
 	
 	public void clearGraph(){
-		this.graph.clearGraph();
-		this.layout.setGraph(this.graph.getGraph());
-		vv.setGraphLayout(layout);
+		if(this.graph != null) {
+			this.graph.clearGraph();
+			if(this.layout != null) {
+				this.layout.setGraph(this.graph.getGraph());
+				if(this.vv != null) {
+					vv.setGraphLayout(layout);
+				}
+			}
+		}
+		
 	}
 }

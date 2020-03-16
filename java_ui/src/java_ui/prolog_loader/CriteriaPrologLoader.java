@@ -67,7 +67,7 @@ public class CriteriaPrologLoader implements PrologLoader{
 
 	private void cleanCriteria() {
 		Query q = new Query("remove_criteria");
-		q.hasSolution();
+		if(q.hasNext()) {q.next();}
 	}
 
 	@Override

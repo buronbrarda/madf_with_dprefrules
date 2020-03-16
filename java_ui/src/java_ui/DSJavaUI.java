@@ -7,7 +7,11 @@ import org.jpl7.*;
 
 import java_ui.steps.ResultsPanel;
 
-import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
@@ -44,33 +48,52 @@ public class DSJavaUI{
 	public DSJavaUI() {
 		initialize();
 		
+		
+		ResultsPanel resultsView = new ResultsPanel();
 		AllStepsPanel stepsView;
-		ResultsPanel resultsView;
 		
 		try {
+			frame.getContentPane().setLayout(new BorderLayout(0, 0));
 			
-			resultsView = new ResultsPanel();
+			JPanel panel = new JPanel();
+			frame.getContentPane().add(panel);
+			GridBagLayout gbl_panel = new GridBagLayout();
+			gbl_panel.columnWidths = new int[]{352, 27, 592, 0};
+			gbl_panel.rowHeights = new int[]{562, 0};
+			gbl_panel.columnWeights = new double[]{0.0, 1.0, 1.0, Double.MIN_VALUE};
+			gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+			panel.setLayout(gbl_panel);
 			stepsView = new AllStepsPanel(resultsView);
 			
-			frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
+			GridBagConstraints gbc_stepsView = new GridBagConstraints();
+			gbc_stepsView.anchor = GridBagConstraints.WEST;
+			gbc_stepsView.fill = GridBagConstraints.VERTICAL;
+			gbc_stepsView.insets = new Insets(0, 0, 0, 5);
+			gbc_stepsView.gridx = 0;
+			gbc_stepsView.gridy = 0;
+			panel.add(stepsView, gbc_stepsView);
+			{
+				JPanel panel_1 = new JPanel();
+				GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+				gbc_panel_1.anchor = GridBagConstraints.WEST;
+				gbc_panel_1.insets = new Insets(0, 0, 0, 5);
+				gbc_panel_1.fill = GridBagConstraints.VERTICAL;
+				gbc_panel_1.gridx = 1;
+				gbc_panel_1.gridy = 0;
+				panel.add(panel_1, gbc_panel_1);
+				panel_1.setLayout(new BorderLayout(0, 0));
+				{
+					JSeparator separator = new JSeparator();
+					separator.setOrientation(SwingConstants.VERTICAL);
+					panel_1.add(separator);
+				}
+			}
 			
-			JSeparator separator_2 = new JSeparator();
-			separator_2.setOrientation(SwingConstants.VERTICAL);
-			frame.getContentPane().add(separator_2);
-			
-			
-			frame.getContentPane().add(stepsView);
-			
-			JSeparator separator = new JSeparator();
-			separator.setOrientation(SwingConstants.VERTICAL);
-			frame.getContentPane().add(separator);
-			
-			
-			frame.getContentPane().add(resultsView);
-			
-			JSeparator separator_1 = new JSeparator();
-			separator_1.setOrientation(SwingConstants.VERTICAL);
-			frame.getContentPane().add(separator_1);
+			GridBagConstraints gbc_resultsView = new GridBagConstraints();
+			gbc_resultsView.fill = GridBagConstraints.BOTH;
+			gbc_resultsView.gridx = 2;
+			gbc_resultsView.gridy = 0;
+			panel.add(resultsView, gbc_resultsView);
 		
 		} catch (IOException e) {
 			e.printStackTrace();
