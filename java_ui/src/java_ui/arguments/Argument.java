@@ -9,23 +9,24 @@ import org.jpl7.Term;
 public class Argument {
 
 	
-	private int id;
+	private String id;
 	private String claim;
 	private ArrayList<String> rules;
 	private boolean accepted;
 	
 	
-	public Argument(int id, String claim, ArrayList<String> rules){
+	public Argument(String id, String claim, ArrayList<String> rules, boolean accepted){
 		this.id = id;
 		this.claim = claim;
-		this.rules = rules;		
+		this.rules = rules;
+		this.accepted = accepted;
 	}
 	
 	
 	public Argument(String id) {
-		this.id = Integer.parseInt(id);
+		this.id = id;
 		
-		Query q_claim = new Query("claim("+this.id+",Claim)");
+		Query q_claim = new Query("claim("+id+",Claim)");
 		
 		if(q_claim.hasNext()){
 			
@@ -45,7 +46,7 @@ public class Argument {
 	}
 
 
-	public int getId(){
+	public String getId(){
 		return this.id;
 	}
 	

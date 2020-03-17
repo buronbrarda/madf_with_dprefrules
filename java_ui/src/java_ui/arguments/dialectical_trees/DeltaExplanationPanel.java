@@ -116,6 +116,7 @@ public class DeltaExplanationPanel extends JPanel {
 		this.graph = new DeltaExplanation(dtrees);
 		
 		this.layout = new  DAGLayout<DTreeNode, DTreeEdge>(this.graph);
+		this.layout.setForceMultiplier(0);
 		
 		if(this.vv != null){
 			this.remove(this.vv);

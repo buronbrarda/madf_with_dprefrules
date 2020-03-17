@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 import org.apache.commons.collections15.Transformer;
 
-import edu.uci.ics.jung.algorithms.layout.DAGLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
@@ -21,11 +21,12 @@ import java_ui.arguments.Argument;
 public class ArgumentsGraphPanel extends JPanel {
 	
 	private ArgumentsGraph graph;
-	private DAGLayout<Argument, DTreeEdge> layout;
+	private ISOMLayout<Argument, DTreeEdge> layout;
 	private VisualizationViewer<Argument, DTreeEdge> vv;
 	private DefaultModalGraphMouse<Argument, DTreeEdge> mouse;
 	
 	public ArgumentsGraphPanel(){
+		this.graph = new ArgumentsGraph();
 		setLayout(new BorderLayout());
 		
 		this.mouse = new DefaultModalGraphMouse<Argument, DTreeEdge>();
@@ -55,7 +56,7 @@ public class ArgumentsGraphPanel extends JPanel {
 
 			@Override
 			public Paint transform(Argument v) {
-				return v.isAccepted()? Color.GREEN : Color.RED;				
+				return v.isAccepted() ? Color.GREEN : Color.RED;
 			}
 		});
 		
@@ -90,11 +91,9 @@ public class ArgumentsGraphPanel extends JPanel {
 	}
 	
 	public void loadGraph(){
-		
-		this.graph = new ArgumentsGraph();
 		this.graph.load();
 		
-		this.layout = new  DAGLayout<Argument, DTreeEdge>(this.graph.getGraph());
+		this.layout = new  ISOMLayout<Argument, DTreeEdge>(this.graph.getGraph());
 		
 		if(this.vv != null){
 			this.remove(this.vv);
@@ -106,7 +105,7 @@ public class ArgumentsGraphPanel extends JPanel {
 	}
 	
 	public void clearGraph(){
-		this.graph.clear();
+		this.graph.clearGraph();
 		this.vv.repaint();
 	}
 	

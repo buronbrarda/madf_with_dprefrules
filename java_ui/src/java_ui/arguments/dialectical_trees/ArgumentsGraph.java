@@ -3,11 +3,8 @@ package java_ui.arguments.dialectical_trees;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.jpl7.JPL;
 import org.jpl7.Query;
 import org.jpl7.Term;
-import org.jpl7.Util;
-
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import java_ui.arguments.Argument;
 
@@ -47,7 +44,7 @@ public class ArgumentsGraph {
 		
 	}
 
-	public void clear() {
+	public void clearGraph() {
 		for(Argument v : this.graph.getVertices()) {
 			this.graph.removeVertex(v);
 		}

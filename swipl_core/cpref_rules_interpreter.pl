@@ -65,10 +65,12 @@
 		(c_relation(C,equal,X,Y);c_relation(C,better,X,Y)).
 		
 	min_distance(X,Y,C,Min_Dist):-
-		distance(X,Y,C,Dist), Dist >= Min_Dist .
+		evidence(X,C,V), evidence(Y,C,U), criterion(C,Domain),
+		distance(V,U,Domain,Dist), Dist >= Min_Dist.
 		
-	max_distance(X,Y,C,Min_Dist):-
-		distance(X,Y,C,Dist), Dist =< Min_Dist .
+	max_distance(X,Y,C,Max_Dist):-
+		evidence(X,C,V), evidence(Y,C,U), criterion(C,Domain),
+		distance(V,U,Domain,Dist), Dist =< Max_Dist.
 		
 		
 	% ============================================================================================

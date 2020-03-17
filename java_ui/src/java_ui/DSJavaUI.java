@@ -99,7 +99,7 @@ public class DSJavaUI{
 	private void initialize() {
 		frame = new JFrame();
 		frame.setResizable(false);
-		frame.setBounds(100, 100, 959, 430);
+		frame.setBounds(100, 100, 970, 430);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		frame.setTitle("Argumentation-Based Multi-Criteria Decision Support System With Conditional Preferences - (Prototype Version)");
