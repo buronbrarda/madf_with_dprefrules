@@ -159,15 +159,10 @@ public class DefineEvidenceStepPanel extends StepPanel{
 		viewButton = new JButton("View");
 		viewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(viewer == null){
 					viewer = new TableViewer(tep.getTableModel());
 					viewer.setFocusable(true);
 					viewer.setTitle(tableViewerTitle);
 					viewer.disableTable();
-				}else{
-					viewer.setVisible(true);
-					viewer.requestFocus();
-				};
 			}
 		});
 		GridBagConstraints gbc_viewButton = new GridBagConstraints();

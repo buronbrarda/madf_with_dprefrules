@@ -45,12 +45,6 @@
 	% ============================================================================================
 	better(X,Y,C):- 
 		c_relation(C,better,X,Y).
-	
-	min(X,C,Min):-
-		evidence(X,C,Vx), criterion(C,Domain), geq_value(Vx,Min,Domain).
-	
-	max(Y,C,Max):-
-		evidence(Y,C,Vy), criterion(C,Domain), geq_value(Max,Vy,Domain).
 		
 	equal(X,Y,C):-
 		c_relation(C,equal,X,Y).
@@ -92,7 +86,7 @@
 		!, V < U.
 		
 	greater_value(V,U,between(X1,X2)):-
-		X1 >= X2,!,
+		X1 =< X2,!,
 		V > U.
 		
 	greater_value(V,U,between(_,_)):-
@@ -122,61 +116,30 @@
 	% 		These predicates define an interpreter of cpref-rules
 	% =================================================================================
 	
-	%Check "better", "worse", "equal" and "dont_care" clauses conditions.	
+	%Check "better", "worse", "equal", "not_better" and "not_worse" clauses conditions.	
 	clause_conditions(Premise,Previous_Clauses,[Criterion,Clause]):-
 		Premise =.. [Clause,_X,_Y,Criterion],
-		member(Clause, [better,worse,equal,dont_care,not_better,not_worse]),!,
+		member(Clause, [better,worse,equal,not_better,not_worse]),!,
 		
-		criterion(Criterion),
-		not(member([Criterion,_],Previous_Clauses)).
-		
-	
-	%Check "min" clauses conditions	
-	clause_conditions(min(_X,Criterion,Min_V),Previous_Clauses,[Criterion,min,Min_V]):-
-		!,criterion(Criterion),								%Check criterion existence.
-		values(Criterion,Domain), member(Min_V,Domain),		%Check criterion domain.
-		/*member([Criterion,_Clause],Previous_Clauses),		%Check previous b_premise, w_premise or e_premise.
-		
-		(%Check that Min_V < Max_V when there exists a previous max clause.
-			(member([Criterion,max,Max_V],Previous_Clauses), greater_value(Max_V,Min_V,Domain));
-			(not(member([Criterion,max,_],Previous_Clauses)))
-		),!,
-		*/
-		
-		not(member([Criterion,min,_Value],Previous_Clauses)).		%Check non-duplicate min.
-		
-	
-	%Check "max" clauses conditions
-	clause_conditions(max(_Y,Criterion,Max_V),Previous_Clauses,[Criterion,max,Max_V]):-
-		!,criterion(Criterion),								%Check criterion existence.
-		values(Criterion,Domain), member(Max_V,Domain),		%Check criterion domain.
-		/*member([Criterion,worse],Previous_Clauses),			%Check previous w_premise.
-		
-		
-		(%Check that Min_V < Max_V when there exists a previous min clause.
-			(member([Criterion,min,Min_V],Previous_Clauses), greater_value(Max_V,Min_V,Domain));
-			(not(member([Criterion,min,_],Previous_Clauses)))
-		),!,
-		*/
-		
-		not(member([Criterion,max,_Value],Previous_Clauses)).		%Check non-duplicate max.
+		criterion(Criterion,_),
+		not(member([Criterion,_],Previous_Clauses)). % Check not previous occurrence of a premise evaluating Criterion.
 	
 	
 	clause_conditions(min_distance(_X,_Y,Criterion,Min_V),Previous_Clauses,[Criterion,min_distance,Min_V]):-
-		!,criterion(Criterion),								%Check criterion existence.
-		number(Min_V), Min_V >= 2,							%Check Min_V is number and discard trivial cases with distance < 2.
+		!,criterion(Criterion,_),									%Check criterion existence.
+		number(Min_V), Min_V >= 1,									%Check Min_V correctness.
 		
-		member([Criterion,better],Previous_Clauses),		%Check previous b_premise.
+		member([Criterion,better],Previous_Clauses),				%Check previous b_premise.
 		
 		not(member([Criterion,min_distance,_],Previous_Clauses)).		%Check non-duplicate min_distance.
 		
 	
 	
 	clause_conditions(max_distance(_X,_Y,Criterion,Max_V),Previous_Clauses,[Criterion,max_distance,Max_V]):-
-		!,criterion(Criterion),								%Check criterion existence.
-		number(Max_V),										%Check Max_V is number.
+		!,criterion(Criterion,_),								%Check criterion existence.
+		number(Max_V), Max_V >= 1,								%Check Max_V correctness.
 		
-		member([Criterion,worse],Previous_Clauses),			%Check previous w_premise.
+		member([Criterion,worse],Previous_Clauses),				%Check previous w_premise.
 		
 		not(member([Criterion,max_distance,_],Previous_Clauses)).		%Check non-duplicate max_distance.
 	

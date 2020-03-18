@@ -146,8 +146,11 @@
 		Values = number; Values = -number,!,
 		number(V).
 		
-	legal_value(V,between(Min,Max)):-
-		!,(between(Min,Max,V);between(Max,Min,V)),!.
+	legal_value(V,between(A,B)):-
+		A >= B, !, A >= V, V >= B.
+	
+	legal_value(V,between(A,B)):-
+		!,A =< V, V =< B.
 	
 	legal_value(V,Values):-
 		member(V,Values).
@@ -167,7 +170,7 @@
 		See coherent_cpref_rule/1 in Cpref-rules Interpreter Module. 
 	************************************************************************************/
 	add_cpref_rule(Id, Rule):-
-		%coherent_cpref_rule(Rule),
+		coherent_cpref_rule(Rule),
 		assert(cpref_rule(Id, Rule)).
 	
 	/***********************************************************************************
@@ -198,6 +201,8 @@
 		Asserts that the rule with id R1 is stronger than that one with id R2.
 	************************************************************************************/
 	add_rule_comparison(R1 > R2):-
+		ground(R1), cpref_rule(R1,_),
+		ground(R2), cpref_rule(R2,_),
 		assert(stronger_rule(R1,R2)).
 	
 	/***********************************************************************************
