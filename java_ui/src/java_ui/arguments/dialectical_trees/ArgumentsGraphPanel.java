@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.util.ArrayList;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -25,15 +27,22 @@ public class ArgumentsGraphPanel extends JPanel {
 	private VisualizationViewer<Argument, DTreeEdge> vv;
 	private DefaultModalGraphMouse<Argument, DTreeEdge> mouse;
 	
+	
 	public ArgumentsGraphPanel(){
 		this.graph = new ArgumentsGraph();
 		setLayout(new BorderLayout());
-		
 		this.mouse = new DefaultModalGraphMouse<Argument, DTreeEdge>();
 		
 	}
 	
-	
+	public ArgumentsGraphPanel(ArrayList<Argument> arguments){
+		this.graph = new ArgumentsGraph(arguments);
+		setLayout(new BorderLayout());
+		this.mouse = new DefaultModalGraphMouse<Argument, DTreeEdge>();
+		
+	}
+
+
 	private void initVisualizerViewer(){
 		this.vv = new VisualizationViewer<Argument, DTreeEdge>(this.layout);
 		

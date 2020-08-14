@@ -1,6 +1,7 @@
 :- module(argumentation_framework,[
 		generate_warranted_conclusions/0,
-	
+		
+		complement/2,
 		defeats/2,
 		claim/2,
 		rules/2,

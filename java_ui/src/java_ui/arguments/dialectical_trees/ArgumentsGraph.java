@@ -12,24 +12,31 @@ public class ArgumentsGraph {
 	
 	
 	private DirectedSparseGraph<Argument,DTreeEdge> graph;
+	private ArrayList<Argument> arguments;
 	
-	public ArgumentsGraph(){
+	public ArgumentsGraph(ArrayList<Argument> arguments){
 		this.graph = new DirectedSparseGraph<Argument,DTreeEdge>();
+		this.arguments = arguments;
 	}
 	
+	public ArgumentsGraph() {
+		this.graph = new DirectedSparseGraph<Argument,DTreeEdge>();
+		this.arguments = null;
+	}
+
 	public DirectedSparseGraph<Argument,DTreeEdge> getGraph(){
 		return graph;
 	}
 	
 	public void load(){
 		
-		ArrayList<String> ids = new ArrayList<String>();
-		for(Map<String, Term> s : new Query("argument(ArgId,_,_)")) {
-			ids.add(s.get("ArgId").toString());
+		if(this.arguments == null) {
+			loadFullGraph();
 		}
-		
-		for(String id : ids) {
-			this.graph.addVertex(new Argument(id));
+		else {
+			for(Argument a : arguments) {
+				this.graph.addVertex(a);
+			}
 		}
 		
 		for(Argument v1 : this.graph.getVertices()) {
@@ -42,6 +49,17 @@ public class ArgumentsGraph {
 			}
 		}
 		
+	}
+	
+	private void loadFullGraph(){
+		ArrayList<String> ids = new ArrayList<String>();
+		for(Map<String, Term> s : new Query("argument(ArgId,_,_)")) {
+			ids.add(s.get("ArgId").toString());
+		}
+		
+		for(String id : ids) {
+			this.graph.addVertex(new Argument(id));
+		}
 	}
 
 	public void clearGraph() {

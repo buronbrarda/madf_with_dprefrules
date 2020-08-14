@@ -4,6 +4,7 @@
 		argument/3,
 		dtree_node/5,
 		
+		complement/2,
 		defeats/2,
 		rules/2,
 		claim/2,
