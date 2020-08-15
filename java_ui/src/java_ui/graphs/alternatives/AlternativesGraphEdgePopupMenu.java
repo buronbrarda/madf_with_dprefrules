@@ -21,7 +21,7 @@ public class AlternativesGraphEdgePopupMenu extends JPopupMenu{
 	
 	private AlternativesGraphEdge edge;
 	
-	public AlternativesGraphEdgePopupMenu(AlternativesGraph graph) {
+	public AlternativesGraphEdgePopupMenu(final AlternativesGraph graph) {
 		
 		super();
 		

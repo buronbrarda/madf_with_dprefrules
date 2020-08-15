@@ -21,7 +21,7 @@ public class RunStepPanel extends StepPanel {
 	private JButton runButton;
 	private ResultsPanel resultsPanel;
 	
-	public RunStepPanel(StepPanel first_step, ResultsPanel resultsPanel){
+	public RunStepPanel(final StepPanel first_step, ResultsPanel resultsPanel){
 		
 		this.resultsPanel = resultsPanel;
 		

@@ -32,7 +32,7 @@ public class DefineStepPanel extends StepPanel{
 	
 	protected TableViewer viewer;
 
-	public DefineStepPanel(String instruction, String tableViewerTitle, TableEditorPanel tep, PrologLoader loader) {
+	public DefineStepPanel(String instruction, final String tableViewerTitle, final TableEditorPanel tep, final PrologLoader loader) {
 		this.tep = tep;
 		this.loader = loader;
 		

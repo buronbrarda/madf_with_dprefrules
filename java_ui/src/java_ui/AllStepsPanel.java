@@ -3,6 +3,8 @@ package java_ui;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JSeparator;
+
+import java_ui.ExamplesLoadPanel;
 import java_ui.prolog_loader.CPrefRulesPrologLoader;
 import java_ui.prolog_loader.CriteriaPrologLoader;
 import java_ui.prolog_loader.EvidencePrologLoader;

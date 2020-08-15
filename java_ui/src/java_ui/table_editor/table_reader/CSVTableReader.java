@@ -72,4 +72,10 @@ public class CSVTableReader implements Iterator<String[]>, Iterable<String[]>{
 		return this;
 	}
 
+	@Override
+	public void remove() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

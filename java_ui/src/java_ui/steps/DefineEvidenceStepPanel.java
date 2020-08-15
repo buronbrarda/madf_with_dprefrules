@@ -35,7 +35,7 @@ public class DefineEvidenceStepPanel extends StepPanel{
 	private TableViewer viewer;
 	private JButton randomButton;
 
-	public DefineEvidenceStepPanel(String instruction, String tableViewerTitle, TableEditorPanel tep, PrologLoader loader) {
+	public DefineEvidenceStepPanel(String instruction, final String tableViewerTitle, final TableEditorPanel tep, final PrologLoader loader) {
 		this.tep = tep;
 		this.loader = loader;
 		

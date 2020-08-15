@@ -16,7 +16,7 @@ public class AlternativesGraphCompoundVertexPopupMenu extends JPopupMenu{
 	private JMenuItem addEdgesItem;
 	private Set<AlternativesGraphVertex> picked;
 	
-	public AlternativesGraphCompoundVertexPopupMenu(AlternativesGraph graph, VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge> vv) {
+	public AlternativesGraphCompoundVertexPopupMenu(final AlternativesGraph graph, final VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge> vv) {
 		
 		super();
 		

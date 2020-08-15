@@ -42,7 +42,7 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 	private TableViewer viewer;
 	private JButton orderButton;
 
-	public DefineCprefRulesStepPanel(String instruction, String tableViewerTitle, TableEditorPanel tep, PrologLoader loader) {
+	public DefineCprefRulesStepPanel(String instruction, final String tableViewerTitle, final TableEditorPanel tep, final PrologLoader loader) {
 		this.tep = tep;
 		this.loader = loader;
 		
@@ -232,7 +232,12 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 			statements.add(solution.get("RA").toString() + " > "+solution.get("RB").toString());			
 		}
 		
-		return String.join("; ", statements);
+		String toReturn = "";
+		for(String s : statements){
+			toReturn = toReturn + s + "; ";
+		}
+
+		return toReturn.substring(0,toReturn.length()-2);
 	}
 	
 	public PrologLoader.StatusCode getLoaderStatus(){

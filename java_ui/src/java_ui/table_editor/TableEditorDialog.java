@@ -25,7 +25,7 @@ public class TableEditorDialog extends JDialog {
 	 * Create the dialog.
 	 * @throws IOException 
 	 */
-	public TableEditorDialog(TableEditorPanel tep) throws IOException {
+	public TableEditorDialog(final TableEditorPanel tep) throws IOException {
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
 		
 		setBounds(100, 100, 450, 300);
