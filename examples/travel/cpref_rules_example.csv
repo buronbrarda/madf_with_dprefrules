@@ -1,0 +1,9 @@
+id;rule
+r1;better(X,Y,price) ==> pref(X,Y)
+r2;better(X,Y,duration) ==> pref(X,Y)
+r3;better(X,Y,security) ==> pref(X,Y)
+r4;better(X,Y,duration), min_distance(X,Y,duration,3) ==> pref(X,Y)
+r5;better(X,Y,duration), min_distance(X,Y,duration,2), equal(X,Y,security) ==> pref(X,Y)
+r6;better(X,Y,duration), min_distance(X,Y,duration,2), better(X,Y,security) ==> pref(X,Y)
+r7;better(X,Y,price), min_distance(X,Y,price,150), worse(X,Y,duration), max_distance(X,Y,duration,2.5) ==> pref(X,Y)
+r8;better(X,Y,duration), min_distance(X,Y,duration,1.5), worse(X,Y,security), max_distance(X,Y,security,1) ==> pref(X,Y)

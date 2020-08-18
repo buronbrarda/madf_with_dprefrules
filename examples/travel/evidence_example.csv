@@ -1,0 +1,6 @@
+alternative;price;duration;security
+car;330;5;vbad
+priv_bus;350;6;reg
+bus;250;8;reg
+train;370;3;vgood
+plane;600;1;good

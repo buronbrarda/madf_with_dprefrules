@@ -1,0 +1,4 @@
+criterion;values
+price;between(600,0)
+duration;between(10,1)
+security;[vbad,bad,reg,good,vgood]

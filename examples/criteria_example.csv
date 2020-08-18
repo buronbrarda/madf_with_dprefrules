@@ -1,4 +1,4 @@
 criterion;values
-price;between(600,0)
-duration;between(10,1)
-security;[vbad,bad,reg,good,vgood]
+salary;between(1000,3000)
+flexibility;[bad,reg,good,vgood]
+growth;[bad,reg,good,vgood]
