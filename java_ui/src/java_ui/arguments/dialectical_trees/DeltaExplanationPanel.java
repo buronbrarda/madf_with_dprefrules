@@ -92,7 +92,7 @@ public class DeltaExplanationPanel extends JPanel {
 				String label = "";
 				
 				if(vertex != null){
-					label += vertex.getArgumentClaim()+"//"+vertex.getArgumentRules();
+					label += vertex.getId()+":<"+vertex.getArgumentClaim()+";"+vertex.getArgumentRules()+">";
 				}
 				
 				return label;

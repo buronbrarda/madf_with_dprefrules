@@ -52,7 +52,7 @@ public class ResultsPanel extends JPanel {
 		gbc_titleLabel.gridy = 0;
 		mainResults.add(titleLabel, gbc_titleLabel);
 		
-		JLabel selectedAlternativesLabel = new JLabel("Selected Alternatives:");
+		JLabel selectedAlternativesLabel = new JLabel("Selected alternatives:");
 		GridBagConstraints gbc_selectedAlternativesLabel = new GridBagConstraints();
 		gbc_selectedAlternativesLabel.gridwidth = 5;
 		gbc_selectedAlternativesLabel.anchor = GridBagConstraints.NORTHWEST;
@@ -92,7 +92,7 @@ public class ResultsPanel extends JPanel {
 		gbc_lblStats.gridy = 4;
 		mainResults.add(lblStats, gbc_lblStats);
 		
-		JLabel alternativesRelationLabel = new JLabel("Reasonig Time:");
+		JLabel alternativesRelationLabel = new JLabel("Reasonig time:");
 		GridBagConstraints gbc_alternativesRelationLabel = new GridBagConstraints();
 		gbc_alternativesRelationLabel.anchor = GridBagConstraints.WEST;
 		gbc_alternativesRelationLabel.insets = new Insets(0, 5, 5, 5);
@@ -110,7 +110,7 @@ public class ResultsPanel extends JPanel {
 		mainResults.add(reasoningTimeText, gbc_reasoningTimeText);
 		reasoningTimeText.setColumns(10);
 		
-		JLabel lblSelectionTime = new JLabel("Selection Time:");
+		JLabel lblSelectionTime = new JLabel("Selection time:");
 		GridBagConstraints gbc_lblSelectionTime = new GridBagConstraints();
 		gbc_lblSelectionTime.anchor = GridBagConstraints.WEST;
 		gbc_lblSelectionTime.insets = new Insets(0, 5, 5, 5);
@@ -170,7 +170,7 @@ public class ResultsPanel extends JPanel {
 		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
-		alternativesGraphButton = new JButton("Explanation Graph");
+		alternativesGraphButton = new JButton("Explanation graph");
 		alternativesGraphButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(alternativesGraphDialog == null){
@@ -188,7 +188,7 @@ public class ResultsPanel extends JPanel {
 		panel.add(alternativesGraphButton, gbc_btnAlternatives);
 		alternativesGraphButton.setEnabled(false);
 		
-		argumentsGraphButton = new JButton("Arguments Graph");
+		argumentsGraphButton = new JButton("Argument graphs");
 		GridBagConstraints gbc_graphButton = new GridBagConstraints();
 		gbc_graphButton.gridx = 1;
 		gbc_graphButton.gridy = 0;

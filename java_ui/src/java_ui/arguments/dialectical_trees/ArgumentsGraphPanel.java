@@ -88,7 +88,7 @@ public class ArgumentsGraphPanel extends JPanel {
 				String label = "";
 				
 				if(vertex != null){
-					label += vertex.getClaim()+"//"+vertex.getRules().toString();
+					label += "A"+vertex.getId()+":<"+vertex.getClaim()+";"+vertex.getRules().toString()+">";
 				}
 				
 				return label;

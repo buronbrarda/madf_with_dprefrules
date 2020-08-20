@@ -18,7 +18,7 @@ public class DeltaExplanationDialog extends JDialog {
 	
 	public DeltaExplanationDialog(ArrayList<Argument> arguments){
 		
-		this.setTitle("Delta-explanation Graph - (Prototype Version)");
+		this.setTitle("Delta-explanation - (Prototype Version)");
 		this.setModalityType(ModalityType.MODELESS);
 		
 		this.setSize(defaultDimension);

@@ -56,7 +56,7 @@ public class ExamplesLoadPanel extends JPanel {
 		gbl_container.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		container.setLayout(gbl_container);
 		
-		JButton loadButton = new JButton("Load Example");
+		JButton loadButton = new JButton("Load example");
 		loadButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -89,15 +89,18 @@ public class ExamplesLoadPanel extends JPanel {
 	
 	private void loadExample() throws IOException{
 			
+		
 			String criteria_example_path = "criteria_example.csv";
 			String evidence_example_path = "evidence_example.csv";
 			String cpref_rules_example_path = "cpref_rules_example.csv";
 			String rules_strength_example_path = "rules_strength_example.csv";
 			
+			
 			File criteria_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+criteria_example_path);
 			File evidence_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+evidence_example_path);
 			File cpref_rules_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+cpref_rules_example_path);
 			File rules_strength_file = new File(DSJavaUI.getExamplesFolderRelativePath()+"/examples/"+rules_strength_example_path);
+			
 			
 			TableModel criteriaModel = new CriteriaTableModelBuilder(new CSVTableReader(criteria_file)).getTableModel();
 			TableModel evidenceModel = new EvidenceTableModelBuilder(new CSVTableReader(evidence_file)).getTableModel();

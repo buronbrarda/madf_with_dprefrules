@@ -104,7 +104,7 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		gbc_stepButton.gridy = 0;
 		add(stepButton, gbc_stepButton);
 		
-		orderButton = new JButton("Rules Priority");
+		orderButton = new JButton("Rule priorities");
 		orderButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
