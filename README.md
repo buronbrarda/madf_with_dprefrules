@@ -1,24 +1,22 @@
-# Argumentation-Based Multi-Criteria Decision Support System with Conditional Preference Rules
+# Argumentation-Based Decision Support System with Conditional Preference Rules (ADDS with Cpref-rules)
 
 This project is an implementation of a research line carried out by Martín E. Buron Brarda, Luciano H. Tamargo and Alejandro J. García, all of them members of the Institute for Computer Science and Engineering (ICIC, UNS-CONICET).
 
-The application contains two main modules: An interface for the users (developed in Java) and the application core (developed in SWI-Prolog). So, for running our application you will need to install the Java Virtual Machine and the SWI-Prolog interpreter into your computer. You can download the Java Runtime Environment 8 (64 bits) or superior from: https://java.com/en/download/manual.jsp. SWI-Prolog 7.6.0 (64 bits) or superior can be download from: http://www.swi-prolog.org/download/devel.
+The application contains two main modules: An interface for the users (developed in Java) and the application core (developed in SWI-Prolog). So, for running our application you will need to install the Java Virtual Machine and the SWI-Prolog interpreter into your computer. The poryect have been tested on Windows 10 with Java Runtime Environment (JRE) 7 and SWI-Prolog 7.6.4 You can download the JRE 7 (64 bits) from: https://www.oracle.com/java/technologies/javase/javase7-archive-downloads.html and SWI-Prolog 7.6.4 (64 bits) from: https://www.swi-prolog.org/download/stable?show=all.
 
 We have tested our application only on machines running Windows. However, since all the the code that we have developed is executed via-interpreter, none major problems should appear for running our application in different operative systems (Linux, MAC OS, etc.). You can download the whole code, or just download the application that was built for Windows x64.
 
-Also, for running our application in Windows it is required to have the local path for SWI-Prolog interpreter added as a Global Path Variable. In the following link, there is an instruction manual to do this: https://docs.telerik.com/teststudio/features/test-runners/add-path-environment-variables.
+Also, for running our application in Windows it is required to have the SWI-Prolog '/bin' directory added to the %PATH% environment variable. In the following link, there is an instruction manual to do this: https://docs.telerik.com/teststudio/features/test-runners/add-path-environment-variables.
 
 
 # Launch the application
 
-After downloading the file cpref_decision_system.zip, you can launch the application executing the file app.jar using your pre-installed JVM (see the explanation above to verify if you meet all the requisites to execute the application).
+After downloading the file cpref_decision_system.zip, you can launch the application executing the file app.jar using your pre-installed JVM (see the explanation above to verify if you meet all the requirements to execute the application).
 
 To use the application, proceed as follows:
 
 Start the application, 
-1. At the top (left) you can select between Evidence Set 1 or Evidence Set 2. 
-2. For each evidence set, three different set of preference rules can be selected (Tim, August and Kate respectively).
-3. Once an evidence set and a set of preferences is selected (note Evidence set 1 and Tim's preferences are selected by default), the "Load Example" button, and the application will automatically check that the all the loaded data is correct. 
+1. You can press "Load Example" button, and the application will automatically check that the all the loaded data is correct. 
 4. You will see that the "status" of the 5 steps (left part) change to "OK".
 5. Then the "Run" button (at the bottom) starts the computation of the selected alternatives.
 6. In the right part of the app's window the assessment base (K in the paper) will appear.  
