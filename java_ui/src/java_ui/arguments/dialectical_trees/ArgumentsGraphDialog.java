@@ -18,7 +18,7 @@ public class ArgumentsGraphDialog extends JDialog {
 	
 	public ArgumentsGraphDialog(){
 		
-		this.setTitle("Arguments Graph - (Prototype Version)");
+		this.setTitle("Arguments graph - (Prototype Version)");
 		this.setModalityType(ModalityType.MODELESS);
 		
 		this.setSize(defaultDimension);

@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path=""/>
-	<classpathentry kind="lib" path="C:/Users/BuronB/git/adds_with_cprefrules/libs/collections-generic-4.01.jar"/>
-	<classpathentry kind="lib" path="C:/Users/BuronB/git/adds_with_cprefrules/libs/jpl.jar"/>
-	<classpathentry kind="lib" path="C:/Users/BuronB/git/adds_with_cprefrules/libs/jung-algorithms-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/BuronB/git/adds_with_cprefrules/libs/jung-api-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/BuronB/git/adds_with_cprefrules/libs/jung-graph-impl-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/BuronB/git/adds_with_cprefrules/libs/jung-visualization-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/adds_with_cprefrules/libs/collections-generic-4.01.jar"/>
+	<classpathentry kind="lib" path="/adds_with_cprefrules/libs/jpl.jar"/>
+	<classpathentry kind="lib" path="/adds_with_cprefrules/libs/jung-algorithms-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/adds_with_cprefrules/libs/jung-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/adds_with_cprefrules/libs/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry kind="lib" path="/adds_with_cprefrules/libs/jung-visualization-2.0.1.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
