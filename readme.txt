@@ -60,7 +60,7 @@ for the selected arcs will be shown.
 Delta-Explanation:
 - Triangles represent arguments.
 - Arguments are labeled with their ids.
-- Green arguments represent they were marked as undefeated (defeated arguments are red).
+- Blue arguments represent they were marked as undefeated (defeated arguments are yellow).
 - The relations among arguments display the different dialectical trees the justify the anwser of the framework.
 - Arguments can be dragged for your convenience.
 
