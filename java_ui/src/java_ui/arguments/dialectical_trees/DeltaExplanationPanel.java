@@ -59,11 +59,11 @@ public class DeltaExplanationPanel extends JPanel {
 			@Override
 			public Paint transform(DTreeNode v) {
 				if(v.getStatus() == Status.DEFEATED){
-					return Color.RED;
+					return Color.YELLOW;
 				}
 				else{
 					if(v.getStatus() == Status.UNDEFEATED){
-						return Color.GREEN;
+						return Color.BLUE;
 					}
 					else{
 						return null;
