@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DSJavaUI<adds_with_cprefrules_b8d3b639>",
+            "request": "launch",
+            "mainClass": "DSJavaUI",
+            "projectName": "adds_with_cprefrules_b8d3b639"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-DSJavaUI<src>",
+            "request": "launch",
+            "mainClass": "java_ui.DSJavaUI",
+            "projectName": "src"
+        }
+    ]
+}
