@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.jpl7.Compound;
+import org.jpl7.PrologException;
 import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
@@ -20,18 +21,18 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.awt.event.ActionEvent;
 
-public class DefineRulesPriorityDialog extends JDialog {
+public class DefineAgentPriorityOrderDialog extends JDialog {
 	
 	private JTextArea textArea;
 	
 	private final JPanel contentPanel = new JPanel();
-	private DefineRulesPriorityDialog me;
+	private DefineAgentPriorityOrderDialog me;
 
 	/**
 	 * Create the dialog.
 	 */
-	public DefineRulesPriorityDialog(final DefineCprefRulesStepPanel step) {
-		setTitle("Rules Priority");
+	public DefineAgentPriorityOrderDialog(final DefineRuleImportanceStepPanel step) {
+		setTitle("Agents priority-order");
 		setBounds(100, 100, 455, 122);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -46,7 +47,7 @@ public class DefineRulesPriorityDialog extends JDialog {
 			textArea.setWrapStyleWord(true);
 			textArea.setTabSize(4);
 			textArea.setLineWrap(true);
-			textArea.setText(getCurrentRulesStrength());
+			textArea.setText(getCurrentAgentsPriorityOrder());
 			contentPanel.add(textArea, BorderLayout.CENTER);
 		}
 		{
@@ -63,25 +64,30 @@ public class DefineRulesPriorityDialog extends JDialog {
 							input.replaceAll("\\s", "");
 							String [] statements = input.split(";");
 							
-							Query cleaning_query = new Query("remove_rule_comparisons");
+							Query cleaning_query = new Query("remove_priorities");
 							if (cleaning_query.hasNext()) {cleaning_query.next();}
 							
-							for (String s : statements) {
-								String [] splited = s.split(">");
-								Compound comp = new Compound(">", new Term[] {Util.textToTerm(splited[0]), Util.textToTerm(splited[1])} );
-								
-								Query q = new Query("add_rule_comparison", new Term [] {comp});
-								
-								if(q.hasNext()){
-									q.next();
+							if (statements.length > 1) {
+							
+								for (String s : statements) {
+									String [] splited = s.split(">");
+									Compound comp = new Compound(">", new Term[] {Util.textToTerm(splited[0]), Util.textToTerm(splited[1])} );
+									
+									Query q = new Query("add_priority", new Term [] {comp});
+									
+									if(q.hasNext()){
+										q.next();
+									}
 								}
+							
 							}
 							
 							
 							
-						}catch(Exception e){
+						}catch(PrologException e){
 							JOptionPane.showMessageDialog(null, "You have not specified a correct order", "Error", JOptionPane.ERROR_MESSAGE);
 							step.getFollowingStep().disableStep();
+							e.printStackTrace();
 						}
 						
 						me.setVisible(false);
@@ -95,13 +101,13 @@ public class DefineRulesPriorityDialog extends JDialog {
 		}
 	}
 	
-	private String getCurrentRulesStrength() {
+	private String getCurrentAgentsPriorityOrder() {
 		
-		Query q = new Query("stronger_rule(RA,RB)");
+		Query q = new Query("has_priority(AgentA,AgentB)");
 		
 		ArrayList<String> statements = new ArrayList<String>();
 		for (Map<String, Term> solution : q) {
-			statements.add(solution.get("RA").toString() + " > "+solution.get("RB").toString());			
+			statements.add(solution.get("AgentA").toString() + " > "+solution.get("AgentB").toString());			
 		}
 		
 		String toReturn = "";
@@ -109,7 +115,7 @@ public class DefineRulesPriorityDialog extends JDialog {
 			toReturn = toReturn + s + "; ";
 		}
 
-		return toReturn.substring(0,toReturn.length()-2);
+		return toReturn.substring(0,Math.max(0, toReturn.length()-2));
 	}
 
 }

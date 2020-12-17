@@ -70,17 +70,8 @@ public class DTreeNode {
 	}
 	
 	
-	public String getArgumentRules(){
-		String toReturn = "{";
-		
-		int i;
-		for(i=0; i < this.argument.getRules().size()-1; i++){
-			toReturn += this.argument.getRules().get(i)+", ";
-		}
-		
-		toReturn += this.argument.getRules().get(i);
-		
-		return toReturn + "}";
+	public String getArgumentRule(){
+		return this.getArgumentRule();
 	}
 	
 	

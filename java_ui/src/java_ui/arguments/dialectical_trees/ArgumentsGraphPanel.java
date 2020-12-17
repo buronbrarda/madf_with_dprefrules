@@ -27,6 +27,9 @@ public class ArgumentsGraphPanel extends JPanel {
 	private VisualizationViewer<Argument, DTreeEdge> vv;
 	private DefaultModalGraphMouse<Argument, DTreeEdge> mouse;
 	
+	private final Color acceptedArgumentColor = new Color(31, 221, 19);
+	private final Color rejectedArgumentColor = new Color(243, 12, 12);
+	
 	
 	public ArgumentsGraphPanel(){
 		this.graph = new ArgumentsGraph();
@@ -65,7 +68,7 @@ public class ArgumentsGraphPanel extends JPanel {
 
 			@Override
 			public Paint transform(Argument v) {
-				return v.isAccepted() ? Color.GREEN : Color.RED;
+				return v.isAccepted() ? acceptedArgumentColor : rejectedArgumentColor;
 			}
 		});
 		
@@ -88,7 +91,7 @@ public class ArgumentsGraphPanel extends JPanel {
 				String label = "";
 				
 				if(vertex != null){
-					label += "A"+vertex.getId()+":<"+vertex.getClaim()+";"+vertex.getRules().toString()+">";
+					label += "A"+vertex.getId()+":<"+vertex.getClaim()+";"+vertex.getRule().toString()+">";
 				}
 				
 				return label;

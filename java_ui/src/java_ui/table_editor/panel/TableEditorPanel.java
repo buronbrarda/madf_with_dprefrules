@@ -5,9 +5,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,8 +17,10 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.TableModel;
 
+import java_ui.DSJavaUI;
 import java_ui.table_editor.NoWrappingTableCellRenderer;
 
 public abstract class TableEditorPanel extends JPanel {
@@ -173,4 +177,24 @@ public abstract class TableEditorPanel extends JPanel {
 	protected abstract void removeButtonAction(ActionEvent event);
 	
 	protected abstract String fileLoadButtonAction(ActionEvent event) throws IOException;
+	
+	
+	protected File loadCSVFile(){
+		
+		JFileChooser fc = new JFileChooser(DSJavaUI.getExamplesFolderRelativePath());
+		fc.setDialogTitle("Select the file to load");
+		
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setFileFilter(new FileNameExtensionFilter("CSV File", "csv"));
+		fc.setMultiSelectionEnabled(false);
+		
+		File toReturn = null;
+		
+		if(fc.showDialog(null, "Load") == JFileChooser.APPROVE_OPTION){
+			toReturn = fc.getSelectedFile();
+		}
+		
+		
+		return toReturn;
+	}
 }

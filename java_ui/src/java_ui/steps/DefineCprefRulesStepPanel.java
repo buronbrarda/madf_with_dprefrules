@@ -3,14 +3,11 @@ package java_ui.steps;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import org.jpl7.Query;
 import java_ui.prolog_loader.PrologLoadException;
 import java_ui.prolog_loader.PrologLoader;
 import java_ui.table_editor.TableEditorDialog;
 import java_ui.table_editor.panel.TableEditorPanel;
 import java_ui.table_editor.panel.TableViewer;
-import java_ui.table_editor.table_reader.CSVTableReader;
-
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,7 +16,6 @@ import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
@@ -34,24 +30,20 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 	private JButton viewButton;
 	
 	private TableViewer viewer;
-	private JButton orderButton;
-	private DefineCprefRulesStepPanel me;
 
 	public DefineCprefRulesStepPanel(String instruction, final String tableViewerTitle, final TableEditorPanel tep, final PrologLoader loader) {
 		this.tep = tep;
 		this.loader = loader;
-		this.me = this;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{45, 293, 110, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
+		gridBagLayout.columnWidths = new int[]{45, 320, 110, 0};
+		gridBagLayout.rowHeights = new int[]{20, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		JLabel instructionLabel = new JLabel(instruction);
 		GridBagConstraints gbc_instructionLabel = new GridBagConstraints();
-		gbc_instructionLabel.gridheight = 2;
 		gbc_instructionLabel.anchor = GridBagConstraints.NORTH;
 		gbc_instructionLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_instructionLabel.gridwidth = 2;
@@ -104,30 +96,13 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		gbc_stepButton.gridy = 0;
 		add(stepButton, gbc_stepButton);
 		
-		orderButton = new JButton("Rule priorities");
-		orderButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				new DefineRulesPriorityDialog(me).setVisible(true);
-				
-			}
-			
-		});
-		GridBagConstraints gbc_orderButton = new GridBagConstraints();
-		gbc_orderButton.fill = GridBagConstraints.HORIZONTAL;
-		gbc_orderButton.anchor = GridBagConstraints.NORTH;
-		gbc_orderButton.insets = new Insets(0, 5, 5, 5);
-		gbc_orderButton.gridx = 2;
-		gbc_orderButton.gridy = 1;
-		add(orderButton, gbc_orderButton);
-		
 		this.statusLabel = new JLabel("Status:");
 		GridBagConstraints gbc_statusLabel = new GridBagConstraints();
 		gbc_statusLabel.anchor = GridBagConstraints.NORTH;
 		gbc_statusLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_statusLabel.insets = new Insets(0, 5, 0, 5);
 		gbc_statusLabel.gridx = 0;
-		gbc_statusLabel.gridy = 2;
+		gbc_statusLabel.gridy = 1;
 		add(statusLabel, gbc_statusLabel);
 		
 		this.statusResultLabel = new JLabel("---");
@@ -136,7 +111,7 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		gbc_statusResultLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_statusResultLabel.insets = new Insets(0, 5, 0, 5);
 		gbc_statusResultLabel.gridx = 1;
-		gbc_statusResultLabel.gridy = 2;
+		gbc_statusResultLabel.gridy = 1;
 		add(statusResultLabel, gbc_statusResultLabel);
 		
 		viewButton = new JButton("View");
@@ -158,7 +133,7 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		gbc_viewButton.insets = new Insets(0, 5, 5, 5);
 		gbc_viewButton.anchor = GridBagConstraints.NORTH;
 		gbc_viewButton.gridx = 2;
-		gbc_viewButton.gridy = 2;
+		gbc_viewButton.gridy = 1;
 		add(viewButton, gbc_viewButton);
 		
 	}
@@ -167,14 +142,12 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 	public void enableStep() {
 		this.stepButton.setEnabled(true);
 		this.viewButton.setEnabled(true);
-		this.orderButton.setEnabled(true);
 	}
 
 	@Override
 	public void disableStepAction() {
 		this.stepButton.setEnabled(false);
 		this.viewButton.setEnabled(false);
-		this.orderButton.setEnabled(false);
 	}
 	
 	
@@ -203,23 +176,5 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 			getFollowingStep().disableStep();
 			throw e;
 		}
-	}
-
-	public void defineRulesStrenght(File file) {
-		try {
-			CSVTableReader reader = new CSVTableReader(file);
-			
-			for(String[] row : reader) {
-				Query q = new Query("add_rule_comparison("+row[0]+")");
-				while(q.hasNext()) {q.next();}
-			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		
 	}
 }

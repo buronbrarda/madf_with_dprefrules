@@ -28,6 +28,9 @@ public class DeltaExplanationPanel extends JPanel {
 	private VisualizationViewer<DTreeNode, DTreeEdge> vv;
 	private DefaultModalGraphMouse<DTreeNode, DTreeEdge> mouse;
 	
+	private final Color UndefeatedColor = new Color(250, 213, 62);
+	private final Color DefeatedColor = new Color(62, 202, 250);
+	
 	public DeltaExplanationPanel(){
 		setLayout(new BorderLayout());
 		
@@ -59,11 +62,11 @@ public class DeltaExplanationPanel extends JPanel {
 			@Override
 			public Paint transform(DTreeNode v) {
 				if(v.getStatus() == Status.DEFEATED){
-					return Color.YELLOW;
+					return UndefeatedColor;
 				}
 				else{
 					if(v.getStatus() == Status.UNDEFEATED){
-						return Color.BLUE;
+						return DefeatedColor;
 					}
 					else{
 						return null;

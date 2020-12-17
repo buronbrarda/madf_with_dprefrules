@@ -1,0 +1,5 @@
+agent;importance_order
+carol;r2 > r1, r2 > r3
+mom;r3 > r1, r3 > r2
+dad;r3 > r1, r3 > r2
+tom;r1 > r2, r1 > r3, r2 > r3

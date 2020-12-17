@@ -4,7 +4,7 @@
 		complement/2,
 		defeats/2,
 		claim/2,
-		rules/2,
+		rule/2,
 		
 		dtree_node/5,
 		
@@ -14,7 +14,7 @@
 	]).
 	
 	:-use_module(ids_manager).
-	:-use_module(data_manager, [stronger_rule/2]).
+	:-use_module(data_manager, [has_priority/2, importance_statement/2]).
 	:-use_module(arg_generator, [argument/3, generate_arguments/0]).
 	
 	:-dynamic d_in_conflict/2.
@@ -32,12 +32,12 @@
 	
 		
 	/***********************************************************************************
-		rules(?Arg_Id, ?Rules).
+		rules(?Arg_Id, ?RuleId).
 		
-		True when Rules are the rules of the argument Argument identified with Id.
+		True when RuleId is the rule's Id of the argument Argument identified with Id.
 	************************************************************************************/
-	rules(Arg_Id,Rules):-
-		argument(Arg_Id, Rules,_Claim).
+	rule(Arg_Id,RuleId):-
+		argument(Arg_Id, [cpref_rule(RuleId,_)],_Claim).
 		
 	
 	/***********************************************************************************
@@ -46,7 +46,7 @@
 		True when Claim is the claim of the argument Argument identified with Id.
 	************************************************************************************/
 	claim(Arg_Id, Claim):-
-		argument(Arg_Id, _Rules, Claim).
+		argument(Arg_Id, _Rule, Claim).
 	
 	
 	/***********************************************************************************
@@ -74,12 +74,13 @@
 		Defines whether ArgA is stronger than Argb.
 	************************************************************************************/	
 	stronger(Arg_Id_A,Arg_Id_B):-
-		rules(Arg_Id_A, Rules_A),
-		rules(Arg_Id_B, Rules_B),
-		forall(member(cpref_rule(RB,_),Rules_B), not((member(cpref_rule(RA,_),Rules_A), stronger_rule(RB,RA)))),
-		member(cpref_rule(RA,_),Rules_A),
-		member(cpref_rule(RB,_),Rules_B),
-		stronger_rule(RA,RB),!.
+		rule(Arg_Id_A, RA),
+		rule(Arg_Id_B, RB),
+		importance_statement(AgentA,(RA > RB)),
+		not((
+			importance_statement(AgentB,(RB > RA)),
+			has_priority(AgentB,AgentA)
+		)),!.
 	
 	
 	/***********************************************************************************

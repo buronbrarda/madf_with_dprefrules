@@ -3,12 +3,6 @@ package java_ui.table_editor.panel;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import java_ui.DSJavaUI;
-import java_ui.DefineCPrefRuleDialog;
-import java_ui.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
 import java_ui.table_editor.model_builder.CriteriaTableModelBuilder;
 import java_ui.table_editor.model_builder.TableModelBuilder;
 import java_ui.table_editor.table_reader.CSVTableReader;
@@ -23,13 +17,12 @@ public class CriteriaTableEditorPanel extends TableEditorPanel {
 	
 	@Override
 	protected void addButtonAction(ActionEvent event) {
-		new DefineCPrefRuleDialog(DefineCprefRuleEditingMode.NEW,"r0");
+		// TODO Auto-generated method stub
 	}
 
 	@Override
 	protected void editButtonAction(ActionEvent event) {
-		String selectedRule = (String) table.getModel().getValueAt(table.getSelectedRow(), 0);
-		new DefineCPrefRuleDialog(DefineCprefRuleEditingMode.EDIT,selectedRule);
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -39,7 +32,7 @@ public class CriteriaTableEditorPanel extends TableEditorPanel {
 
 	@Override
 	protected String fileLoadButtonAction(ActionEvent event) throws IOException {
-		File f = loadCSVFile();
+		File f = this.loadCSVFile();
 		
 		String filePath = null;
 		
@@ -54,26 +47,5 @@ public class CriteriaTableEditorPanel extends TableEditorPanel {
 		return filePath;
 		
 	}
-	
-	
-	private File loadCSVFile(){
-		
-		JFileChooser fc = new JFileChooser(DSJavaUI.getExamplesFolderRelativePath());
-		fc.setDialogTitle("Select the file to load");
-		
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fc.setFileFilter(new FileNameExtensionFilter("CSV File", "csv"));
-		fc.setMultiSelectionEnabled(false);
-		
-		File toReturn = null;
-		
-		if(fc.showDialog(null, "Load") == JFileChooser.APPROVE_OPTION){
-			toReturn = fc.getSelectedFile();
-		}
-		
-		
-		return toReturn;
-	}
-	
 
 }

@@ -9,8 +9,11 @@
 		criterion/2,
 		alternative/1,
 		cpref_rule/2,
-		stronger_rule/2,
+		has_priority/2,
+		importance_statement/2,
 		evidence/3,
+		
+		legal_value/2,
 		
 		add_alternative/2,	
 		remove_alternative/1,
@@ -24,15 +27,19 @@
 		remove_cpref_rule/1,
 		remove_cpref_rules/0,
 		
-		add_rule_comparison/1,
-		remove_rule_comparisons/0,
+		add_priority/1,
+		remove_priorities/0,
+		
+		add_importance_statement/2,
+		remove_importance_orders/0,
 		
 		generate_random_evidence/1
 	]).
 
 	:- dynamic alternative/1.
 	:- dynamic criterion/2.
-	:- dynamic stronger_rule/2.
+	:- dynamic importance_statement/2.
+	:- dynamic has_priority/2.
 	:- dynamic cpref_rule/2.
 	:- dynamic evidence/3.
 	
@@ -196,24 +203,44 @@
 	
 	
 	/***********************************************************************************
-		add_rule_comparison(+R1 > +R2)  .
+		add_rule_comparison(+AgentA > +AgentB)  .
 		
-		Asserts that the rule with id R1 is stronger than that one with id R2.
+		Asserts that AgentA has priority AgentB.
 	************************************************************************************/
-	add_rule_comparison(R1 > R2):-
-		ground(R1), cpref_rule(R1,_),
-		ground(R2), cpref_rule(R2,_),
-		assert(stronger_rule(R1,R2)).
+	add_priority(AgentA > AgentB):-
+		ground(AgentA),
+		ground(AgentB),
+		assert(has_priority(AgentA,AgentB)).
 	
 	/***********************************************************************************
 		remove_rule_comparisons.
 		
 		Removes all rules comparisons.
 	************************************************************************************/
-	remove_rule_comparisons:-
-		retractall(stronger_rule(_,_)).
+	remove_priorities:-
+		retractall(has_priority(_,_)).
 	
+	
+	
+	/***********************************************************************************
+		add_importance_statement(+Agent, (+R1 > +R2) )  .
 		
+		Asserts that Agent consider that R1 is more important than R2.
+	************************************************************************************/
+	add_importance_statement(Agent, R1 > R2):-
+		ground(Agent),
+		ground(R1), cpref_rule(R1,_),
+		ground(R2), cpref_rule(R2,_),
+		assert(importance_statement(Agent,(R1 > R2))).
+	
+	/***********************************************************************************
+		remove_rule_comparisons.
+		
+		Removes all rules comparisons.
+	************************************************************************************/
+	remove_importance_orders:-
+		retractall(importance_statement(_,_)).
+	
 	
 	/***********************************************************************************
 		generate_random_evidence(+Alterantives_Amount).
@@ -276,13 +303,6 @@
     criterion(cost,[vbad,bad,reg,good,vgood]).
     criterion(location,[vbad,bad,reg,good,vgood]).
     criterion(size,[vbad,bad,reg,good,vgood]).
-    
-    
-    stronger_rule(r4,r1).
-    stronger_rule(r5,r1).
-    stronger_rule(r6,r2).
-    stronger_rule(r7,r2).
-    stronger_rule(r8,r1). 
     
     
     % ========================================

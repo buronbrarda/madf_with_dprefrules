@@ -1,4 +1,4 @@
 criterion;values
-salary;between(1000,3000)
-flexibility;[bad,reg,good,vgood]
-growth;[bad,reg,good,vgood]
+days;between(1,30)
+entrmnt;[vbad,bad,reg,good,vgood]
+service;[vbad,bad,reg,good,vgood]

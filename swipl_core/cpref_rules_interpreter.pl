@@ -15,6 +15,7 @@
 	:-op(1101, xfx, ==>).
 	
 	
+	%To optimize consults in cpref-rules.
 	generate_pre_comparisons:-
 		retractall(c_relation(_,_,_,_)),
 		
@@ -23,7 +24,7 @@
 			criterion(C,_),
 			relation(C,R,X,Y)
 		),(
-			assert(c_relation(C,R,X,Y))
+			assert(c_relation(C,R,X,Y)) %c_ comes from 'compiled'.
 		)).
 		
 		
@@ -53,10 +54,20 @@
 		c_relation(C,worse,X,Y).
 	
 	not_better(X,Y,C):-
-		(c_relation(C,equal,X,Y);c_relation(C,worse,X,Y)).
+		not(c_relation(C,better,X,Y)).
 	
 	not_worse(X,Y,C):-
-		(c_relation(C,equal,X,Y);c_relation(C,better,X,Y)).
+		not(c_relation(C,worse,X,Y)).
+		
+	max(X,C,V):-
+		evidence(X,C,Vx),
+		criterion(C,Domain),
+		geq_value(V,Vx,Domain).
+		
+	min(X,C,V):-
+		evidence(X,C,Vx),
+		criterion(C,Domain),
+		geq_value(Vx,V,Domain).
 		
 	min_distance(X,Y,C,Min_Dist):-
 		evidence(X,C,V), evidence(Y,C,U), criterion(C,Domain),
@@ -142,6 +153,21 @@
 		member([Criterion,worse],Previous_Clauses),				%Check previous w_premise.
 		
 		not(member([Criterion,max_distance,_],Previous_Clauses)).		%Check non-duplicate max_distance.
+		
+		
+	clause_conditions(max(_X,Criterion,Max_V),Previous_Clauses,[Criterion,max,Max_V]):-
+		!,criterion(Criterion,Domain),							%Check criterion existence.
+		legal_value(Max_V,Domain),								%Check Max_V correctness.
+		
+		member([Criterion,_],Previous_Clauses).					%Check previous criterion evaluation.
+		
+		
+	
+	clause_conditions(min(_X,Criterion,Min_V),Previous_Clauses,[Criterion,min,Min_V]):-
+		!,criterion(Criterion,Domain),							%Check criterion existence.
+		legal_value(Min_V,Domain),								%Check Max_V correctness.
+		
+		member([Criterion,_],Previous_Clauses).					%Check previous criterion evaluation.
 	
 	
 	/***********************************************************************************

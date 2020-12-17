@@ -1,6 +1,6 @@
-alternative;salary;flexibility;growth
-j1;2240;good;bad
-j2;2380;reg;reg
-j3;1980;good;vgood
-j4;2050;vgood;vgood
-j5;2200;reg;good
+alternative;days;entrmnt;service
+mntns;14;reg;vbad
+beach;7;good;reg
+lake;20;bad;reg
+jungle;14;good;vgood
+cruise;11;vgood;good

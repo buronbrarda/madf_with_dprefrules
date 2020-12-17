@@ -58,7 +58,7 @@
 			
 	************************************************************************************/
 	print_args:-
-		forall(argument(Id,_Rules,_Claim), print_arg(Id)).
+		forall(argument(Id,_Rule,_Claim), print_arg(Id)).
 		
 	
 	/***********************************************************************************
@@ -68,17 +68,16 @@
 			
 	************************************************************************************/
 	print_args(RuleId):-
-		forall((argument(ArgId,Rules,_Claim), member(cpref_rule(RuleId,_), Rules)), print_arg(ArgId)).
+		forall((argument(ArgId,[cpref_rule(RuleId,_)],_Claim), cpref_rule(RuleId,_)), print_arg(ArgId)).
+		
 	
 	
 	
 	print_arg(Id):-
-		argument(Id,Rules,Claim),
+		argument(Id,RuleId,Claim),
 		writeln('<'),
 			write('\tId: '), writeln(Id),
-			writeln('\tRules: {'),
-				forall(member(R,Rules),(write('\t\t'),write(R),wrteln(','))),
-			writeln('\t}'),
+			write('\tRule: '), print_rule(RuleId),
 			write('\tClaim: '), writeln(Claim),
 		writeln('>').	
 	

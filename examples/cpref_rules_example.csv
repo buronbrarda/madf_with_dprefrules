@@ -1,10 +1,4 @@
 id;rule
-r1;better(X,Y,salary) ==> pref(X,Y)
-r2;better(X,Y,flexibility) ==> pref(X,Y)
-r3;better(X,Y,growth) ==> pref(X,Y)
-r4;better(X,Y,growth), min_distance(X,Y,growth,2), worse(X,Y,salary), max_distance(X,Y,salary,300) ==> pref(X,Y)
-r5;better(X,Y,flexibility), better(X,Y,growth), worse(X,Y,salary), max_distance(X,Y,salary,300) ==> pref(X,Y)
-r6;better(X,Y,flexibility), better(X,Y,growth), min_distance(X,Y,growth,2), worse(X,Y,salary), max_distance(X,Y,salary,400) ==> pref(X,Y)
-r7;equal(X,Y,flexibility), better(X,Y,salary), min_distance(X,Y,salary,200) ==> pref(X,Y)
-r8;better(X,Y,flexibility), better(X,Y,salary), min_distance(X,Y,salary,100) ==> pref(X,Y)
-r9;equal(X,Y,flexibility), better(X,Y,growth), min_distance(X,Y,growth,3), worse(X,Y,salary), max_distance(X,Y,salary,250) ==> pref(X,Y)
+r1;better(X,Y,days) ==> pref(X,Y)
+r2;better(X,Y,entrmnt) ==> pref(X,Y)
+r3;better(X,Y,service) ==> pref(X,Y)

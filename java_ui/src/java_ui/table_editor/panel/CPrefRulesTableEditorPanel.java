@@ -3,10 +3,6 @@ package java_ui.table_editor.panel;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import java_ui.DSJavaUI;
 import java_ui.DefineCPrefRuleDialog;
 import java_ui.DefineCPrefRuleDialog.DefineCprefRuleEditingMode;
 import java_ui.table_editor.model_builder.RulesTableModelBuilder;
@@ -42,7 +38,7 @@ public class CPrefRulesTableEditorPanel extends TableEditorPanel {
 		
 		String filePath = null;
 		
-		File f = loadCSVFile();
+		File f = this.loadCSVFile();
 		
 		
 		if(f != null) {
@@ -55,26 +51,6 @@ public class CPrefRulesTableEditorPanel extends TableEditorPanel {
 		
 		return filePath;
 		
-	}
-	
-	
-	private File loadCSVFile(){
-		
-		JFileChooser fc = new JFileChooser(DSJavaUI.getExamplesFolderRelativePath());
-		fc.setDialogTitle("Select the file to load");
-		
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		fc.setFileFilter(new FileNameExtensionFilter("CSV File", "csv"));
-		fc.setMultiSelectionEnabled(false);
-		
-		File toReturn = null;
-		
-		if(fc.showDialog(null, "Load") == JFileChooser.APPROVE_OPTION){
-			toReturn = fc.getSelectedFile();
-		}
-		
-		
-		return toReturn;
 	}
 	
 

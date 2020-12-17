@@ -6,7 +6,7 @@
 		
 		complement/2,
 		defeats/2,
-		rules/2,
+		rule/2,
 		claim/2,
 		
 		explicitly_preferred/2,
@@ -218,13 +218,11 @@
 	************************************************************************************/
 	justification_rules(X,Y,Rules):-
 		explicitly_preferred(X,Y),
-		findall(R_Id, (
+		findall(Arg_Rule, (
 			claim(Arg_Id,pref(X,Y)),
-			rules(Arg_Id,Arg_Rules),
-			member(cpref_rule(R_Id,_),Arg_Rules)
-		),Rules_List),
-		flatten(Rules_List, Aux),
-		list_to_set(Aux, Rules),!.
+			rule(Arg_Id,Arg_Rule)
+		),Rule_List),
+		list_to_set(Rule_List, Rules),!.
 		
 	justification_rules(X,Y,[]):-
 		not(is_list(X)),
@@ -233,14 +231,12 @@
 		
 	justification_rules(X,[Y|Group],Rules):-
 		explicitly_preferred(X,Y),
-		findall(R_Id, (
+		findall(Arg_Rule, (
 			claim(Arg_Id,pref(X,Y)),
-			rules(Arg_Id,Arg_Rules),
-			member(cpref_rule(R_Id,_),Arg_Rules)
-		),Rules_List),
-		flatten(Rules_List, Rules_X),
+			rule(Arg_Id,Arg_Rule)
+		),Rule_List_X),
 		justification_rules(X,Group,Rules_G),!,
-		append(Rules_X, Rules_G, Aux),
+		append(Rule_List_X, Rules_G, Aux),
 		list_to_set(Aux,Rules).
 		
 	justification_rules(X,[Y|Group],Rules_G):-
@@ -251,14 +247,12 @@
 		
 	justification_rules([X|Group],Y,Rules):-
 		explicitly_preferred(X,Y),
-		findall(R_Id, (
+		findall(Arg_Rule, (
 			claim(Arg_Id,pref(X,Y)),
-			rules(Arg_Id,Arg_Rules),
-			member(cpref_rule(R_Id,_),Arg_Rules)
-		),Rules_List),
-		flatten(Rules_List, Rules_X),
+			rule(Arg_Id,Arg_Rule)
+		),Rule_List_X),
 		justification_rules(Group,Y,Rules_G),!,
-		append(Rules_X, Rules_G, Aux),
+		append(Rule_List_X, Rules_G, Aux),
 		list_to_set(Aux,Rules).
 		
 	justification_rules([X|Group],Y,Rules_G):-
