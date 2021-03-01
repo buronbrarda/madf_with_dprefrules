@@ -69,11 +69,11 @@
 		criterion(C,Domain),
 		geq_value(Vx,V,Domain).
 		
-	min_distance(X,Y,C,Min_Dist):-
+	min_dist(X,Y,C,Min_Dist):-
 		evidence(X,C,V), evidence(Y,C,U), criterion(C,Domain),
 		distance(V,U,Domain,Dist), Dist >= Min_Dist.
 		
-	max_distance(X,Y,C,Max_Dist):-
+	max_dist(X,Y,C,Max_Dist):-
 		evidence(X,C,V), evidence(Y,C,U), criterion(C,Domain),
 		distance(V,U,Domain,Dist), Dist =< Max_Dist.
 		
@@ -136,23 +136,23 @@
 		not(member([Criterion,_],Previous_Clauses)). % Check not previous occurrence of a premise evaluating Criterion.
 	
 	
-	clause_conditions(min_distance(_X,_Y,Criterion,Min_V),Previous_Clauses,[Criterion,min_distance,Min_V]):-
+	clause_conditions(min_dist(_X,_Y,Criterion,Min_V),Previous_Clauses,[Criterion,min_dist,Min_V]):-
 		!,criterion(Criterion,_),									%Check criterion existence.
 		number(Min_V), Min_V >= 1,									%Check Min_V correctness.
 		
 		member([Criterion,better],Previous_Clauses),				%Check previous b_premise.
 		
-		not(member([Criterion,min_distance,_],Previous_Clauses)).		%Check non-duplicate min_distance.
+		not(member([Criterion,min_dist,_],Previous_Clauses)).		%Check non-duplicate min_distance.
 		
 	
 	
-	clause_conditions(max_distance(_X,_Y,Criterion,Max_V),Previous_Clauses,[Criterion,max_distance,Max_V]):-
+	clause_conditions(max_dist(_X,_Y,Criterion,Max_V),Previous_Clauses,[Criterion,max_dist,Max_V]):-
 		!,criterion(Criterion,_),								%Check criterion existence.
 		number(Max_V), Max_V >= 1,								%Check Max_V correctness.
 		
 		member([Criterion,worse],Previous_Clauses),				%Check previous w_premise.
 		
-		not(member([Criterion,max_distance,_],Previous_Clauses)).		%Check non-duplicate max_distance.
+		not(member([Criterion,max_dist,_],Previous_Clauses)).		%Check non-duplicate max_distance.
 		
 		
 	clause_conditions(max(_X,Criterion,Max_V),Previous_Clauses,[Criterion,max,Max_V]):-

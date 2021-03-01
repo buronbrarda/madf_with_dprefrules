@@ -19,7 +19,7 @@ xcopy readme.txt tmp
 
 cd .\tmp
 
-rar a -r cpref_decision_system.zip app_lib examples swipl_core app.jar readme.txt
+tar -cf cpref_decision_system.zip app_lib examples swipl_core app.jar readme.txt
 
 cd ..
 
