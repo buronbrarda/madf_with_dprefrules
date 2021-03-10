@@ -53,6 +53,8 @@ public class DeltaExplanationPanel extends JPanel {
 	
 	
 	private void initVisualizerViewer(){
+		this.selectedArgId = "";
+		
 		this.vv = new VisualizationViewer<DTreeNode, DTreeEdge>(this.layout);
 		
 		
@@ -129,6 +131,10 @@ public class DeltaExplanationPanel extends JPanel {
 				
 				if(vv.getPickedVertexState().isPicked(node)) {
 					selectedArgId = node.getArgument().getId();
+				}
+				
+				if(vv.getPickedVertexState().getPicked().isEmpty()) {
+					selectedArgId = "";
 				}
 				
 				
