@@ -8,14 +8,16 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
 
+import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Tree;
+import edu.uci.ics.jung.graph.util.EdgeType;
 import java_ui.arguments.Argument;
 
-public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> implements Tree<DTreeNode, DTreeEdge>{
+public class DialecticalTree extends DelegateForest<DTreeNode, DTreeEdge> implements Tree<DTreeNode, DTreeEdge>{
 	
-	private int height;
-	private DTreeNode root;
+	//private int height;
+	//private DTreeNode root;
 	
 	
 	public DialecticalTree(){
@@ -23,9 +25,11 @@ public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> i
 	}
 	
 	public DialecticalTree(DTreeNode root){
-		this.root = root;
-		root.setParent(null);
-		this.height = 0;
+		super();
+		this.addVertex(root);
+		//root.setParent(null);
+		this.setRoot(root);		
+		//this.height = 0;
 	}
 	
 	public void load(Argument arg){
@@ -34,12 +38,15 @@ public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> i
 		if(q.hasNext()){
 			Map<String, Term> s = q.next();
 			
-			this.root = new DTreeNode(s.get("Node_Id").toString(), arg, s.get("Status").toString());
-			this.root.setParent(null);
+			DTreeNode root = new DTreeNode(s.get("Node_Id").toString(), arg, s.get("Status").toString());
+			this.addVertex(root);
+			this.setRoot(root);
 			
-			this.addVertex(this.root);
+			//this.getRoot().setParent(null);
 			
-			buildChildren(this.root, Util.listToTermArray(s.get("Children")));
+			
+			
+			buildChildren(root, Util.listToTermArray(s.get("Children")));
 		}
 	}
 	
@@ -61,7 +68,9 @@ public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> i
 					
 					DTreeNode childNode = new DTreeNode(child.toString(), argument, s.get("Status").toString());
 					
-					this.addEdge(new DTreeEdge(), childNode, node);
+					//this.addVertex(childNode);
+					
+					this.addEdge(new DTreeEdge(), node, childNode);
 					
 					buildChildren(childNode, Util.listToTermArray(s.get("Children")));
 				}
@@ -71,7 +80,7 @@ public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> i
 		}
 	}
 	
-	
+	/*
 	@Override
 	public boolean addEdge(DTreeEdge e, DTreeNode v1, DTreeNode v2) {
 		boolean succed = false;
@@ -137,7 +146,7 @@ public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> i
 	public DTreeNode getRoot() {
 		return this.root;
 	}
-
+	*/
 	public void clear() {
 		
 		Collection<DTreeNode> vertices = this.getVertices();
@@ -146,7 +155,7 @@ public class DialecticalTree extends DirectedSparseGraph<DTreeNode, DTreeEdge> i
 			this.removeVertex(v);
 		}
 		
-		this.root = null;
+		//this.root = null;
 		
 	}
 

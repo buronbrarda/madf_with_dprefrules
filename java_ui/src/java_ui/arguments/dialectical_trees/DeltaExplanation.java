@@ -3,23 +3,23 @@ package java_ui.arguments.dialectical_trees;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Tree;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 
-public class DeltaExplanation implements Forest<DTreeNode,DTreeEdge>{
-	
-	private ArrayList<Tree<DTreeNode, DTreeEdge>> dtrees;
+public class DeltaExplanation extends DelegateForest<DTreeNode, DTreeEdge> implements Forest<DTreeNode,DTreeEdge>{
 	
 	public DeltaExplanation(ArrayList<DialecticalTree> dtrees){
-		this.dtrees = new ArrayList<Tree<DTreeNode, DTreeEdge>>();
+		super();
 		
 		for(DialecticalTree t : dtrees){
-			this.dtrees.add(t);
+			this.addTree(t);
 		};
 	}
 	
+	/*
 	
 	private Tree<DTreeNode, DTreeEdge> findTree(DTreeNode v){
 		for(Tree<DTreeNode, DTreeEdge> t : this.dtrees){
@@ -38,6 +38,7 @@ public class DeltaExplanation implements Forest<DTreeNode,DTreeEdge>{
 		}
 		return null;
 	}
+	
 	
 	@Override
 	public boolean addEdge(DTreeEdge e, DTreeNode v1, DTreeNode v2) {
@@ -555,14 +556,14 @@ public class DeltaExplanation implements Forest<DTreeNode,DTreeEdge>{
 	public Collection<Tree<DTreeNode, DTreeEdge>> getTrees() {
 		return this.dtrees;
 	}
-
+	*/
 
 	public void clear() {
-		for(Tree<DTreeNode, DTreeEdge> t : dtrees){
+		for(Tree<DTreeNode, DTreeEdge> t : this.getTrees()){
 			((DialecticalTree)t).clear();
 		}
 		
-		dtrees.clear();
+		//dtrees.clear();
 	}
 	
 }

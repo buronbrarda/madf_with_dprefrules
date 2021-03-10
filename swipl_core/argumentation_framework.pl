@@ -165,18 +165,31 @@
 	************************************************************************************/
 	
 	acceptable_arg_line(Arg_Id,[Arg_Id|Line]):-
-		acceptable_arg_line([],[Arg_Id],Line).
+		acceptable_arg_line([],[Arg_Id],Line,con).
 		
-	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line]):-
+	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line],pro):-
 		defeats(Defeater,E),
 		not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
 		concordant_with(Defeater,Allies),
-		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line).
+		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line,con).
 	
-	acceptable_arg_line(Allies,[E|Enemies],[]):-
+	acceptable_arg_line(Allies,[E|Enemies],[],pro):-
 		not(( 
 			defeats(Defeater,E),
 			not((append(Allies,Enemies,Union), member(Defeater,Union))),
+			concordant_with(Defeater,Allies)
+		)).
+		
+	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line],con):-
+		defeats(Defeater,E),
+		concordant_with(Defeater,Allies),
+		not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
+		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line,pro).
+	
+	acceptable_arg_line(Allies,[E|Enemies],[],con):-
+		not(( 
+			defeats(Defeater,E),
+			not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
 			concordant_with(Defeater,Allies)
 		)).
 	

@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
 import javax.swing.JMenu;
@@ -14,9 +16,14 @@ import javax.swing.JPanel;
 import org.apache.commons.collections15.Transformer;
 
 import edu.uci.ics.jung.algorithms.layout.DAGLayout;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
+import edu.uci.ics.jung.visualization.decorators.DirectionalEdgeArrowTransformer;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import java_ui.arguments.Argument;
 import java_ui.arguments.dialectical_trees.DTreeNode.Status;
@@ -24,12 +31,18 @@ import java_ui.arguments.dialectical_trees.DTreeNode.Status;
 public class DeltaExplanationPanel extends JPanel {
 	
 	private DeltaExplanation graph;
-	private DAGLayout<DTreeNode, DTreeEdge> layout;
+	private TreeLayout<DTreeNode, DTreeEdge> layout;
 	private VisualizationViewer<DTreeNode, DTreeEdge> vv;
 	private DefaultModalGraphMouse<DTreeNode, DTreeEdge> mouse;
+	private String selectedArgId;
 	
-	private final Color UndefeatedColor = new Color(250, 213, 62);
-	private final Color DefeatedColor = new Color(62, 202, 250);
+	private final Color DefeatedColor = new Color(250, 213, 62);
+	private final Color UndefeatedColor = new Color(62, 202, 250);
+	
+	private final Color DefeatedSelectedColor = new Color(252, 157, 25);
+	private final Color UndefeatedSelectedColor = new Color(43, 152, 249);
+	
+	
 	
 	public DeltaExplanationPanel(){
 		setLayout(new BorderLayout());
@@ -62,11 +75,11 @@ public class DeltaExplanationPanel extends JPanel {
 			@Override
 			public Paint transform(DTreeNode v) {
 				if(v.getStatus() == Status.DEFEATED){
-					return UndefeatedColor;
+					return v.getArgument().getId().equals(selectedArgId) ? DefeatedSelectedColor : DefeatedColor;
 				}
 				else{
 					if(v.getStatus() == Status.UNDEFEATED){
-						return DefeatedColor;
+						return v.getArgument().getId().equals(selectedArgId) ? UndefeatedSelectedColor : UndefeatedColor;
 					}
 					else{
 						return null;
@@ -85,8 +98,11 @@ public class DeltaExplanationPanel extends JPanel {
 			}
 			
 		});
-	
-	
+		
+		this.vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line<DTreeNode,DTreeEdge>());
+		
+		this.vv.getRenderContext().setEdgeArrowTransformer(new DirectionalEdgeArrowTransformer<DTreeNode,DTreeEdge>(0, 0, 0));
+		
 		this.vv.getRenderContext().setVertexLabelTransformer(new Transformer<DTreeNode, String>(){
 
 			@Override
@@ -104,6 +120,20 @@ public class DeltaExplanationPanel extends JPanel {
 		});
 		
 		this.vv.getRenderContext().setVertexShapeTransformer(new DTreeNodeShapeTransformer());
+		
+		this.vv.getPickedVertexState().addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				DTreeNode node = (DTreeNode) e.getItem();
+				
+				if(vv.getPickedVertexState().isPicked(node)) {
+					selectedArgId = node.getArgument().getId();
+				}
+				
+				
+			}
+		});
 	}
 	
 	public void loadGraph(ArrayList<Argument> arguments){
@@ -118,8 +148,10 @@ public class DeltaExplanationPanel extends JPanel {
 		
 		this.graph = new DeltaExplanation(dtrees);
 		
-		this.layout = new  DAGLayout<DTreeNode, DTreeEdge>(this.graph);
-		this.layout.setForceMultiplier(0);
+		//this.layout = new  DAGLayout<DTreeNode, DTreeEdge>(this.graph);
+		//this.layout.setForceMultiplier(0);
+		
+		this.layout = new  TreeLayout<DTreeNode, DTreeEdge>(this.graph);
 		
 		if(this.vv != null){
 			this.remove(this.vv);
@@ -142,7 +174,7 @@ public class DeltaExplanationPanel extends JPanel {
             setSizeTransformer(new Transformer<DTreeNode, Integer>() {
             	
             	public Integer transform(DTreeNode v){
-            		return 30;
+            		return v.getArgument().getId().equals(selectedArgId) ? 35 : 30;
             	}
 			});
         }
