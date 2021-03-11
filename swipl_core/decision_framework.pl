@@ -92,7 +92,7 @@
 		weakly_preferred(?X,?Y).
 		
 		An alternative X is weakly preferred over Y iff X is transitively preferred over
-		Y but it is not the case that X is explecitly preferred over Y. That means that
+		Y but it is not the case that X is explicitly preferred over Y. That means that
 		there is no argument-based explanation to justify that X is preferred over Y.
 			
 	************************************************************************************/
@@ -136,9 +136,10 @@
 		alternative(X), alternative(Y), X \= Y,
 		transitively_preferred(X,Y),
 		transitively_preferred(Y,X).
+		
 	
 	equivalent_alternatives(X, [X|Equivalent_Alts]):-
-		findall(Y,equivalent(X,Y),Equivalent_Alts).
+		findall(Y, equivalent(X,Y), Equivalent_Alts).
 	
 	equivalent_groups(Groups):-
 		equivalent_groups([],Groups).
@@ -298,8 +299,8 @@
 	************************************************************************************/
 	equivalent_groups_ranking(Ranking):-
 		assert_preferences_amount,
-		sort_groups([],[],Sorted),
-		aggregate_sorted_groups(Sorted,[],Ranking),
+		setof((N,Group), preference_amount(N,Group), SortedGroups),
+		aggregate_sorted_groups(SortedGroups,[],Ranking),
 		retractall(preference_amount(_,_)).
 	
 	
@@ -308,39 +309,17 @@
 		equivalent_groups(Groups),
 		forall(member(G,Groups), (
 				G = [X|_],
-				findall(Y,strict_preferred(X,Y),StrictAux),
-				list_to_set(StrictAux,StrictList),
-				length(StrictList,StrictCount),
-				assert(preference_amount(G,StrictCount))
+				findall(Y,strict_preferred(X,Y),List),
+				length(List,N),
+				assert(preference_amount(N,G))
 			)).
-
-	sort_groups([],[],Sorted):-
-		preference_amount(Group_A,N),
-		not((
-			preference_amount(Group_B,M),
-			Group_A \= Group_B,
-			M > N
-		)),sort_groups([Group_A],[(Group_A,N)],Sorted),!.
-
-	sort_groups(Visited,[(Group_B,M)|List],Sorted):-
-		preference_amount(Group_A,N),
-		N =< M,
-		not(member(Group_A,Visited)),
-		not((
-			preference_amount(Group_C,M2),
-			not(member(Group_C,Visited)),
-			Group_C \= Group_A,
-			M2 > N
-		)),sort_groups([Group_A|Visited],[(Group_A,N),(Group_B,M)|List],Sorted),!.
-
-	sort_groups(_,L,L).
 	
 	aggregate_sorted_groups(In_Process,Aux,Aggregated_Set):-
-		In_Process = [(_,N)|_],
+		In_Process = [(N,_)|_],
 		
-		findall((Y,N), (member((Y,N),In_Process)), Substract_Equivalent_Set),
+		findall((N,Y), (member((N,Y),In_Process)), Substract_Equivalent_Set),
 		
-		findall(Y, member((Y,N),Substract_Equivalent_Set), Equivalent_Set),
+		findall(Y, member((N,Y),Substract_Equivalent_Set), Equivalent_Set),
 		
 		subtract(In_Process,Substract_Equivalent_Set,Substracted_List),
 		
