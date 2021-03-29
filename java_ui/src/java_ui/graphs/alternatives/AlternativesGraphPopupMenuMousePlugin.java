@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AbstractPopupGraphMousePlugin;
+import java_ui.graphs.alternatives.lattice.JungLatticeLayout;
 
 public class AlternativesGraphPopupMenuMousePlugin extends AbstractPopupGraphMousePlugin{
 	
@@ -12,14 +13,14 @@ public class AlternativesGraphPopupMenuMousePlugin extends AbstractPopupGraphMou
 	private AlternativesGraphEdgePopupMenu edgePopup;
 	private VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv;
 	
-	public AlternativesGraphPopupMenuMousePlugin(AlternativesGraph graph, VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv){
-		this(MouseEvent.BUTTON3, graph, vv);
+	public AlternativesGraphPopupMenuMousePlugin(AlternativesGraph graph, VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv, JungLatticeLayout<AlternativesGraphVertex,AlternativesGraphEdge> layout){
+		this(MouseEvent.BUTTON3, graph, vv, layout);
 	}
 	
-	public AlternativesGraphPopupMenuMousePlugin(int modifiers,AlternativesGraph graph, VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv){
+	public AlternativesGraphPopupMenuMousePlugin(int modifiers,AlternativesGraph graph, VisualizationViewer<AlternativesGraphVertex,AlternativesGraphEdge> vv, JungLatticeLayout<AlternativesGraphVertex,AlternativesGraphEdge> layout){
 		super(modifiers);
 		this.vv = vv;
-		vertexPopup = new AlternativesGraphCompoundVertexPopupMenu(graph, vv);
+		vertexPopup = new AlternativesGraphCompoundVertexPopupMenu(graph, vv, layout);
 		edgePopup = new AlternativesGraphEdgePopupMenu(graph);
 	}
 	

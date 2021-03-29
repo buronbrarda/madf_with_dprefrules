@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 
 import javax.swing.JMenu;
@@ -19,6 +21,7 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import java_ui.arguments.Argument;
+import java_ui.graphs.alternatives.lattice.Utils;
 
 public class ArgumentsGraphPanel extends JPanel {
 	
@@ -100,6 +103,13 @@ public class ArgumentsGraphPanel extends JPanel {
 		});
 		
 		this.vv.getRenderContext().setVertexShapeTransformer(new ArgumentShapeTransformer());
+		
+		this.vv.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				super.componentResized(arg0);
+				Utils.fitGraph(vv, layout);
+			}});
 	}
 	
 	public void loadGraph(){

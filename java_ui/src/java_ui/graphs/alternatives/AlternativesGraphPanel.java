@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -24,11 +26,13 @@ import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import edu.uci.ics.jung.visualization.decorators.InterpolatingVertexSizeTransformer;
 import java_ui.arguments.dialectical_trees.DTreeEdge;
 import java_ui.arguments.dialectical_trees.DTreeNode;
+import java_ui.graphs.alternatives.lattice.JungLatticeLayout;
+import java_ui.graphs.alternatives.lattice.Utils;
 
 public class AlternativesGraphPanel extends JPanel {
 	
 	private AlternativesGraph graph;
-	private DAGLayout<AlternativesGraphVertex, AlternativesGraphEdge> layout;
+	private JungLatticeLayout<AlternativesGraphVertex, AlternativesGraphEdge> layout;
 	private VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge> vv;
 	private DefaultModalGraphMouse<AlternativesGraphVertex, AlternativesGraphEdge> mouse;
 	
@@ -44,10 +48,9 @@ public class AlternativesGraphPanel extends JPanel {
 	private void initVisualizerViewer(){
 		this.vv = new VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge>(this.layout);
 		
-		
 		this.vv.setGraphMouse(this.mouse);	
 		
-		this.mouse.add(new AlternativesGraphPopupMenuMousePlugin(this.graph, this.vv));
+		this.mouse.add(new AlternativesGraphPopupMenuMousePlugin(this.graph, this.vv, this.layout));
 		
 		JMenu menu = this.mouse.getModeMenu();
 		menu.setText("MOUSE MODE");
@@ -117,12 +120,19 @@ public class AlternativesGraphPanel extends JPanel {
 			}
 			
 		});
+		
+		this.vv.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				super.componentResized(arg0);
+				Utils.fitGraph(vv, layout);
+			}});
 	}
 	
 	public void loadGraph(){
 		this.graph.load();
 		
-		this.layout = new  DAGLayout<AlternativesGraphVertex, AlternativesGraphEdge>(this.graph.getGraph());
+		this.layout = new  JungLatticeLayout<AlternativesGraphVertex, AlternativesGraphEdge>(this.graph.getGraph());
 		
 		if(this.vv != null){
 			this.remove(this.vv);

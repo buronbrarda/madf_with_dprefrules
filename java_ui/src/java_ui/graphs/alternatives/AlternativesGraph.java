@@ -11,19 +11,20 @@ import org.jpl7.Term;
 import org.jpl7.Util;
 
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import java_ui.graphs.alternatives.lattice.JungLatticeGraph;
 
 public class AlternativesGraph {
 	
 	
-	private DirectedSparseGraph<AlternativesGraphVertex,AlternativesGraphEdge> graph;
+	private JungLatticeGraph<AlternativesGraphVertex,AlternativesGraphEdge> graph;
 	private HashMap<String,AlternativesGraphVertex> alternativesVertexMap;
 	
 	public AlternativesGraph(){
-		this.graph = new DirectedSparseGraph<AlternativesGraphVertex,AlternativesGraphEdge>();
+		this.graph = new JungLatticeGraph<AlternativesGraphVertex,AlternativesGraphEdge>();
 		this.alternativesVertexMap = new HashMap<String,AlternativesGraphVertex>();
 	}
 	
-	public DirectedSparseGraph<AlternativesGraphVertex,AlternativesGraphEdge> getGraph(){
+	public JungLatticeGraph<AlternativesGraphVertex, AlternativesGraphEdge> getGraph(){
 		return graph;
 	}
 	
@@ -215,7 +216,7 @@ public class AlternativesGraph {
 	*/
 	
 	public void clearGraph(){
-		this.graph = new DirectedSparseGraph<AlternativesGraphVertex,AlternativesGraphEdge>();
+		this.graph = new JungLatticeGraph<AlternativesGraphVertex,AlternativesGraphEdge>();
 		this.alternativesVertexMap = new HashMap<String,AlternativesGraphVertex>();
 	}
 

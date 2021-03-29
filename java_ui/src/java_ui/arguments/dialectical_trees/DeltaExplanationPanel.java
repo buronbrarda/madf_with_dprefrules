@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import java_ui.arguments.Argument;
 import java_ui.arguments.dialectical_trees.DTreeNode.Status;
+import java_ui.graphs.alternatives.lattice.Utils;
 
 public class DeltaExplanationPanel extends JPanel {
 	
@@ -140,6 +143,13 @@ public class DeltaExplanationPanel extends JPanel {
 				
 			}
 		});
+		
+		this.vv.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				super.componentResized(arg0);
+				Utils.fitGraph(vv, layout);
+			}});
 	}
 	
 	public void loadGraph(ArrayList<Argument> arguments){

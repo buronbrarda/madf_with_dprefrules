@@ -8,6 +8,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import java_ui.graphs.alternatives.lattice.JungLatticeLayout;
 
 public class AlternativesGraphCompoundVertexPopupMenu extends JPopupMenu{
 	
@@ -16,7 +17,7 @@ public class AlternativesGraphCompoundVertexPopupMenu extends JPopupMenu{
 	private JMenuItem addEdgesItem;
 	private Set<AlternativesGraphVertex> picked;
 	
-	public AlternativesGraphCompoundVertexPopupMenu(final AlternativesGraph graph, final VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge> vv) {
+	public AlternativesGraphCompoundVertexPopupMenu(final AlternativesGraph graph, final VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge> vv, final JungLatticeLayout<AlternativesGraphVertex, AlternativesGraphEdge> layout) {
 		
 		super();
 		
@@ -26,6 +27,7 @@ public class AlternativesGraphCompoundVertexPopupMenu extends JPopupMenu{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				graph.expand((AlternativesGraphCompoundVertex)v);
+				layout.update();
 				vv.repaint();
 			}
 		});

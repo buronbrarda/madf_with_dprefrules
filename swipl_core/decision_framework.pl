@@ -138,8 +138,10 @@
 		transitively_preferred(Y,X).
 		
 	
-	equivalent_alternatives(X, [X|Equivalent_Alts]):-
-		findall(Y, equivalent(X,Y), Equivalent_Alts).
+	equivalent_alternatives(X, Output):-
+		findall(Y, equivalent(X,Y), Equivalent_Alts),
+		findall(Z, incomparable(X,Z), Incomparable_Alts),
+		append([X|Equivalent_Alts],Incomparable_Alts,Output).
 	
 	equivalent_groups(Groups):-
 		equivalent_groups([],Groups).
@@ -158,10 +160,11 @@
 		True iff there not exist any preference relation between X and Y.			
 	************************************************************************************/
 	incomparable(X,Y):-
-		alternative(X), alternative(Y),
+		alternative(X), alternative(Y), X\=Y,
 		not(transitively_preferred(X,Y)),
 		not(transitively_preferred(Y,X)).
-
+	
+	
 	
 	/***********************************************************************************
 		generate_transitive_preferences.
@@ -308,9 +311,7 @@
 		retractall(preference_amount(_,_)),
 		equivalent_groups(Groups),
 		forall(member(G,Groups), (
-				G = [X|_],
-				findall(Y,strict_preferred(X,Y),List),
-				length(List,N),
+				representant(G,_,N),
 				assert(preference_amount(N,G))
 			)).
 	
@@ -327,5 +328,15 @@
 	
 	
 	aggregate_sorted_groups([],Aggregated_Set,Aggregated_Set).
+	
+	
+	representant([X],X,N):-
+		!,findall(Y,strict_preferred(X,Y),List),length(List,N).
 		
+	representant([X|Group],X,N):-
+		findall(Y,strict_preferred(X,Y),List),length(List,N),
+		representant(Group,_,M),
+		N > M,!.
 		
+	representant([_|Group],X,N):-
+		representant(Group,X,N).
