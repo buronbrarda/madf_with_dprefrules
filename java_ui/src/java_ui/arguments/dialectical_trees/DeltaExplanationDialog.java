@@ -35,4 +35,8 @@ public class DeltaExplanationDialog extends JDialog {
 		
 		graphPanel.loadGraph(arguments);
 	}
+	
+	public DeltaExplanationPanel getGraphPanel(){
+		return this.graphPanel;
+	}
 }

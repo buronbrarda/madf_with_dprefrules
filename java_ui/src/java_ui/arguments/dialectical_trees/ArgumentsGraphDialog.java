@@ -36,7 +36,7 @@ public class ArgumentsGraphDialog extends JDialog {
 		graphPanel.loadGraph();
 	}
 	
-public ArgumentsGraphDialog(ArrayList<Argument> arguments){
+	public ArgumentsGraphDialog(ArrayList<Argument> arguments){
 		
 		this.setTitle("Argument graph - (Prototype Version)");
 		this.setModalityType(ModalityType.MODELESS);
@@ -55,4 +55,9 @@ public ArgumentsGraphDialog(ArrayList<Argument> arguments){
 		
 		graphPanel.loadGraph();
 	}
+
+	public ArgumentsGraphPanel getGraphPanel(){
+		return this.graphPanel;
+	}
+	
 }

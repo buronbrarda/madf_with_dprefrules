@@ -63,6 +63,9 @@ public class AlternativesGraphEdgePopupMenu extends JPopupMenu{
 						ad.setVisible(true);
 						ad.setLocation(de.getX()+de.getWidth(), de.getY());
 						
+						de.getGraphPanel().setArgumentsPanel(ad.getGraphPanel());
+						ad.getGraphPanel().setExplanationPanel(de.getGraphPanel());
+						
 					}
 					
 				}

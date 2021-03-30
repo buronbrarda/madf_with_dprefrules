@@ -37,6 +37,8 @@ public class DeltaExplanationPanel extends JPanel {
 	private TreeLayout<DTreeNode, DTreeEdge> layout;
 	private VisualizationViewer<DTreeNode, DTreeEdge> vv;
 	private DefaultModalGraphMouse<DTreeNode, DTreeEdge> mouse;
+	
+	private ArgumentsGraphPanel argumentsPanel = null;
 	private String selectedArgId;
 	
 	private final Color DefeatedColor = new Color(250, 213, 62);
@@ -133,11 +135,16 @@ public class DeltaExplanationPanel extends JPanel {
 				DTreeNode node = (DTreeNode) e.getItem();
 				
 				if(vv.getPickedVertexState().isPicked(node)) {
-					selectedArgId = node.getArgument().getId();
+					String argId = node.getArgument().getId();
+					setSelectedArgument(argId);
+					if(argumentsPanel != null)
+						argumentsPanel.setSelectedArgument(argId);
 				}
 				
 				if(vv.getPickedVertexState().getPicked().isEmpty()) {
-					selectedArgId = "";
+					setSelectedArgument("");
+					if(argumentsPanel != null)
+						argumentsPanel.setSelectedArgument("");
 				}
 				
 				
@@ -152,6 +159,9 @@ public class DeltaExplanationPanel extends JPanel {
 			}});
 	}
 	
+	
+
+
 	public void loadGraph(ArrayList<Argument> arguments){
 		
 		ArrayList<DialecticalTree> dtrees = new ArrayList<DialecticalTree>();
@@ -190,7 +200,7 @@ public class DeltaExplanationPanel extends JPanel {
             setSizeTransformer(new Transformer<DTreeNode, Integer>() {
             	
             	public Integer transform(DTreeNode v){
-            		return v.getArgument().getId().equals(selectedArgId) ? 35 : 30;
+            		return v.getArgument().getId().equals(selectedArgId) ? 40 : 30;
             	}
 			});
         }
@@ -198,5 +208,14 @@ public class DeltaExplanationPanel extends JPanel {
 		public Shape transform(DTreeNode v) {
             return factory.getRegularPolygon(v, 3);
         }
+	}
+	
+	public void setSelectedArgument(String id) {
+		this.selectedArgId = id;
+		this.vv.repaint();
+	}
+	
+	public void setArgumentsPanel(ArgumentsGraphPanel panel) {
+		this.argumentsPanel = panel;
 	}
 }

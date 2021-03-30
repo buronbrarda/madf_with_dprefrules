@@ -7,6 +7,8 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 
 import javax.swing.JMenu;
@@ -31,7 +33,13 @@ public class ArgumentsGraphPanel extends JPanel {
 	private DefaultModalGraphMouse<Argument, DTreeEdge> mouse;
 	
 	private final Color acceptedArgumentColor = new Color(31, 221, 19);
+	private final Color acceptedSelectedArgumentColor = new Color(17, 117, 10);
+	
 	private final Color rejectedArgumentColor = new Color(243, 12, 12);
+	private final Color rejectedSelectedArgumentColor = new Color(195, 9, 9);
+			
+	private String selectedArgId;
+	private DeltaExplanationPanel explanationPanel = null;
 	
 	
 	public ArgumentsGraphPanel(){
@@ -50,6 +58,8 @@ public class ArgumentsGraphPanel extends JPanel {
 
 
 	private void initVisualizerViewer(){
+		this.selectedArgId = "";
+		
 		this.vv = new VisualizationViewer<Argument, DTreeEdge>(this.layout);
 		
 		
@@ -69,9 +79,12 @@ public class ArgumentsGraphPanel extends JPanel {
 		
 		this.vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<Argument, Paint>() {
 
+			
+
 			@Override
 			public Paint transform(Argument v) {
-				return v.isAccepted() ? acceptedArgumentColor : rejectedArgumentColor;
+				return v.isAccepted() ? (v.getId().equals(selectedArgId) ? acceptedSelectedArgumentColor : acceptedArgumentColor) : 
+										(v.getId().equals(selectedArgId) ? rejectedSelectedArgumentColor : rejectedArgumentColor);
 			}
 		});
 		
@@ -110,6 +123,30 @@ public class ArgumentsGraphPanel extends JPanel {
 				super.componentResized(arg0);
 				Utils.fitGraph(vv, layout);
 			}});
+		
+		
+		this.vv.getPickedVertexState().addItemListener(new ItemListener() {
+					
+					@Override
+					public void itemStateChanged(ItemEvent e) {
+						Argument node = (Argument) e.getItem();
+						
+						if(vv.getPickedVertexState().isPicked(node)) {
+							String argId = node.getId();
+							setSelectedArgument(argId);
+							if(explanationPanel != null)
+								explanationPanel.setSelectedArgument(argId);
+						}
+						
+						if(vv.getPickedVertexState().getPicked().isEmpty()) {
+							setSelectedArgument(null);
+							if(explanationPanel != null)
+								explanationPanel.setSelectedArgument("");
+						}
+						
+						
+					}
+		});
 	}
 	
 	public void loadGraph(){
@@ -138,7 +175,7 @@ public class ArgumentsGraphPanel extends JPanel {
             setSizeTransformer(new Transformer<Argument, Integer>() {
             	
             	public Integer transform(Argument v){
-            		return 30;
+            		return v.getId().equals(selectedArgId) ? 40 : 30;
             	}
 			});
         }
@@ -146,5 +183,15 @@ public class ArgumentsGraphPanel extends JPanel {
 		public Shape transform(Argument v) {
             return factory.getRegularPolygon(v, 3);
         }
+	}
+
+
+	public void setSelectedArgument(String id) {
+		this.selectedArgId = id;
+		this.vv.repaint();
+	}
+	
+	public void setExplanationPanel(DeltaExplanationPanel panel) {
+		this.explanationPanel  = panel;
 	}
 }
