@@ -74,7 +74,7 @@ public class AllStepsPanel extends JPanel{
 		);
 		
 		step4 = new DefineRuleImportanceStepPanel(
-				"4. Define the agent's priority order, and the importance"+"\n"+"each agent assigns to the CPref-rules.",
+				"4. Define the agent's priority order, and the importance each agent assigns to the CPref-rules.",
 				"Importance Orders",
 				new RuleImportanceTableEditorPanel(),
 				new RuleImportancePrologLoader()
