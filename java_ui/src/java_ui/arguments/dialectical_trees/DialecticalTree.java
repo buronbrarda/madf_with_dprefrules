@@ -1,6 +1,5 @@
 package java_ui.arguments.dialectical_trees;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -9,9 +8,7 @@ import org.jpl7.Term;
 import org.jpl7.Util;
 
 import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Tree;
-import edu.uci.ics.jung.graph.util.EdgeType;
 import java_ui.arguments.Argument;
 
 public class DialecticalTree extends DelegateForest<DTreeNode, DTreeEdge> implements Tree<DTreeNode, DTreeEdge>{

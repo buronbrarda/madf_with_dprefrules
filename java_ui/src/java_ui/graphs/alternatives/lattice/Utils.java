@@ -52,13 +52,14 @@ public class Utils {
 
 	private static final double crossover = 1.0;
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Rectangle getGraphBounds(Layout layout) {
 		int minX = 10000;
 		int minY = 10000;
 		int maxX = 0;
 		int maxY = 0;
 		
-		Graph<?,?> graph = layout.getGraph();
+		Graph graph = layout.getGraph();
 
 		for (Object m : graph.getVertices()) {
 			Point2D point = (Point2D) layout.transform(m);

@@ -1,13 +1,9 @@
 package java_ui.arguments.dialectical_trees;
 
 import java.util.ArrayList;
-import java.util.Collection;
-
 import edu.uci.ics.jung.graph.DelegateForest;
 import edu.uci.ics.jung.graph.Forest;
 import edu.uci.ics.jung.graph.Tree;
-import edu.uci.ics.jung.graph.util.EdgeType;
-import edu.uci.ics.jung.graph.util.Pair;
 
 public class DeltaExplanation extends DelegateForest<DTreeNode, DTreeEdge> implements Forest<DTreeNode,DTreeEdge>{
 	

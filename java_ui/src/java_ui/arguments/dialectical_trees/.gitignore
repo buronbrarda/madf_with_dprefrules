@@ -22,3 +22,12 @@
 /DeltaExplanationPanel$5.class
 /ArgumentsGraphPanel$4.class
 /ArgumentsGraphPanel$5.class
+/ArgumentsGraphPanel$ArgumentLabelRenderer.class
+/ArgumentsGraphPanel$ArgumentStrokeTransformer.class
+/DeltaExplanationPanel$DTreeNodeLabelRenderer.class
+/DeltaExplanationPanel$DTreeNodeStrokeTransformer.class
+/DeltaExplanationPanel$6.class
+/ArgumentsGraphPanel$ArgumentsGraphFocusListener.class
+/DeltaExplanationPanel$DeltaExplanationFocusListener.class
+/ArgumentsGraphPanel$ArgumentFillPaintTransformer.class
+/DeltaExplanationPanel$DTreeNodeFillPaintTransformer.class

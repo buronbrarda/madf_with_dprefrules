@@ -1,16 +1,24 @@
 package java_ui.arguments.dialectical_trees;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -22,6 +30,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
+import edu.uci.ics.jung.visualization.renderers.DefaultVertexLabelRenderer;
 import java_ui.arguments.Argument;
 import java_ui.graphs.alternatives.lattice.Utils;
 
@@ -37,6 +46,8 @@ public class ArgumentsGraphPanel extends JPanel {
 	
 	private final Color rejectedArgumentColor = new Color(243, 12, 12);
 	private final Color rejectedSelectedArgumentColor = new Color(195, 9, 9);
+	
+	private final Color selectedArgumentLabelColor = new Color(3, 98, 252);
 			
 	private String selectedArgId;
 	private DeltaExplanationPanel explanationPanel = null;
@@ -62,6 +73,7 @@ public class ArgumentsGraphPanel extends JPanel {
 		
 		this.vv = new VisualizationViewer<Argument, DTreeEdge>(this.layout);
 		
+		this.vv.addFocusListener(new ArgumentsGraphFocusListener());
 		
 		this.vv.setGraphMouse(this.mouse);
 		
@@ -77,16 +89,7 @@ public class ArgumentsGraphPanel extends JPanel {
 		
 		this.mouse.setMode(Mode.PICKING);
 		
-		this.vv.getRenderContext().setVertexFillPaintTransformer(new Transformer<Argument, Paint>() {
-
-			
-
-			@Override
-			public Paint transform(Argument v) {
-				return v.isAccepted() ? (v.getId().equals(selectedArgId) ? acceptedSelectedArgumentColor : acceptedArgumentColor) : 
-										(v.getId().equals(selectedArgId) ? rejectedSelectedArgumentColor : rejectedArgumentColor);
-			}
-		});
+		
 		
 		
 		this.vv.getRenderContext().setEdgeLabelTransformer(new Transformer<DTreeEdge, String>(){
@@ -115,7 +118,11 @@ public class ArgumentsGraphPanel extends JPanel {
 			
 		});
 		
+		
+		this.vv.getRenderContext().setVertexFillPaintTransformer(new ArgumentFillPaintTransformer());
 		this.vv.getRenderContext().setVertexShapeTransformer(new ArgumentShapeTransformer());
+		this.vv.getRenderContext().setVertexStrokeTransformer(new ArgumentStrokeTransformer());
+		this.vv.getRenderContext().setVertexLabelRenderer(new ArgumentLabelRenderer(selectedArgumentLabelColor));
 		
 		this.vv.addComponentListener(new ComponentAdapter() {
 			@Override
@@ -129,21 +136,27 @@ public class ArgumentsGraphPanel extends JPanel {
 					
 					@Override
 					public void itemStateChanged(ItemEvent e) {
-						Argument node = (Argument) e.getItem();
-						
-						if(vv.getPickedVertexState().isPicked(node)) {
-							String argId = node.getId();
-							setSelectedArgument(argId);
-							if(explanationPanel != null)
-								explanationPanel.setSelectedArgument(argId);
+						if(vv.getPickedVertexState().getPicked().size() == 1) {
+							Argument node = (Argument) e.getItem();
+							
+							if(vv.getPickedVertexState().isPicked(node)) {
+								String argId = node.getId();
+								setSelectedArgument(argId);
+								if(explanationPanel != null)
+									explanationPanel.setSelectedArgument(argId);
+							}
+							
+							if(vv.getPickedVertexState().getPicked().isEmpty()) {
+								setSelectedArgument("none");
+								if(explanationPanel != null)
+									explanationPanel.setSelectedArgument("none");
+							}
 						}
-						
-						if(vv.getPickedVertexState().getPicked().isEmpty()) {
-							setSelectedArgument(null);
+						else {
+							setSelectedArgument("many");
 							if(explanationPanel != null)
-								explanationPanel.setSelectedArgument("");
+								explanationPanel.setSelectedArgument("none");
 						}
-						
 						
 					}
 		});
@@ -167,23 +180,6 @@ public class ArgumentsGraphPanel extends JPanel {
 		this.graph.clearGraph();
 		this.vv.repaint();
 	}
-	
-	
-	private class ArgumentShapeTransformer extends EllipseVertexShapeTransformer<Argument>{
-		
-		ArgumentShapeTransformer() {
-            setSizeTransformer(new Transformer<Argument, Integer>() {
-            	
-            	public Integer transform(Argument v){
-            		return v.getId().equals(selectedArgId) ? 40 : 30;
-            	}
-			});
-        }
-		
-		public Shape transform(Argument v) {
-            return factory.getRegularPolygon(v, 3);
-        }
-	}
 
 
 	public void setSelectedArgument(String id) {
@@ -193,5 +189,95 @@ public class ArgumentsGraphPanel extends JPanel {
 	
 	public void setExplanationPanel(DeltaExplanationPanel panel) {
 		this.explanationPanel  = panel;
+	}
+	
+	private class ArgumentsGraphFocusListener implements FocusListener {
+		
+		@Override
+		public void focusLost(FocusEvent e) {
+			// do nothing
+		}
+		
+		@Override
+		public void focusGained(FocusEvent e) {
+			try {
+				for(Argument v : vv.getPickedVertexState().getPicked()) {
+					vv.getPickedVertexState().pick(v, false);
+				}
+			}catch (ConcurrentModificationException exception) {
+				// do nothing
+			}
+		}
+	}
+	
+	private class ArgumentFillPaintTransformer implements Transformer<Argument,Paint>{
+
+		@Override
+		public Color transform(Argument v) {
+			if(selectedArgId.equals("many") && vv.getRenderContext().getPickedVertexState().isPicked(v)) {
+				return selectedArgumentLabelColor;
+			}
+			else {
+				if(v.getId().equals(selectedArgId)) {
+					return v.isAccepted() ? acceptedSelectedArgumentColor : rejectedSelectedArgumentColor;
+				}
+				else {
+					return v.isAccepted() ? acceptedArgumentColor : rejectedArgumentColor;
+				}
+			}
+		}
+		
+	}
+	
+	private class ArgumentShapeTransformer extends EllipseVertexShapeTransformer<Argument>{
+		
+		ArgumentShapeTransformer() {
+            setSizeTransformer(new Transformer<Argument, Integer>() {
+            	
+            	public Integer transform(Argument v){
+            		return 30;
+            	}
+			});
+        }
+		
+		public Shape transform(Argument v) {
+            return factory.getRegularPolygon(v, 3);
+        }
+	}
+	
+	private class ArgumentStrokeTransformer implements Transformer<Argument, Stroke> {
+
+		@Override
+		public Stroke transform(Argument v) {
+			float [] dash = {5.0f};
+			Stroke toReturn = new BasicStroke();
+			
+			if(v.getId().equals(selectedArgId))
+				toReturn = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f);
+			
+			return  toReturn;
+		}
+		
+	};
+	
+	private class ArgumentLabelRenderer extends DefaultVertexLabelRenderer{
+
+		public ArgumentLabelRenderer(Color pickedVertexLabelColor) {
+			super(pickedVertexLabelColor);
+		}
+		
+		@Override
+		public <V> Component getVertexLabelRendererComponent(JComponent vv, Object value, Font font, boolean isSelected, V vertex) {
+			isSelected = selectedArgId.equals("many") ? isSelected : false;
+			super.getVertexLabelRendererComponent(vv, value, font, isSelected, vertex);
+			
+			if(((Argument)vertex).getId().equals(selectedArgId)) {
+				this.setForeground(this.pickedVertexLabelColor);
+			}
+			
+			
+			return this;
+		}
+		
 	}
 }

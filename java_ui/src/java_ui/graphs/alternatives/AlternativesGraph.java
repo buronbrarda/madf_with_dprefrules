@@ -10,7 +10,6 @@ import org.jpl7.Query;
 import org.jpl7.Term;
 import org.jpl7.Util;
 
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import java_ui.graphs.alternatives.lattice.JungLatticeGraph;
 
 public class AlternativesGraph {
