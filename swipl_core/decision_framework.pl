@@ -1,5 +1,5 @@
 :- module(decision_framework,[		
-		run/5,
+		run/4,
 		
 		argument/3,
 		dtree_node/5,
@@ -19,7 +19,7 @@
 		selected_alternative/1,
 		selected_alternatives/1,
 		justification_rules/3,
-		equivalent_groups_ranking/1,
+		ranking_parent/2,
 		
 		justification/4
 	]).
@@ -31,16 +31,17 @@
 	
 	:-dynamic explicitly_preferred/2.
 	:-dynamic reaches/2.
-	:-dynamic preference_amount/2.
+	:-dynamic preference_amount/3.
+	:-dynamic ranking_parent/2.
 	
 	
 	
-	run(Selection,Order,Args_Count,Reasoning_Time,Selection_Time):-
+	run(Selection,Args_Count,Reasoning_Time,Selection_Time):-
 		init(T1,T2),
 		
 		selected_alternatives(Selection),
 		
-		equivalent_groups_ranking(Order),
+		generate_equivalent_groups_ranking,
 			
 		get_time(T3),
 			
@@ -87,85 +88,6 @@
 	assert_preference(_,_).
 	
 	
-	
-	/***********************************************************************************
-		weakly_preferred(?X,?Y).
-		
-		An alternative X is weakly preferred over Y iff X is transitively preferred over
-		Y but it is not the case that X is explicitly preferred over Y. That means that
-		there is no argument-based explanation to justify that X is preferred over Y.
-			
-	************************************************************************************/
-	weakly_preferred(X,Y):-
-		alternative(X), alternative(Y),
-		transitively_preferred(X,Y),
-		explicitly_preferred(X,Y).
-	
-	
-	/***********************************************************************************
-		transitively_preferred(?X,?Y).
-		
-		An alternative X is transitively preferred over Y iff there exists a transitive
-		sequence between X and Y.
-			
-	************************************************************************************/
-	
-	transitively_preferred(X,Y):-
-		reaches(X,Y),!.
-	
-	/***********************************************************************************
-		strict_preferred(?X,?Y).
-		
-		True iff X is transitively preferred over Y and Y is not transitively preferred
-		over X.
-			
-	************************************************************************************/
-	strict_preferred(X,Y):-
-		alternative(X), alternative(Y), X \= Y,
-		transitively_preferred(X,Y),
-		not(transitively_preferred(Y,X)).	
-	
-
-	/***********************************************************************************
-		equivalent(?X,?Y).
-		
-		True iff X is just as preferred as Y.
-			
-	************************************************************************************/
-	equivalent(X,Y):-
-		alternative(X), alternative(Y), X \= Y,
-		transitively_preferred(X,Y),
-		transitively_preferred(Y,X).
-		
-	
-	equivalent_alternatives(X, Output):-
-		findall(Y, equivalent(X,Y), Equivalent_Alts),
-		findall(Z, incomparable(X,Z), Incomparable_Alts),
-		append([X|Equivalent_Alts],Incomparable_Alts,Output).
-	
-	equivalent_groups(Groups):-
-		equivalent_groups([],Groups).
-		
-	equivalent_groups(Visited, [New_Group|Groups]):-
-		alternative(X), not(member(X,Visited)),
-		equivalent_alternatives(X,New_Group),
-		append(Visited,New_Group,New_Visited),
-		equivalent_groups(New_Visited,Groups),!.
-		
-	equivalent_groups(_, []).
-
-	/***********************************************************************************
-		incomparable(?X,?Y).
-		
-		True iff there not exist any preference relation between X and Y.			
-	************************************************************************************/
-	incomparable(X,Y):-
-		alternative(X), alternative(Y), X\=Y,
-		not(transitively_preferred(X,Y)),
-		not(transitively_preferred(Y,X)).
-	
-	
-	
 	/***********************************************************************************
 		generate_transitive_preferences.
 		
@@ -209,6 +131,79 @@
 	
 	reached_by(X,Y):-
 		explicitly_preferred(X,Y).
+	
+	
+	/***********************************************************************************
+		transitively_preferred(?X,?Y).
+		
+		An alternative X is transitively preferred over Y iff there exists a transitive
+		sequence between X and Y.
+			
+	************************************************************************************/
+	
+	transitively_preferred(X,Y):-
+		reaches(X,Y),!.
+	
+	/***********************************************************************************
+		strict_preferred(?X,?Y).
+		
+		True iff X is transitively preferred over Y and Y is not transitively preferred
+		over X.
+			
+	************************************************************************************/
+	strict_preferred(X,Y):-
+		alternative(X), alternative(Y), X \= Y,
+		transitively_preferred(X,Y),
+		not(transitively_preferred(Y,X)).	
+	
+	
+	/***********************************************************************************
+		weakly_preferred(?X,?Y).
+		
+		An alternative X is weakly preferred over Y iff X is transitively preferred over
+		Y but it is not the case that X is explicitly preferred over Y. That means that
+		there is no argument-based explanation to justify that X is preferred over Y.
+			
+	************************************************************************************/
+	weakly_preferred(X,Y):-
+		alternative(X), alternative(Y),
+		transitively_preferred(X,Y),
+		not(explicitly_preferred(X,Y)).
+
+	/***********************************************************************************
+		equivalent(?X,?Y).
+		
+		True iff X is just as preferred as Y.
+			
+	************************************************************************************/
+	equivalent(X,X).
+	
+	equivalent(X,Y):-
+		alternative(X), alternative(Y), X \= Y,
+		transitively_preferred(X,Y),
+		transitively_preferred(Y,X).
+	
+	equivalent_groups(Groups):-
+		equivalent_groups([],Groups).
+		
+	equivalent_groups(Visited, [New_Group|Groups]):-
+		alternative(X), not(member(X,Visited)),!,
+		findall(Y, equivalent(X,Y), New_Group),
+		append(New_Group,Visited,New_Visited),
+		equivalent_groups(New_Visited,Groups),!.
+		
+	equivalent_groups(_, []).
+
+	/***********************************************************************************
+		incomparable(?X,?Y).
+		
+		True iff there not exist any preference relation between X and Y.			
+	************************************************************************************/
+	incomparable(X,Y):-
+		alternative(X), alternative(Y), X\=Y,
+		not(transitively_preferred(X,Y)),
+		not(transitively_preferred(Y,X)).
+	
 		
 	
 	/***********************************************************************************
@@ -295,48 +290,37 @@
 		not((alternative(Y), X \= Y, strict_preferred(Y,X))).
 	
 	/***********************************************************************************
-		equivalent_groups_ranking(?Ranking).
+		generate_equivalent_groups_ranking
 		
 		
 
 	************************************************************************************/
-	equivalent_groups_ranking(Ranking):-
-		assert_preferences_amount,
-		setof((N,Group), preference_amount(N,Group), SortedGroups),
-		aggregate_sorted_groups(SortedGroups,[],Ranking),
-		retractall(preference_amount(_,_)).
 	
 	
-	assert_preferences_amount:-
-		retractall(preference_amount(_,_)),
+	generate_equivalent_groups_ranking:-	
+		retractall(ranking_parent(_,_)),
 		equivalent_groups(Groups),
-		forall(member(G,Groups), (
-				representant(G,_,N),
-				assert(preference_amount(N,G))
-			)).
-	
-	aggregate_sorted_groups(In_Process,Aux,Aggregated_Set):-
-		In_Process = [(N,_)|_],
-		
-		findall((N,Y), (member((N,Y),In_Process)), Substract_Equivalent_Set),
-		
-		findall(Y, member((N,Y),Substract_Equivalent_Set), Equivalent_Set),
-		
-		subtract(In_Process,Substract_Equivalent_Set,Substracted_List),
-		
-		aggregate_sorted_groups(Substracted_List,[Equivalent_Set|Aux],Aggregated_Set),!.
+		forall((member(G,Groups), G=[X|_], not(strict_preferred(_,X))),(
+			assert(ranking_parent(null,G)),
+			generate_ranking(G,Groups)
+		)).
 	
 	
-	aggregate_sorted_groups([],Aggregated_Set,Aggregated_Set).
+	generate_ranking(Parent,Groups):-
+		not(ranking_parent(Parent,_)),!,
+		children_groups(Parent,Children,Groups),
+		forall((member(G,Children)),(
+			assert(ranking_parent(Parent,G)),
+			generate_ranking(G,Groups)
+		)).
 	
+	generate_ranking(_,_).
 	
-	representant([X],X,N):-
-		!,findall(Y,strict_preferred(X,Y),List),length(List,N).
-		
-	representant([X|Group],X,N):-
-		findall(Y,strict_preferred(X,Y),List),length(List,N),
-		representant(Group,_,M),
-		N > M,!.
-		
-	representant([_|Group],X,N):-
-		representant(Group,X,N).
+	children_groups(Parent,Children,Groups):-
+		Parent=[X|_],
+		findall(Child,(
+			member(Child,Groups),
+			Child = [Y|_],
+			strict_preferred(X,Y),
+			not( (member([Z|_],Groups), strict_preferred(X,Z), strict_preferred(Z,Y)) )
+		),Children).

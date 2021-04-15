@@ -3,6 +3,8 @@ package java_ui.graphs.alternatives;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +31,7 @@ public class AlternativesGraph {
 	
 	public void load(){
 		
-		loadFirstSigthGraph();
+		loadFirstSigthGraph("null");
 		
 		//loadVerteces();
 		
@@ -96,79 +98,85 @@ public class AlternativesGraph {
 	private AlternativesGraphVertex buildVertex(Term [] verteces_group) {
 		
 		AlternativesGraphVertex toReturn;
-		
+
 		if(verteces_group.length == 1){
 			
-			toReturn = new AlternativesGraphSimpleVertex(verteces_group[0].toString());
-		
-			alternativesVertexMap.put(toReturn.getId(), toReturn);
+			String id = verteces_group[0].toString();
+			toReturn = alternativesVertexMap.get(id);
+			
+			if(toReturn == null) {
+				toReturn = new AlternativesGraphSimpleVertex(id);
+				alternativesVertexMap.put(toReturn.getId(), toReturn);
+			}
+			
 			
 		}else{
 			
-			toReturn = new AlternativesGraphCompoundVertex(termArrayToStringArray(verteces_group));
 			
-			alternativesVertexMap.put(toReturn.getId(), toReturn);
+			toReturn = new AlternativesGraphCompoundVertex(termArrayToStringArray(verteces_group));
+			AlternativesGraphVertex aux = alternativesVertexMap.get(toReturn.getId());
+			
+			if(aux == null) {
+				alternativesVertexMap.put(toReturn.getId(), toReturn);
+			}
+			else {
+				toReturn = aux;
+			}
 			
 		}
 		
 		return toReturn;
 	}
 
-	private void loadFirstSigthGraph(){	
-		Query q = new Query("equivalent_groups_ranking(Ranking)");
+	private void loadFirstSigthGraph(String parent){
+		Query q = new Query("ranking_parent("+parent+",Kid)");
 		
-		while(q.hasNext()){
-			Map<String, Term> s = q.next();
-			
-			loadFirstSightGraphVerteces(s.get("Ranking"));
-			
-			loadFirstSightGraphEdges(s.get("Ranking"));	
-			
+		LinkedList<Term> kids = new LinkedList<Term>();
+
+		for(Map<String, Term> solution : q) {
+			kids.add(solution.get("Kid"));
 		}
+			
+		loadFirstSightGraphVerteces(kids);
+		
+		if(!parent.toString().equals("null")) {
+			loadFirstSightGraphEdges(Util.textToTerm(parent),kids);
+		}
+		
+		for(Term k : kids) {
+			loadFirstSigthGraph(listToString(k));
+		}
+
 		
 	}
 	
 	
-	private void loadFirstSightGraphVerteces(Term ranking){		
-		Term [] eq_groups = Util.listToTermArray(ranking);
-		
-		for(Term eqg : eq_groups){
-			
-			Term [] groups = Util.listToTermArray(eqg);
-			
-			for(Term g : groups){
-				AlternativesGraphVertex v = buildVertex(Util.listToTermArray(g));
-				graph.addVertex(v);
-			}
+	private void loadFirstSightGraphVerteces(List<Term> groups){		
+		for(Term g : groups){
+			AlternativesGraphVertex v = buildVertex(Util.listToTermArray(g));
+			graph.addVertex(v);
 		}
 	}
 	
 	
-	private void loadFirstSightGraphEdges(Term ranking) {
-		Term [] eq_groups = Util.listToTermArray(ranking);
-		
+	private void loadFirstSightGraphEdges(Term parent, List<Term> kids) {
 		AlternativesGraphVertex v1, v2;
+		Term [] parentArray = Util.listToTermArray(parent);
 		
-		for(int i = 0; i < eq_groups.length-1; i++){
+		for(Term group : kids){		
 			
-			Term [] groups1 = Util.listToTermArray(eq_groups[i]);
-			Term [] groups2 = Util.listToTermArray(eq_groups[i+1]);
+			Term [] kidArray = Util.listToTermArray(group);
 			
-			for(Term g1 : groups1){
-				for(Term g2 : groups2){
-					
-					Term [] array1 = Util.listToTermArray(g1);
-					Term [] array2 = Util.listToTermArray(g2);
-					
-					String id1 = array1.length == 1 ? array1[0].toString() : listToString(g1);
-					String id2 = array2.length == 1 ? array2[0].toString() : listToString(g2);
-					
-					v1 = alternativesVertexMap.get(id1);
-					v2 = alternativesVertexMap.get(id2);					
-					
-					graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
-				}
+			String id1 = parentArray.length == 1 ? parentArray[0].toString() : listToString(parent);
+			String id2 = kidArray.length == 1 ? kidArray[0].toString() : listToString(group);
+			
+			v1 = alternativesVertexMap.get(id1);
+			v2 = alternativesVertexMap.get(id2);
+			
+			if(graph.findEdge(v1, v2) == null) {
+				graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
 			}
+			
 			
 		}
 		

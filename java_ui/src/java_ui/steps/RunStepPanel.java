@@ -68,7 +68,6 @@ public class RunStepPanel extends StepPanel {
 		this.runButton.setEnabled(true);
 		
 		resultsPanel.setSelectedAlternatives("");
-		resultsPanel.setAlternativesRelation("");
 	}
 
 	@Override
@@ -76,7 +75,6 @@ public class RunStepPanel extends StepPanel {
 		this.runButton.setEnabled(false);
 		
 		resultsPanel.setSelectedAlternatives("");
-		resultsPanel.setAlternativesRelation("");
 		
 		resultsPanel.setArgumentsCount("");
 		resultsPanel.setReasoningTime("");
@@ -89,22 +87,18 @@ public class RunStepPanel extends StepPanel {
 	private void runButtonAction(ActionEvent e){
 		this.cleanStep();
 		
-		Query q = new Query("run(Selection,Order,Args_Count,Reasoning_Time,Selection_Time)");
-		
-		Map<String, Term> solution;
+		Query q = new Query("run(Selection,Args_Count,Reasoning_Time,Selection_Time)");
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
-		while(q.hasNext()){
-			solution = q.next();
+		for(Map<String,Term> solution : q) {	
 			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
-			resultsPanel.setAlternativesRelation(parseAlternativesRelation(Util.listToTermArray(solution.get("Order"))));
 			resultsPanel.setArgumentsCount(solution.get("Args_Count").toString());
 			resultsPanel.setReasoningTime(solution.get("Reasoning_Time").toString()+" ms");
 			resultsPanel.setSelectionTime(solution.get("Selection_Time").toString()+" ms");
 			resultsPanel.enableGraphButtons();
 		}
-		
+
 		if(!q.hasSolution()){
 			String message = "The completeness and consistency requirements for the assessments base are not fullfilled.\n"+
 							 "Please, check if the set if set profile rules and the evidence set are correct.";
@@ -113,7 +107,6 @@ public class RunStepPanel extends StepPanel {
 		}
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		
 		resultsPanel.loadAlternativesGraph();
 	}
 	
@@ -132,27 +125,12 @@ public class RunStepPanel extends StepPanel {
 		return toReturn;
 	}
 	
-	
-	private String parseAlternativesRelation(Term [] list){
-		String toReturn = "";
-		
-		int i;
-		
-		for(i = 0; i < list.length-1; i++){
-			toReturn += "["+termArrayToText(Util.listToTermArray(list[i]))+"] --> ";
-		}
-		
-		toReturn += "["+termArrayToText(Util.listToTermArray(list[i]))+"]";
-		
-		return toReturn;
-	}
 
 	@Override
 	protected void cleanStepAction() {
 		resultsPanel.cleanGraphs();
 		
 		resultsPanel.setSelectedAlternatives("");
-		resultsPanel.setAlternativesRelation("");
 		resultsPanel.setArgumentsCount("");
 		resultsPanel.setReasoningTime("");
 		resultsPanel.setSelectionTime("");

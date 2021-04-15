@@ -7,8 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Font;
-import javax.swing.JTextArea;
-
 import java_ui.arguments.dialectical_trees.ArgumentsGraphDialog;
 import java_ui.graphs.alternatives.AlternativesGraphDialog;
 import javax.swing.JTextField;
@@ -19,7 +17,6 @@ import javax.swing.JSeparator;
 
 
 public class ResultsPanel extends JPanel {
-	private JTextArea relationResults;
 	private JTextField selectedAlternativesText;
 	private JTextField reasoningTimeText;
 	private JTextField selectionTimeText;
@@ -206,8 +203,6 @@ public class ResultsPanel extends JPanel {
 			}
 		});
 		
-		relationResults = new JTextArea();
-		relationResults.setLineWrap(true);
 		GridBagConstraints gbc_relationResults = new GridBagConstraints();
 		gbc_relationResults.insets = new Insets(0, 5, 5, 5);
 		gbc_relationResults.fill = GridBagConstraints.BOTH;
@@ -218,10 +213,6 @@ public class ResultsPanel extends JPanel {
 	
 	public void setSelectedAlternatives(String alternatives){
 		selectedAlternativesText.setText(alternatives);
-	}
-	
-	public void setAlternativesRelation(String relation){
-		relationResults.setText(relation);
 	}
 	
 	public void loadAlternativesGraph() {
