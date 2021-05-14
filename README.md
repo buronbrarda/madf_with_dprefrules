@@ -1,4 +1,4 @@
-# Argumentation-Based Decision Support System with Conditional Preference Rules (ADDS with Cpref-rules)
+#Multi-agent Argumentation-Based Decision Support System with Conditional Preference Rules (MADSS with Cpref-rules)
 
 This project is an implementation of a research line carried out by Martín E. Buron Brarda, Luciano H. Tamargo and Alejandro J. García, all of them members of the Institute for Computer Science and Engineering (ICIC, UNS-CONICET).
 
