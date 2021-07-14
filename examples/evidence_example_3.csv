@@ -1,6 +1,6 @@
 alternative;days;entrmnt;service
-beach;11;good;good
-jungle;14;reg;vgood
 mntns;14;reg;vbad
+beach;11;good;vgood
 lake;20;bad;good
+jungle;14;reg;vgood
 cruise;10;good;good
