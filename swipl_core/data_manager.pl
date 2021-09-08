@@ -59,10 +59,13 @@
 		forall(member([C,V], Evidence),(
 			criterion(C,Values),
 			legal_value(V,Values),
-			assert(evidence(D, C, V))
+			add_evidence_piece(D,C,V)
 		)),
 		assert(alternative(D)).
-		
+	
+	
+	add_evidence_piece(_D,_C,null):-!.
+	add_evidence_piece(D,C,V):- assert(evidence(D, C, V)).
 	
 	/***********************************************************************************
 		remove_alternative(+D).
@@ -149,6 +152,8 @@
 		
 		True iff V is a legal value of the range Values.
 	************************************************************************************/
+	legal_value(null,_Values):-!.
+	
 	legal_value(V,Values):-
 		Values = number; Values = -number,!,
 		number(V).
