@@ -110,7 +110,7 @@ public class ArgumentsGraphPanel extends JPanel {
 				String label = "";
 				
 				if(vertex != null){
-					label += "A"+vertex.getId()+":<"+vertex.getClaim()+";"+vertex.getRule().toString()+">";
+					label += "A"+vertex.getId()+":<"+vertex.getClaim()+";"+vertex.getRules().toString()+";"+vertex.getSubargs().toString()+">";
 				}
 				
 				return label;

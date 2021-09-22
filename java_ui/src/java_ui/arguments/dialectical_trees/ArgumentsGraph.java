@@ -53,7 +53,7 @@ public class ArgumentsGraph {
 	
 	private void loadFullGraph(){
 		ArrayList<String> ids = new ArrayList<String>();
-		for(Map<String, Term> s : new Query("argument(ArgId,_,_)")) {
+		for(Map<String, Term> s : new Query("argument(ArgId,_,_,_)")) {
 			ids.add(s.get("ArgId").toString());
 		}
 		

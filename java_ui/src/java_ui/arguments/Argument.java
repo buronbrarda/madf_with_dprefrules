@@ -10,31 +10,41 @@ public class Argument {
 	
 	private String id;
 	private String claim;
-	private String rule;
+	private ArrayList<String> rules;
+	private ArrayList<String> subargs;
 	private boolean accepted;
 	
 	
-	public Argument(String id, String claim, String rule, boolean accepted){
+	public Argument(String id, String claim, ArrayList<String> rules, ArrayList<String> subargs,boolean accepted){
 		this.id = id;
 		this.claim = claim;
-		this.rule = rule;
+		this.rules = rules;
+		this.subargs = subargs;
 		this.accepted = accepted;
 	}
 	
 	
 	public Argument(String id) {
 		this.id = id;
-		
+		this.rules = new ArrayList<String>()
 		
 		//Query to know the claim and the rule of the argument.
 
-		Query qArg = new Query("claim("+id+",Claim), rule("+this.id+",RuleId)");
+		Query qArg = new Query("argument("+this.id+",RuleIds,Subargs,Claim)");
 
-		if(qArg.hasNext()){
-			
-			Map<String,Term> solution = qArg.next();
+		for(Map<String,Term> solution : qArg){
+
 			this.claim = solution.get("Claim").toString();
-			this.rule = solution.get("RuleId").toString();		
+
+			Term [] aux = Util.listToTermArray(solution.get("RuleIds"))
+			for(r : aux){
+				this.rules.addLast(r.toString())
+			}
+
+			aux = Util.listToTermArray(solution.get("Subargs"))
+			for(subarg : aux){
+				this.rules.addLast(subarg.toString())
+			}
 		}
 		
 		
@@ -54,8 +64,12 @@ public class Argument {
 		return this.claim;
 	}
 	
-	public String getRule(){
-		return this.rule;
+	public ArrayList<String> getRules(){
+		return this.rules;
+	}
+
+	public ArrayList<String> getSubargs(){
+		return this.subargs;
 	}
 	
 	public boolean isAccepted() {

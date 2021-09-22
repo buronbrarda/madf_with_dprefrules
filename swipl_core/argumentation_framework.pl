@@ -4,7 +4,8 @@
 		complement/2,
 		defeats/2,
 		claim/2,
-		rule/2,
+		rules/2,
+		subargs/2,
 		
 		dtree_node/5,
 		
@@ -32,41 +33,62 @@
 	
 		
 	/***********************************************************************************
-		rules(?Arg_Id, ?RuleId).
+		rules(?ArgId, ?RuleIds).
 		
-		True when RuleId is the rule's Id of the argument Argument identified with Id.
+		True when RuleIds is the set of rule Ids of the argument identified with ArgId.
 	************************************************************************************/
-	rule(Arg_Id,RuleId):-
-		argument(Arg_Id, [cpref_rule(RuleId,_)],_Claim).
+	rules(Arg_Id,RuleIds):-
+		argument(ArgId, Rules, _SubArgs, _Claim),
+		findall(RuleIds, member(cpref_rule(RuleId,_),Arg_Rules), RuleId).
 		
 	
 	/***********************************************************************************
-		claim(?Arg_Id?, Claim).
+		claim(?ArgId, ?Claim).
 		
-		True when Claim is the claim of the argument Argument identified with Id.
+		True when Claim is the claim of the argument ArgId.
 	************************************************************************************/
-	claim(Arg_Id, Claim):-
-		argument(Arg_Id, _Rule, Claim).
+	claim(ArgId, Claim):-
+		argument(ArgId, _Rules, _SubArgs, Claim).
 	
-	
+	/***********************************************************************************
+		claim(?ArgId, ?Subargs).
+		
+		True when Subargs is the set of the subarguments of the argument ArgId.
+	************************************************************************************/
+	subargs(ArgId,SubArgs):-
+		argument(ArgId, _Rules, SubArgs, _Claim).
+
 	/***********************************************************************************
 		complement(+ClaimA, +ClaimB).
 		
 		Define whether a literal is the complement of another literal.
 	************************************************************************************/
-	complement(pref(X,Y),pref(Y,X)).
+	complement(Claim,~Claim):- Claim \= ~Subclaim,!.
+	complement(~Claim,Claim):- Claim \= ~Subclaim,!.
+	complement(~Subclaim,SubclaimComp):- complement(Subclaim,SubclaimComp).
 	
 	
 	/***********************************************************************************
-		in_conflict(+ArgA, +ArgB).
+		in_conflict(+ArgA, +ArgB, +SubArgB).
 		
-		Define whether two arguments ArgA and Argb are in conflict.
+		Define whether the argument ArgA is in conflict with argument Argb
+		at Subargument SubArgB.
 	************************************************************************************/
-	in_conflict(Arg_Id_A, Arg_Id_B):-
+	in_conflict(Arg_Id_A, Arg_Id_B, Arg_Id_B):-
 		claim(Arg_Id_A, Claim_A),
 		claim(Arg_Id_B, Claim_B),
 		complement(Claim_A,Claim_B).
 
+	in_conflict(Arg_Id_A, Arg_Id_B, SubArgBi):-
+		argument(Arg_Id_A, RulesA, _SubArgsA, ClaimA),
+		argument(Arg_Id_A, RulesB, SubArgsB, ClaimB),
+		not(complement(ClaimA,ClaimB)),
+		sub_conflict(Arg_Id_A,SubArgsB,SubArgBi).
+
+	sub_conflict(Arg_Id_A,SubArgsB,SubArgBi):-
+		member(SubArgBi, SubArgsB),
+		in_conflict(Arg_Id_A, SubArgBi),!.	% The cut is for optimization, but it isn't necessary for correctness. 
+									  		% It is not possible to have two subarguments with the same claim
 	
 	/***********************************************************************************
 		stronger(+ArgA, +ArgB).
@@ -74,11 +96,25 @@
 		Defines whether ArgA is stronger than Argb.
 	************************************************************************************/	
 	stronger(Arg_Id_A,Arg_Id_B):-
-		rule(Arg_Id_A, RA),
-		rule(Arg_Id_B, RB),
-		importance_statement(AgentA,(RA > RB)),
+		rules(Arg_Id_A, Rules_A),
+		rules(Arg_Id_B, Rules_B),
+		member(RA, Rules_A),
+		member(RB, Rules_B),
+		stronger_rule(RA,RB),
 		not((
-			importance_statement(AgentB,(RB > RA)),
+			member(RBPrime, Rules_B),
+			stronger_rule(RBPrime,RA)
+		)),!.
+
+	/***********************************************************************************
+		stronger_rule(+RuleA, +RuleB).
+		
+		Defines whether RuleA is stronger than RuleB.
+	************************************************************************************/
+	stronger_rule(RuleA,RuleB):-
+		importance_statement(AgentA,(RuleA > RuleB)),
+		not((
+			importance_statement(AgentB,(RuleB > RuleA)),
 			has_priority(AgentB,AgentA)
 		)),!.
 	
@@ -103,8 +139,8 @@
 		A is stronger than B.
 	************************************************************************************/
 	properly_defeats(Arg_Id_A,Arg_Id_B):-
-		in_conflict(Arg_Id_A,Arg_Id_B),
-		stronger(Arg_Id_A,Arg_Id_B).	
+		in_conflict(Arg_Id_A,Arg_Id_B,SubArg_B),
+		stronger(Arg_Id_A,SubArg_B).
 	
 	
 	/***********************************************************************************
@@ -114,9 +150,9 @@
 		stronger than B and vice-versa.
 	************************************************************************************/
 	blocks(Arg_Id_A, Arg_Id_B):-
-		in_conflict(Arg_Id_A,Arg_Id_B),
-		not(stronger(Arg_Id_A, Arg_Id_B)), 
-		not(stronger(Arg_Id_B, Arg_Id_A)).	
+		in_conflict(Arg_Id_A,Arg_Id_B,SubArg_B),
+		not(stronger(Arg_Id_A, SubArg_B)), 
+		not(stronger(SubArg_B, Arg_Id_A)).	
 		
 	
 	% Arguments relation in_conflic, properly_defeats and blocks must be pre-calculated
@@ -133,7 +169,8 @@
 		)),
 		
 		forall((blocks(Arg_Id_A,Arg_Id_B)), (
-			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),  % Just in one direction cause block is symmetric
+			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),  % For subarguments blocks are not symetric.
+			if(d_in_conflict(Arg_Id_B,Arg_Id_A), true, assert(d_in_conflict(Arg_Id_B,Arg_Id_A))),
 			assert(d_blocks(Arg_Id_A,Arg_Id_B))
 		)).
 	
@@ -241,11 +278,11 @@
 		===============================================================================
 		
 		Every node within a linked dialectical tree is a tuple 
-		dtree_node(Id, Parent, Children, Arg_Id, Status), where:
+		dtree_node(Id, Parent, Children, ArgId, Status), where:
 		  - Id is the node id.
 		  - Parent is the node's parent id
 		  - Children is the list of node's children ids
-		  - Arg_Id is the node's argument id.
+		  - ArgId is the node's argument id.
 		  - Status is the result of the marking procedure.
 			  Status is 'U' (undefeated) when every child of the node is marked 'D'
 		      Status is 'D' (defeated) when the node has at least one child marked 'U'.
@@ -255,22 +292,22 @@
 		reset_id(dtree_node),
 		retractall(dtree_node(_,_,_,_,_)),
 		
-		forall((argument(Arg_Id,_,_),dialectical_tree(Arg_Id,Tree)), assert_dtree_nodes(Tree,null)).
+		forall((argument(ArgId,_,_,_),dialectical_tree(ArgId,Tree)), assert_dtree_nodes(Tree,null)).
 			
 	
 	assert_dtree_nodes(Dtree,null):-
 		next_id(dtree_node,Node_Id),
-		Dtree = (Arg_Id,Subtrees), 
+		Dtree = (ArgId,Subtrees), 
 		findall(Child_Id,(member(ST, Subtrees),assert_dtree_nodes(ST,Node_Id,Child_Id)),Children),
 		node_status(Children,Status),
-		assert(dtree_node(Node_Id,null,Children,Arg_Id,Status)).
+		assert(dtree_node(Node_Id,null,Children,ArgId,Status)).
 		
 	assert_dtree_nodes(Dtree,Father,Node_Id):-
 		next_id(dtree_node,Node_Id),
-		Dtree = (Arg_Id,Subtrees),
+		Dtree = (ArgId,Subtrees),
 		findall(Child_Id,(member(ST, Subtrees),assert_dtree_nodes(ST,Node_Id,Child_Id)),Children),
 		node_status(Children,Status),
-		assert(dtree_node(Node_Id,Father,Children,Arg_Id,Status)),!.
+		assert(dtree_node(Node_Id,Father,Children,ArgId,Status)),!.
 		
 	
 	%If every child of a node N is marked as U, then N is marked as D.		
@@ -287,8 +324,8 @@
 		Defines wheter Claim is warranted.
 	************************************************************************************/
 	warranted_conclusion(Claim):-
-		claim(Arg_Id, Claim),
-		dtree_node(_, null, _, Arg_Id, 'U'),!.
+		claim(ArgId, Claim),
+		dtree_node(_, null, _, ArgId, 'U'),!.
 	
 	
 	/***********************************************************************************

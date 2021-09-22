@@ -1,5 +1,6 @@
 :- module(arg_generator,[
-		argument/3,			%argument(Id,Rules,Claim)					
+		op(200, fx, ~),
+		argument/4,			%argument(Id,Rules,Claim)					
 		
 		generate_arguments/0,
 		args_count/1,
@@ -14,9 +15,9 @@
 	:-use_module(cpref_rules_interpreter).
 	:-use_module(ids_manager).
 	
-	
-	:-dynamic argument/3.
-	
+	:-op(200, xf, ~).
+
+	:-dynamic argument/4.
 	
 	
 	/***********************************************************************************
@@ -27,7 +28,7 @@
 	************************************************************************************/
 	remove_arguments:-
 		reset_id(arguments),
-		retractall(argument(_,_,_)).	
+		retractall(argument(_,_,_,_)).	
 		
 		
 	
@@ -45,11 +46,41 @@
 		generate_pre_comparisons,
 					
 		% Generates arguments from cpref_rules
-		forall(consult_cpref_rule(RuleId,Premises,Claim),(
-				next_id(arguments,ArgId),
-				assert(argument(ArgId,[cpref_rule(RuleId,Premises ==> Claim)],Claim))
+		forall(consult_cpref_rule(RuleId,Premises,pref(X,Y)),(
+			next_id(arguments,ArgId),
+			assert(argument(ArgId,[cpref_rule(RuleId,Premises ==> pref(X,Y))],[],pref(X,Y))),
 			)
-		).
+		)
+
+		% Generate opposite-arguments from the previous generated arguments.
+		% Note that opposite-arguments can be derived from other arguments.
+		forall((alternative(X), alternative(Y), X\=Y, rules_for_preference(X,Y,Rules,SubArgs))),(
+			next_id(arguments,ArgId),
+			assert(argument(ArgId,Rules,SubArgs,(~pref(Y,X))))
+		). 
+
+
+	/***********************************************************************************
+		rules_for_preference(+X,+Y,?Rules).
+		
+		True iff Rules is a set of rules whose claims derive pref(X,Y), where X and Y
+		must be instantiated with two alternatives.
+			
+	************************************************************************************/
+	rules_for_preference(X,Y,Rules,SubArgs):-
+		rules_for_preference(X,Y,Rules,SubArgs,[],[]).
+
+	rules_for_preference(X,Y,[Rule],[ArgId],Visited,VisitedClaims):-
+		argument(ArgId,[Rule],_,pref(X,Y)),
+		not(member(ArgId,Visited)).
+	
+	rules_for_preference(X,Z,[Rule|Rules],[ArgId|SubArgs],Visited,VisitedClaims):-
+		argument(ArgId,[Rule],_,pref(X,Y)).
+		Y \= Z,
+		not(member(ArgId,Visited)),
+		not(member(pref(Y,X),VisitedClaims)), %Ensure consistency of arguments.
+		rules_for_preference(Y,Z,Rules,SubArgs,[ArgId|Visited],[pref(X,Y)|VisitedClaims]).
+
 	
 	/***********************************************************************************
 		print_args.
@@ -58,7 +89,7 @@
 			
 	************************************************************************************/
 	print_args:-
-		forall(argument(Id,_Rule,_Claim), print_arg(Id)).
+		forall(argument(Id,_Rule,_,_Claim), print_arg(Id)).
 		
 	
 	/***********************************************************************************
@@ -68,16 +99,19 @@
 			
 	************************************************************************************/
 	print_args(RuleId):-
-		forall((argument(ArgId,[cpref_rule(RuleId,_)],_Claim), cpref_rule(RuleId,_)), print_arg(ArgId)).
+		forall((argument(ArgId,[cpref_rule(RuleId,_)],_,_Claim), cpref_rule(RuleId,_)), print_arg(ArgId)).
 		
 	
 	
 	
 	print_arg(Id):-
-		argument(Id,RuleId,Claim),
+		argument(Id,RuleIds,_,Claim),
 		writeln('<'),
 			write('\tId: '), writeln(Id),
-			write('\tRule: '), print_rule(RuleId),
+			write('\tRules: '), 
+				forall(member(Id,RuleIds),(
+					write('\t\t- '),print_rule(Id)
+				)),
 			write('\tClaim: '), writeln(Claim),
 		writeln('>').	
 	
@@ -88,7 +122,7 @@
 			
 	************************************************************************************/
 	args_count(N):-
-		findall(_,argument(_,_,_),Args),
+		findall(Id,argument(Id,_,_,_),Args),
 		length(Args,N).
 	
 

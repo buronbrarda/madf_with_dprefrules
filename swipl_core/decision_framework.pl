@@ -1,12 +1,13 @@
 :- module(decision_framework,[		
 		run/4,
 		
-		argument/3,
+		argument/4,
 		dtree_node/5,
 		
 		complement/2,
 		defeats/2,
-		rule/2,
+		rules/2,
+		subargs/2,
 		claim/2,
 		
 		explicitly_preferred/2,
@@ -26,7 +27,7 @@
 	
 	:-reexport(data_manager).
 	:-reexport(cpref_rules_interpreter,[op(1101, xfx, ==>)]).
-	:-use_module(arg_generator, [argument/3, args_count/1]).
+	:-use_module(arg_generator, [argument/4, args_count/1]).
 	:-use_module(argumentation_framework).
 	
 	:-dynamic explicitly_preferred/2.
@@ -217,11 +218,12 @@
 	************************************************************************************/
 	justification_rules(X,Y,Rules):-
 		explicitly_preferred(X,Y),
-		findall(Arg_Rule, (
+		findall(Arg_Rules, (
 			claim(Arg_Id,pref(X,Y)),
-			rule(Arg_Id,Arg_Rule)
-		),Rule_List),
-		list_to_set(Rule_List, Rules),!.
+			rules(Arg_Id,Arg_Rules)
+		),Rules_List),
+		flatten(Rules_List,Flat_Rules_List),
+		list_to_set(Flat_Rules_List, Rules),!.
 		
 	justification_rules(X,Y,[]):-
 		not(is_list(X)),
@@ -230,12 +232,13 @@
 		
 	justification_rules(X,[Y|Group],Rules):-
 		explicitly_preferred(X,Y),
-		findall(Arg_Rule, (
+		findall(Arg_Rules, (
 			claim(Arg_Id,pref(X,Y)),
-			rule(Arg_Id,Arg_Rule)
-		),Rule_List_X),
+			rules(Arg_Id,Arg_Rules)
+		),Rules_List_X),
+		flatten(Rules_List_X,Flat_Rules_List_X),
 		justification_rules(X,Group,Rules_G),!,
-		append(Rule_List_X, Rules_G, Aux),
+		append(Flat_Rules_List_X, Rules_G, Aux),
 		list_to_set(Aux,Rules).
 		
 	justification_rules(X,[Y|Group],Rules_G):-
@@ -246,12 +249,13 @@
 		
 	justification_rules([X|Group],Y,Rules):-
 		explicitly_preferred(X,Y),
-		findall(Arg_Rule, (
+		findall(Arg_Rules, (
 			claim(Arg_Id,pref(X,Y)),
-			rule(Arg_Id,Arg_Rule)
-		),Rule_List_X),
+			rule(Arg_Id,Arg_Rules)
+		),Rules_List_X),
+		flatten(Rules_List_X,Flat_Rules_List_X),
 		justification_rules(Group,Y,Rules_G),!,
-		append(Rule_List_X, Rules_G, Aux),
+		append(Flat_Rules_List_X, Rules_G, Aux),
 		list_to_set(Aux,Rules).
 		
 	justification_rules([X|Group],Y,Rules_G):-
