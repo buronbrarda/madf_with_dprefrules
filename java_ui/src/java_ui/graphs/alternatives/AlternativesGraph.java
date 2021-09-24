@@ -174,7 +174,10 @@ public class AlternativesGraph {
 			v2 = alternativesVertexMap.get(id2);
 			
 			if(graph.findEdge(v1, v2) == null) {
-				graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
+				ArrayList <String> list = new ArrayList<String>(); list.add("r*");
+				graph.addEdge(new AlternativesGraphStrongEdge(list), v1, v2);
+				//graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
+				
 			}
 			
 			
@@ -255,7 +258,9 @@ public class AlternativesGraph {
 			expandedVertices.add(simpleVertex);
 			
 			for(AlternativesGraphVertex p : predecessors){
-				this.graph.addEdge(new AlternativesGraphStrongEdge(p.getJustificationRulesFor(simpleVertex)), p, simpleVertex);
+				ArrayList <String> list = new ArrayList<String>(); list.add("r*");
+				this.graph.addEdge(new AlternativesGraphStrongEdge(list), p, simpleVertex);
+				//this.graph.addEdge(new AlternativesGraphStrongEdge(p.getJustificationRulesFor(simpleVertex)), p, simpleVertex);
 			}
 			
 			for(AlternativesGraphVertex s : successors){
@@ -279,7 +284,9 @@ public class AlternativesGraph {
 					
 					if(q.hasSolution()){
 						
-						this.graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
+						ArrayList <String> list = new ArrayList<String>(); list.add("r*");
+						this.graph.addEdge(new AlternativesGraphStrongEdge(list), v1, v2);
+						//this.graph.addEdge(new AlternativesGraphStrongEdge(v1.getJustificationRulesFor(v2)), v1, v2);
 						
 						q.close();
 					}

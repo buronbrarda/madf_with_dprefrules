@@ -377,4 +377,14 @@
         better(X,Y,size), min(X,size,reg) ==> pref(X,Y)
     )).
     
-    
+   agent(1). agent(2).
+   has_priority(1, 2).
+   
+   importance_statement(1,(r1 > r2)).
+   importance_statement(1,(r1 > r3)).
+   importance_statement(1,(r2 > r3)).
+   importance_statement(1,(r4 > r1)).
+   importance_statement(1,(r5 > r1)).
+   importance_statement(1,(r7 > r2)).
+   importance_statement(1,(r8 > r2)).
+   

@@ -1,9 +1,11 @@
 package java_ui.arguments;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.jpl7.Query;
 import org.jpl7.Term;
+import org.jpl7.Util;
 
 public class Argument {
 
@@ -26,7 +28,7 @@ public class Argument {
 	
 	public Argument(String id) {
 		this.id = id;
-		this.rules = new ArrayList<String>()
+		this.rules = new ArrayList<String>();
 		
 		//Query to know the claim and the rule of the argument.
 
@@ -36,14 +38,14 @@ public class Argument {
 
 			this.claim = solution.get("Claim").toString();
 
-			Term [] aux = Util.listToTermArray(solution.get("RuleIds"))
-			for(r : aux){
-				this.rules.addLast(r.toString())
+			Term [] aux = Util.listToTermArray(solution.get("RuleIds"));
+			for(Term r : aux){
+				this.rules.add(r.toString());
 			}
 
-			aux = Util.listToTermArray(solution.get("Subargs"))
-			for(subarg : aux){
-				this.rules.addLast(subarg.toString())
+			aux = Util.listToTermArray(solution.get("Subargs"));
+			for(Term subarg : aux){
+				this.rules.add(subarg.toString());
 			}
 		}
 		

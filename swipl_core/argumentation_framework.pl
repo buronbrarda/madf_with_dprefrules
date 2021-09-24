@@ -16,7 +16,7 @@
 	
 	:-use_module(ids_manager).
 	:-use_module(data_manager, [has_priority/2, importance_statement/2]).
-	:-use_module(arg_generator, [argument/3, generate_arguments/0]).
+	:-use_module(arg_generator, [op(200, fx, ~),argument/4, generate_arguments/0]).
 	
 	:-dynamic d_in_conflict/2.
 	:-dynamic d_properly_defeats/2.
@@ -37,9 +37,9 @@
 		
 		True when RuleIds is the set of rule Ids of the argument identified with ArgId.
 	************************************************************************************/
-	rules(Arg_Id,RuleIds):-
+	rules(ArgId,RuleIds):-
 		argument(ArgId, Rules, _SubArgs, _Claim),
-		findall(RuleIds, member(cpref_rule(RuleId,_),Arg_Rules), RuleId).
+		findall(RuleId, member(cpref_rule(RuleId,_),Rules), RuleIds).
 		
 	
 	/***********************************************************************************
@@ -63,9 +63,9 @@
 		
 		Define whether a literal is the complement of another literal.
 	************************************************************************************/
-	complement(Claim,~Claim):- Claim \= ~Subclaim,!.
-	complement(~Claim,Claim):- Claim \= ~Subclaim,!.
-	complement(~Subclaim,SubclaimComp):- complement(Subclaim,SubclaimComp).
+	complement(pref(X,Y),~pref(X,Y)).
+	complement(~pref(X,Y),pref(X,Y)).
+	%complement(~Subclaim,SubclaimComp):- complement(Subclaim,SubclaimComp).
 	
 	
 	/***********************************************************************************
@@ -79,15 +79,15 @@
 		claim(Arg_Id_B, Claim_B),
 		complement(Claim_A,Claim_B).
 
-	in_conflict(Arg_Id_A, Arg_Id_B, SubArgBi):-
-		argument(Arg_Id_A, RulesA, _SubArgsA, ClaimA),
-		argument(Arg_Id_A, RulesB, SubArgsB, ClaimB),
+	/*in_conflict(Arg_Id_A, Arg_Id_B, SubArgBi):-
+		argument(Arg_Id_A, _RulesA, _SubArgsA, ClaimA),
+		argument(Arg_Id_B, _RulesB, SubArgsB, ClaimB),
 		not(complement(ClaimA,ClaimB)),
-		sub_conflict(Arg_Id_A,SubArgsB,SubArgBi).
+		sub_conflict(Arg_Id_A,SubArgsB,SubArgBi).*/
 
-	sub_conflict(Arg_Id_A,SubArgsB,SubArgBi):-
+	sub_conflict(Arg_Id_A,SubArgsB,SubConflictArg):-
 		member(SubArgBi, SubArgsB),
-		in_conflict(Arg_Id_A, SubArgBi),!.	% The cut is for optimization, but it isn't necessary for correctness. 
+		in_conflict(Arg_Id_A, SubArgBi, SubConflictArg),!.	% The cut is for optimization, but it isn't necessary for correctness. 
 									  		% It is not possible to have two subarguments with the same claim
 	
 	/***********************************************************************************
@@ -98,13 +98,18 @@
 	stronger(Arg_Id_A,Arg_Id_B):-
 		rules(Arg_Id_A, Rules_A),
 		rules(Arg_Id_B, Rules_B),
+		forall((member(RA, Rules_A), member(RB,Rules_B)), stronger_rule(RA,RB)),!.
+		
+	/*stronger(Arg_Id_A,Arg_Id_B):-
+		rules(Arg_Id_A, Rules_A),
+		rules(Arg_Id_B, Rules_B),
 		member(RA, Rules_A),
 		member(RB, Rules_B),
 		stronger_rule(RA,RB),
 		not((
 			member(RBPrime, Rules_B),
 			stronger_rule(RBPrime,RA)
-		)),!.
+		)),!.*/
 
 	/***********************************************************************************
 		stronger_rule(+RuleA, +RuleB).
@@ -169,8 +174,8 @@
 		)),
 		
 		forall((blocks(Arg_Id_A,Arg_Id_B)), (
-			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),  % For subarguments blocks are not symetric.
-			if(d_in_conflict(Arg_Id_B,Arg_Id_A), true, assert(d_in_conflict(Arg_Id_B,Arg_Id_A))),
+			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),  	% For subarguments blocks are not symetric,
+			%assert(d_in_conflict(Arg_Id_B,Arg_Id_A)),	% but we need to say that they are confliting.
 			assert(d_blocks(Arg_Id_A,Arg_Id_B))
 		)).
 	
@@ -206,31 +211,56 @@
 		
 	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line],pro):-
 		defeats(Defeater,E),
-		not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
 		concordant_with(Defeater,Allies),
+		append(Allies,Enemies,Union),
+		not(repeated(Defeater,Union)),  			% Avoid arguments repetition
+		not(repeated_subarg(Defeater,Union)),		% Avoid internal repetition
 		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line,con).
 	
 	acceptable_arg_line(Allies,[E|Enemies],[],pro):-
 		not(( 
 			defeats(Defeater,E),
-			not((append(Allies,Enemies,Union), member(Defeater,Union))),
-			concordant_with(Defeater,Allies)
+			concordant_with(Defeater,Allies),
+			append(Allies,Enemies,Union),
+			not(repeated(Defeater,Union)),  		% Avoid arguments repetition
+			not(repeated_subarg(Defeater,Union))	% Avoid internal repetition
+			
 		)).
 		
 	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line],con):-
 		defeats(Defeater,E),
 		concordant_with(Defeater,Allies),
-		not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
+		append(Allies,Enemies,Union),
+		not(repeated(Defeater,Union)),  		% Avoid arguments repetition
+		not(repeated_subarg(Defeater,Union)),	% Avoid internal repetition
 		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line,pro).
 	
 	acceptable_arg_line(Allies,[E|Enemies],[],con):-
 		not(( 
 			defeats(Defeater,E),
-			not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
-			concordant_with(Defeater,Allies)
+			concordant_with(Defeater,Allies),
+			append(Allies,Enemies,Union),
+			not(repeated(Defeater,Union)),  		% Avoid arguments repetition
+			not(repeated_subarg(Defeater,Union))	% Avoid internal repetition
+			
 		)).
 	
 	
+	repeated(ArgIdA,Line):-
+		member(ArgIdB, Line),
+		subargument(ArgIdA,ArgIdB),!.
+	
+	repeated_subarg(ArgIdA,Line):-
+		subargs(ArgIdA,SubArgsA),
+		member(Sub,SubArgsA),
+		repeated(Sub,Line),!.
+			
+	subargument(ArgId,ArgId):-!.
+	subargument(ArgIdA,ArgIdB):-
+		ArgIdA \= ArgIdB,
+		subargs(ArgIdB,SubArgs),
+		member(ArgIdA,SubArgs),!.
+		
 	/***********************************************************************************
 		dialectical_tree(?Arg_Id, ?Tree).
 		
@@ -287,7 +317,7 @@
 			  Status is 'U' (undefeated) when every child of the node is marked 'D'
 		      Status is 'D' (defeated) when the node has at least one child marked 'U'.
 	************************************************************************************/
-	
+		
 	generate_dtree_nodes:-
 		reset_id(dtree_node),
 		retractall(dtree_node(_,_,_,_,_)),
@@ -372,6 +402,19 @@
 		
 	
 	
-	
+	export_args_and_defeats:-
+		open('AF.dl',write,Out,[create([write])]),
+    	
+    	forall(argument(Id,_,_,_),(
+    		swritef(String1, 'arg(%t).\n',[Id]),
+    		write(Out,String1)
+    	)),
+    	
+    	forall(defeats(IdA,IdB),( 
+    		swritef(String2, 'att(%t,%t).\n',[IdA,IdB]),
+    		write(Out,String2)
+    	)),
+    	
+    	close(Out). 
 		
 	

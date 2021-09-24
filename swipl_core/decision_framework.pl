@@ -27,7 +27,7 @@
 	
 	:-reexport(data_manager).
 	:-reexport(cpref_rules_interpreter,[op(1101, xfx, ==>)]).
-	:-use_module(arg_generator, [argument/4, args_count/1]).
+	:-use_module(arg_generator, [op(200, fx, ~), argument/4, args_count/1]).
 	:-use_module(argumentation_framework).
 	
 	:-dynamic explicitly_preferred/2.
@@ -55,7 +55,7 @@
 	init(T1,T2):-
 		
 		get_time(T1),
-		
+
 		generate_warranted_conclusions,
 		
 		get_time(T2),

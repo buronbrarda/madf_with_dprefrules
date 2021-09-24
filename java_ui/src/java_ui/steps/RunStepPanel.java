@@ -107,7 +107,7 @@ public class RunStepPanel extends StepPanel {
 		}
 		
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		resultsPanel.loadAlternativesGraph();
+		//resultsPanel.loadAlternativesGraph();
 	}
 	
 	

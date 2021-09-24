@@ -11,7 +11,7 @@
 		print_rule/1
 	]).
 	
-	:-use_module(data_manager, [cpref_rule/2]).
+	:-use_module(data_manager, [alternative/1,cpref_rule/2]).
 	:-use_module(cpref_rules_interpreter).
 	:-use_module(ids_manager).
 	
@@ -48,16 +48,16 @@
 		% Generates arguments from cpref_rules
 		forall(consult_cpref_rule(RuleId,Premises,pref(X,Y)),(
 			next_id(arguments,ArgId),
-			assert(argument(ArgId,[cpref_rule(RuleId,Premises ==> pref(X,Y))],[],pref(X,Y))),
-			)
-		)
-
+			assert(argument(ArgId,[cpref_rule(RuleId,Premises ==> pref(X,Y))],[],pref(X,Y)))
+			
+		)),
+		
 		% Generate opposite-arguments from the previous generated arguments.
 		% Note that opposite-arguments can be derived from other arguments.
-		forall((alternative(X), alternative(Y), X\=Y, rules_for_preference(X,Y,Rules,SubArgs))),(
+		forall((alternative(X), alternative(Y), X\=Y, rules_for_preference(X,Y,Rules,SubArgs)),(
 			next_id(arguments,ArgId),
-			assert(argument(ArgId,Rules,SubArgs,(~pref(Y,X))))
-		). 
+			assert( argument(ArgId,Rules,SubArgs, ~pref(Y,X) ) )
+		)). 
 
 
 	/***********************************************************************************
@@ -72,12 +72,15 @@
 
 	rules_for_preference(X,Y,[Rule],[ArgId],Visited,VisitedClaims):-
 		argument(ArgId,[Rule],_,pref(X,Y)),
-		not(member(ArgId,Visited)).
+		not(member(ArgId,Visited)),
+		not(member(pref(X,Y),VisitedClaims)), %Ensure non-trivialiaty.
+		not(member(pref(Y,X),VisitedClaims)). %Ensure consistency of arguments.
 	
 	rules_for_preference(X,Z,[Rule|Rules],[ArgId|SubArgs],Visited,VisitedClaims):-
-		argument(ArgId,[Rule],_,pref(X,Y)).
+		argument(ArgId,[Rule],_,pref(X,Y)),
 		Y \= Z,
 		not(member(ArgId,Visited)),
+		not(member(pref(X,Y),VisitedClaims)), %Ensure non-trivialiaty.
 		not(member(pref(Y,X),VisitedClaims)), %Ensure consistency of arguments.
 		rules_for_preference(Y,Z,Rules,SubArgs,[ArgId|Visited],[pref(X,Y)|VisitedClaims]).
 
