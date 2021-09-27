@@ -31,3 +31,5 @@
 /DeltaExplanationPanel$DeltaExplanationFocusListener.class
 /ArgumentsGraphPanel$ArgumentFillPaintTransformer.class
 /DeltaExplanationPanel$DTreeNodeFillPaintTransformer.class
+/ArgumentsGraphPanel$ArgumentFontTransformer.class
+/DeltaExplanationPanel$DTreeNodeFontTransformer.class

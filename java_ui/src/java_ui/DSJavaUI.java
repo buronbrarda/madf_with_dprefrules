@@ -22,7 +22,7 @@ public class DSJavaUI{
 	private static final boolean productionFlag = false;
 	
 	private static final String productionPrologFilesPath = "./swipl_core/";
-	private static final String prologFilesPath = "../swipl_core/";
+	private static final String prologFilesPath = "../../swipl_core/";
 	private static final String prologEntryPoint = "decision_framework.pl";
 
 	/**
@@ -121,7 +121,7 @@ public class DSJavaUI{
 			return "./";
 		}
 		else{
-			return "../";
+			return "../../";
 		}
 	}
 

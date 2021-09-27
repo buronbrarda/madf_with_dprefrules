@@ -110,7 +110,7 @@ public class ArgumentsGraphPanel extends JPanel {
 				String label = "";
 				
 				if(vertex != null){
-					label += "A"+vertex.getId()+":<"+vertex.getClaim()+";"+vertex.getRule().toString()+">";
+					label += "A"+vertex.getId()+":<"+vertex.getRule().toString()+","+vertex.getClaim()+">";
 				}
 				
 				return label;
@@ -123,6 +123,7 @@ public class ArgumentsGraphPanel extends JPanel {
 		this.vv.getRenderContext().setVertexShapeTransformer(new ArgumentShapeTransformer());
 		this.vv.getRenderContext().setVertexStrokeTransformer(new ArgumentStrokeTransformer());
 		this.vv.getRenderContext().setVertexLabelRenderer(new ArgumentLabelRenderer(selectedArgumentLabelColor));
+		this.vv.getRenderContext().setVertexFontTransformer(new ArgumentFontTransformer());
 		
 		this.vv.addComponentListener(new ComponentAdapter() {
 			@Override
@@ -278,6 +279,19 @@ public class ArgumentsGraphPanel extends JPanel {
 			
 			return this;
 		}
+		
+		
+	}
+	
+	private class ArgumentFontTransformer implements Transformer<Argument, Font>{
+		
+		private Font font = new Font("Calibri", Font.BOLD, 16);
+		
+		@Override
+		public Font transform(Argument vertex) {
+            
+            return font;
+        }
 		
 	}
 }

@@ -122,6 +122,7 @@ public class DeltaExplanationPanel extends JPanel {
 		this.vv.getRenderContext().setVertexShapeTransformer(new DTreeNodeShapeTransformer());
 		this.vv.getRenderContext().setVertexStrokeTransformer(new DTreeNodeStrokeTransformer());
 		this.vv.getRenderContext().setVertexLabelRenderer(new DTreeNodeLabelRenderer(selectedNodeLabelColor));
+		this.vv.getRenderContext().setVertexFontTransformer(new DTreeNodeFontTransformer());
 		
 		this.vv.getPickedVertexState().addItemListener(new ItemListener() {
 			
@@ -298,6 +299,18 @@ public class DeltaExplanationPanel extends JPanel {
 			
 			return this;
 		}
+		
+	}
+	
+	private class DTreeNodeFontTransformer implements Transformer<DTreeNode, Font>{
+		
+		private Font font = new Font("Calibri", Font.BOLD, 16);
+		
+		@Override
+		public Font transform(DTreeNode vertex) {
+            
+            return font;
+        }
 		
 	}
 }

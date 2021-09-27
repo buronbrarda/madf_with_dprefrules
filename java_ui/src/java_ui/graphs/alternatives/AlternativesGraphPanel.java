@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.event.ComponentAdapter;
@@ -99,9 +100,11 @@ public class AlternativesGraphPanel extends JPanel {
 		});
 		
 		this.vv.getRenderContext().setVertexShapeTransformer(new AlternativesGraphVertexShapeTransformer());
+		this.vv.getRenderContext().setVertexFontTransformer(new AlternativesGraphVertexFontTransformer());
+		this.vv.getRenderContext().setEdgeFontTransformer(new AlternativesGraphEdgeFontTransformer());
 		
-		this.vv.getRenderContext().setVertexStrokeTransformer(new Transformer<AlternativesGraphVertex, Stroke>() {
-
+		this.vv.getRenderContext().setVertexStrokeTransformer(new Transformer<AlternativesGraphVertex, Stroke>() {			
+			
 			@Override
 			public Stroke transform(AlternativesGraphVertex v) {
 				float [] dash = {5.0f};
@@ -160,5 +163,28 @@ public class AlternativesGraphPanel extends JPanel {
             	}
 			});
         }
+	}
+	
+	private class AlternativesGraphVertexFontTransformer implements Transformer<AlternativesGraphVertex, Font>{
+		
+		private Font font = new Font("Calibri", Font.BOLD, 16);
+		
+		@Override
+		public Font transform(AlternativesGraphVertex vertex) {
+            
+            return font;
+        }
+		
+	}
+	
+	private class AlternativesGraphEdgeFontTransformer implements Transformer<AlternativesGraphEdge, Font>{
+		
+		private Font font = new Font("Calibri", Font.BOLD, 16);
+		
+		@Override
+		public Font transform(AlternativesGraphEdge edge) {
+            return font;
+        }
+		
 	}
 }
