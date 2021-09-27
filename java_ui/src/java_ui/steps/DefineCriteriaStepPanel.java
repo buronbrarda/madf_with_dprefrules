@@ -5,10 +5,10 @@ import javax.swing.table.TableModel;
 
 import java_ui.prolog_loader.PrologLoadException;
 import java_ui.prolog_loader.PrologLoader;
-import java_ui.prolog_loader.RuleImportancePrologLoader;
 import java_ui.table_editor.TableEditorDialog;
 import java_ui.table_editor.panel.TableEditorPanel;
 import java_ui.table_editor.panel.TableViewer;
+
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,34 +17,30 @@ import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
-public class DefineRuleImportanceStepPanel extends StepPanel{
+public class DefineCriteriaStepPanel extends StepPanel{
 	
-	private JButton stepButton;
-	private JLabel statusLabel;
-	private JLabel statusResultLabel;
+	protected JButton stepButton;
+	protected JLabel statusLabel;
+	protected JLabel statusResultLabel;
 	
-	private TableEditorPanel tep;
-	private RuleImportancePrologLoader loader;
-	private JButton viewButton;
+	protected TableEditorPanel tep;
+	protected PrologLoader loader;
+	protected JButton viewButton;
 	
-	private TableViewer viewer;
-	private JButton btnPriorityOrder;
-	
-	private DefineRuleImportanceStepPanel me;
-	
-	public DefineRuleImportanceStepPanel(String instruction, final String tableViewerTitle, final TableEditorPanel tep, final RuleImportancePrologLoader loader) {
-		this.me = this; //'me' will be use as 'this' into ActionListeners.
+	protected TableViewer viewer;
+
+	public DefineCriteriaStepPanel(String instruction, final String tableViewerTitle, final TableEditorPanel tep, final PrologLoader loader) {
 		this.tep = tep;
 		this.loader = loader;
+		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{45, 230, 129, 0};
-		gridBagLayout.rowHeights = new int[]{0, 20, 0, 0};
+		gridBagLayout.columnWidths = new int[]{45, 320, 110, 0};
+		gridBagLayout.rowHeights = new int[]{20, 20, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		JLabel instructionLabel = new JLabel(instruction);
@@ -57,19 +53,59 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 		gbc_instructionLabel.gridy = 0;
 		add(instructionLabel, gbc_instructionLabel);
 		
-		btnPriorityOrder = new JButton("Agents priority order");
-		btnPriorityOrder.addActionListener(new ActionListener() {
+		this.stepButton = new JButton("Edit");
+		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new DefineAgentPriorityOrderDialog(me).setVisible(true);
+				try {				
+					TableModel backup = tep.getTableModel();
+					TableEditorDialog dialog = new TableEditorDialog(tep);
+					
+					TableModel response = dialog.getResponse();
+					
+					if(response != null){
+						loader.loadData(response);
+						
+						
+						if(loader.getStatus() == PrologLoader.StatusCode.Ok){
+							statusResultLabel.setText("OK");
+							
+							//If criteria set changes, the remaining data should also be changed
+							getFollowingStep().cleanStep();
+
+							getFollowingStep().enableStep();
+							
+						}
+						else{
+							statusResultLabel.setText("ERROR");
+							getFollowingStep().disableStep();
+						}
+					}
+					else {
+						tep.setTableModel(backup);
+					}
+				} 
+				catch (PrologLoadException e1) {
+					getFollowingStep().disableStep();
+					statusResultLabel.setText("ERROR");
+					e1.printStackTrace();
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+					getFollowingStep().disableStep();
+				}
+				catch (IOException e1) {
+					getFollowingStep().disableStep();
+					statusResultLabel.setText("ERROR");
+					e1.printStackTrace();
+					getFollowingStep().disableStep();
+				}
 			}
 		});
-		GridBagConstraints gbc_btnPriorityOrder = new GridBagConstraints();
-		gbc_btnPriorityOrder.anchor = GridBagConstraints.NORTH;
-		gbc_btnPriorityOrder.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnPriorityOrder.insets = new Insets(5, 5, 5, 5);
-		gbc_btnPriorityOrder.gridx = 2;
-		gbc_btnPriorityOrder.gridy = 0;
-		add(btnPriorityOrder, gbc_btnPriorityOrder);
+		GridBagConstraints gbc_stepButton = new GridBagConstraints();
+		gbc_stepButton.anchor = GridBagConstraints.NORTH;
+		gbc_stepButton.fill = GridBagConstraints.HORIZONTAL;
+		gbc_stepButton.insets = new Insets(5, 5, 5, 5);
+		gbc_stepButton.gridx = 2;
+		gbc_stepButton.gridy = 0;
+		add(stepButton, gbc_stepButton);
 		
 		this.statusLabel = new JLabel("Status:");
 		GridBagConstraints gbc_statusLabel = new GridBagConstraints();
@@ -89,7 +125,7 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 		gbc_statusResultLabel.gridy = 1;
 		add(statusResultLabel, gbc_statusResultLabel);
 		
-		viewButton = new JButton("View importance orders");
+		viewButton = new JButton("View");
 		viewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				viewer = new TableViewer(tep.getTableModel());
@@ -98,60 +134,12 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 				viewer.disableTable();
 			}
 		});
-		
-		this.stepButton = new JButton("Set importance orders");
-		stepButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					TableModel backup = tep.getTableModel();
-					TableEditorDialog dialog = new TableEditorDialog(tep);
-					
-					TableModel response = dialog.getResponse();
-					
-					if(response != null){
-						loader.loadData(response);
-						
-						if(loader.getStatus() == PrologLoader.StatusCode.Ok){
-							statusResultLabel.setText("OK");
-							getFollowingStep().enableStep();
-						}
-						else{
-							statusResultLabel.setText("ERROR");
-							getFollowingStep().disableStep();
-						}
-					}
-					else {
-						tep.setTableModel(backup);
-					}
-				} 
-				catch (PrologLoadException e1) {
-					getFollowingStep().disableStep();
-					statusResultLabel.setText("ERROR");
-					e1.printStackTrace();
-					JOptionPane.showMessageDialog(null, e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-					disableStep();
-				}
-				catch (IOException e1) {
-					getFollowingStep().disableStep();
-					statusResultLabel.setText("ERROR");
-					e1.printStackTrace();
-					disableStep();
-				}
-			}
-		});
-		GridBagConstraints gbc_stepButton = new GridBagConstraints();
-		gbc_stepButton.fill = GridBagConstraints.HORIZONTAL;
-		gbc_stepButton.anchor = GridBagConstraints.NORTH;
-		gbc_stepButton.insets = new Insets(5, 5, 5, 5);
-		gbc_stepButton.gridx = 2;
-		gbc_stepButton.gridy = 1;
-		add(stepButton, gbc_stepButton);
 		GridBagConstraints gbc_viewButton = new GridBagConstraints();
+		gbc_viewButton.insets = new Insets(0, 5, 5, 5);
 		gbc_viewButton.fill = GridBagConstraints.HORIZONTAL;
-		gbc_viewButton.insets = new Insets(5, 5, 5, 5);
 		gbc_viewButton.anchor = GridBagConstraints.NORTH;
 		gbc_viewButton.gridx = 2;
-		gbc_viewButton.gridy = 2;
+		gbc_viewButton.gridy = 1;
 		add(viewButton, gbc_viewButton);
 		
 	}
@@ -160,14 +148,12 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 	public void enableStep() {
 		this.stepButton.setEnabled(true);
 		this.viewButton.setEnabled(true);
-		this.btnPriorityOrder.setEnabled(true);
 	}
 
 	@Override
 	public void disableStepAction() {
 		this.stepButton.setEnabled(false);
 		this.viewButton.setEnabled(false);
-		this.btnPriorityOrder.setEnabled(false);
 	}
 	
 	
@@ -179,6 +165,7 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 			this.viewer = null;
 		}
 	}
+	
 
 	public PrologLoader.StatusCode getLoaderStatus(){
 		return this.loader.getStatus();
@@ -196,9 +183,5 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 			getFollowingStep().disableStep();
 			throw e;
 		}
-	}
-	
-	public void setAgentsPriorityOrder(File file) {
-		this.loader.setAgentPriorityOrder(file);
 	}
 }

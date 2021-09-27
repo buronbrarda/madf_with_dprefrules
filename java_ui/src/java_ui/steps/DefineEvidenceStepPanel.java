@@ -61,6 +61,7 @@ public class DefineEvidenceStepPanel extends StepPanel{
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
+					TableModel backup = tep.getTableModel();
 					TableEditorDialog dialog = new TableEditorDialog(tep);
 					
 					TableModel response = dialog.getResponse();
@@ -76,6 +77,9 @@ public class DefineEvidenceStepPanel extends StepPanel{
 							statusResultLabel.setText("ERROR");
 							getFollowingStep().disableStep();
 						}
+					}
+					else {
+						tep.setTableModel(backup);
 					}
 				} 
 				catch (PrologLoadException e1) {

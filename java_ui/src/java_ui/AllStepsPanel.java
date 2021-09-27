@@ -11,7 +11,7 @@ import java_ui.prolog_loader.RuleImportancePrologLoader;
 import java_ui.steps.DefineCprefRulesStepPanel;
 import java_ui.steps.DefineEvidenceStepPanel;
 import java_ui.steps.DefineRuleImportanceStepPanel;
-import java_ui.steps.DefineStepPanel;
+import java_ui.steps.DefineCriteriaStepPanel;
 import java_ui.steps.ResultsPanel;
 import java_ui.steps.RunStepPanel;
 import java_ui.table_editor.panel.CPrefRulesTableEditorPanel;
@@ -26,7 +26,7 @@ import java.io.IOException;
 
 public class AllStepsPanel extends JPanel{
 	
-	private DefineStepPanel step1;
+	private DefineCriteriaStepPanel step1;
 	private DefineEvidenceStepPanel step2;
 	private DefineCprefRulesStepPanel step3;
 	private DefineRuleImportanceStepPanel step4;
@@ -50,7 +50,7 @@ public class AllStepsPanel extends JPanel{
 		
 		
 		
-		step1 = new DefineStepPanel(
+		step1 = new DefineCriteriaStepPanel(
 				"1. Define the set of criteria and their range of values.",
 				"Criteria",
 				new CriteriaTableEditorPanel(),

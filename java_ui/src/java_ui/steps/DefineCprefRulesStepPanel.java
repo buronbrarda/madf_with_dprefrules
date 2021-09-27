@@ -56,6 +56,7 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		stepButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
+					TableModel backup = tep.getTableModel();
 					TableEditorDialog dialog = new TableEditorDialog(tep);
 					
 					TableModel response = dialog.getResponse();
@@ -71,6 +72,9 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 							statusResultLabel.setText("ERROR");
 							getFollowingStep().disableStep();
 						}
+					}
+					else {
+						tep.setTableModel(backup);
 					}
 				} 
 				catch (PrologLoadException e1) {
@@ -117,15 +121,10 @@ public class DefineCprefRulesStepPanel extends StepPanel{
 		viewButton = new JButton("View");
 		viewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(viewer == null){
-					viewer = new TableViewer(tep.getTableModel());
-					viewer.setFocusable(true);
-					viewer.setTitle(tableViewerTitle);
-					viewer.disableTable();
-				}else{
-					viewer.setVisible(true);
-					viewer.requestFocus();
-				};
+				viewer = new TableViewer(tep.getTableModel());
+				viewer.setFocusable(true);
+				viewer.setTitle(tableViewerTitle);
+				viewer.disableTable();
 			}
 		});
 		GridBagConstraints gbc_viewButton = new GridBagConstraints();

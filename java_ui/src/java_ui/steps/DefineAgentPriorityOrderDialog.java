@@ -42,63 +42,58 @@ public class DefineAgentPriorityOrderDialog extends JDialog {
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		me = this;
 		
-		{
-			textArea = new JTextArea();
-			textArea.setWrapStyleWord(true);
-			textArea.setTabSize(4);
-			textArea.setLineWrap(true);
-			textArea.setText(getCurrentAgentsPriorityOrder());
-			contentPanel.add(textArea, BorderLayout.CENTER);
-		}
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("Save");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						
-						try{
-							String input = textArea.getText();
-							input.replaceAll("\\s", "");
-							String [] statements = input.split(";");
+		textArea = new JTextArea();
+		textArea.setWrapStyleWord(true);
+		textArea.setTabSize(4);
+		textArea.setLineWrap(true);
+		textArea.setText(getCurrentAgentsPriorityOrder());
+		contentPanel.add(textArea, BorderLayout.CENTER);
+
+		JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+
+		JButton okButton = new JButton("Save");
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				try{
+					String input = textArea.getText();
+					input.replaceAll("\\s", "");
+					String [] statements = input.split(";");
+					
+					Query cleaning_query = new Query("remove_priorities");
+					if (cleaning_query.hasNext()) {cleaning_query.next();}
+					
+					if (statements.length > 1) {
+					
+						for (String s : statements) {
+							String [] splited = s.split(">");
+							Compound comp = new Compound(">", new Term[] {Util.textToTerm(splited[0]), Util.textToTerm(splited[1])} );
 							
-							Query cleaning_query = new Query("remove_priorities");
-							if (cleaning_query.hasNext()) {cleaning_query.next();}
+							Query q = new Query("add_priority", new Term [] {comp});
 							
-							if (statements.length > 1) {
-							
-								for (String s : statements) {
-									String [] splited = s.split(">");
-									Compound comp = new Compound(">", new Term[] {Util.textToTerm(splited[0]), Util.textToTerm(splited[1])} );
-									
-									Query q = new Query("add_priority", new Term [] {comp});
-									
-									if(q.hasNext()){
-										q.next();
-									}
-								}
-							
+							if(q.hasNext()){
+								q.next();
 							}
-							
-							
-							
-						}catch(PrologException e){
-							JOptionPane.showMessageDialog(null, "You have not specified a correct order", "Error", JOptionPane.ERROR_MESSAGE);
-							step.getFollowingStep().disableStep();
-							e.printStackTrace();
 						}
-						
-						me.setVisible(false);
-						
+					
 					}
-				});
-				okButton.setActionCommand("Save");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+					
+					
+				}catch(PrologException e){
+					JOptionPane.showMessageDialog(null, "You have not specified a correct order", "Error", JOptionPane.ERROR_MESSAGE);
+					step.getFollowingStep().disableStep();
+					e.printStackTrace();
+				}
+				
+				me.setVisible(false);
+				
 			}
-		}
+		});
+		okButton.setActionCommand("Save");
+		buttonPane.add(okButton);
+		getRootPane().setDefaultButton(okButton);
 	}
 	
 	private String getCurrentAgentsPriorityOrder() {

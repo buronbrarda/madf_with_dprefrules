@@ -86,10 +86,14 @@ public class RuleImportancePrologLoader implements PrologLoader{
 	
 	public void setAgentPriorityOrder(File file) {
 		try {
+			Query q = new Query("remove_priorities");
+			q.hasSolution(); q.close();
+			
+			
 			CSVTableReader reader = new CSVTableReader(file);
 			
 			for(String[] row : reader) {
-				Query q = new Query("add_priority("+row[0]+")");
+				q = new Query("add_priority("+row[0]+")");
 				while(q.hasNext()) {q.next();}
 			}
 			

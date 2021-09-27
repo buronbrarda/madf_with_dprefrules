@@ -12,7 +12,7 @@ import javax.swing.table.TableModel;
 import java_ui.steps.DefineCprefRulesStepPanel;
 import java_ui.steps.DefineEvidenceStepPanel;
 import java_ui.steps.DefineRuleImportanceStepPanel;
-import java_ui.steps.DefineStepPanel;
+import java_ui.steps.DefineCriteriaStepPanel;
 import java_ui.steps.RunStepPanel;
 import java_ui.table_editor.model_builder.CriteriaTableModelBuilder;
 import java_ui.table_editor.model_builder.EvidenceTableModelBuilder;
@@ -29,14 +29,14 @@ import java.awt.BorderLayout;
 public class ExamplesLoadPanel extends JPanel {
 	
 	
-	private DefineStepPanel criteriaStep;
+	private DefineCriteriaStepPanel criteriaStep;
 	private DefineEvidenceStepPanel evidenceStep;
 	private DefineCprefRulesStepPanel rulesStep;
 	private DefineRuleImportanceStepPanel importanceStep;
 	private RunStepPanel runStep;
 
 
-	public ExamplesLoadPanel(DefineStepPanel criteriaStep, DefineEvidenceStepPanel evidenceStep, DefineCprefRulesStepPanel rulesStep, DefineRuleImportanceStepPanel importanceStep,RunStepPanel runStep) {
+	public ExamplesLoadPanel(DefineCriteriaStepPanel criteriaStep, DefineEvidenceStepPanel evidenceStep, DefineCprefRulesStepPanel rulesStep, DefineRuleImportanceStepPanel importanceStep,RunStepPanel runStep) {
 		this.criteriaStep = criteriaStep;
 		this.evidenceStep = evidenceStep;
 		this.rulesStep = rulesStep;
