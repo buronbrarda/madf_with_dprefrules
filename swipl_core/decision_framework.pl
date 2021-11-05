@@ -27,7 +27,8 @@
 	
 	:-reexport(data_manager).
 	:-reexport(cpref_rules_interpreter,[op(1101, xfx, ==>)]).
-	:-use_module(arg_generator, [op(200, fx, ~), argument/4, args_count/1]).
+	:-reexport(arg_generator,[op(200, fx, ~), argument/4]).
+	:-use_module(arg_generator, [args_count/1]).
 	:-use_module(argumentation_framework).
 	
 	:-dynamic explicitly_preferred/2.

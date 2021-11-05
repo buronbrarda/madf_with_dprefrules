@@ -55,8 +55,9 @@
 		% Generate opposite-arguments from the previous generated arguments.
 		% Note that opposite-arguments can be derived from other arguments.
 		forall((alternative(X), alternative(Y), X\=Y, rules_for_preference(X,Y,Rules,SubArgs)),(
+			SubArgs \= [],
 			next_id(arguments,ArgId),
-			assert( argument(ArgId,Rules,SubArgs, ~pref(Y,X) ) )
+			assert( argument(ArgId,Rules,SubArgs, pref(X,Y) ) )
 		)). 
 
 
@@ -68,22 +69,29 @@
 			
 	************************************************************************************/
 	rules_for_preference(X,Y,Rules,SubArgs):-
-		rules_for_preference(X,Y,Rules,SubArgs,[],[]).
+		rules_for_preference(X,Y,Rules,SubArgs,[X]).
 
-	rules_for_preference(X,Y,[Rule],[ArgId],Visited,VisitedClaims):-
-		argument(ArgId,[Rule],_,pref(X,Y)),
-		not(member(ArgId,Visited)),
-		not(member(pref(X,Y),VisitedClaims)), %Ensure non-trivialiaty.
-		not(member(pref(Y,X),VisitedClaims)). %Ensure consistency of arguments.
+	rules_for_preference(X,Y,[Rules],[SubArgs],VisitedAlternatives):-
+		alternative(Y), not(member(Y,VisitedAlternatives)), %Ensure consistency & minimality of arguments.
+		findall([ArgId,Rule],(
+			argument(ArgId,[Rule],_,pref(X,Y))
+		), ArgRulePairs),
+		ArgRulePairs \= [],
+		divide_pairs(ArgRulePairs,SubArgs,Rules). 
 	
-	rules_for_preference(X,Z,[Rule|Rules],[ArgId|SubArgs],Visited,VisitedClaims):-
-		argument(ArgId,[Rule],_,pref(X,Y)),
-		Y \= Z,
-		not(member(ArgId,Visited)),
-		not(member(pref(X,Y),VisitedClaims)), %Ensure non-trivialiaty.
-		not(member(pref(Y,X),VisitedClaims)), %Ensure consistency of arguments.
-		rules_for_preference(Y,Z,Rules,SubArgs,[ArgId|Visited],[pref(X,Y)|VisitedClaims]).
-
+	rules_for_preference(X,Z,[Rules|RulesZ],[SubArgs|SubArgsZ],VisitedAlternatives):-
+		alternative(Y), not(member(Y,VisitedAlternatives)), %Ensure consistency & minimality of arguments.
+		findall([ArgId,Rule],(
+			argument(ArgId,[Rule],_,pref(X,Y))
+		), ArgRulePairs),
+		divide_pairs(ArgRulePairs,SubArgs,Rules),
+		ArgRulePairs \= [], 
+		rules_for_preference(Y,Z,RulesZ,SubArgsZ,[Y|VisitedAlternatives]).
+	
+	
+	divide_pairs([],[],[]):-!.
+	divide_pairs([[E1,E2]|Pairs],[E1|Elements1],[E2|Elements2]):-
+		divide_pairs(Pairs,Elements1,Elements2).
 	
 	/***********************************************************************************
 		print_args.

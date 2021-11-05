@@ -16,20 +16,33 @@
 	
 	:-use_module(ids_manager).
 	:-use_module(data_manager, [has_priority/2, importance_statement/2]).
-	:-use_module(arg_generator, [op(200, fx, ~),argument/4, generate_arguments/0]).
+	:-use_module(arg_generator, [op(200, fx, ~),argument/4, generate_arguments/0, args_count/1]).
 	
 	:-dynamic d_in_conflict/2.
 	:-dynamic d_properly_defeats/2.
 	:-dynamic d_blocks/2.
 	:-dynamic d_arg_line/2.
 	:-dynamic dtree_node/5.
+	:-dynamic marked_argument/2.
 	
 	
 	%===================================================================================
 	generate_warranted_conclusions:-
+		get_time(T1),
 		generate_arguments,
+		get_time(T2),
+		ArgGTime is  round((T2 - T1)*1000),
+		writeln(ArgGTime),
+		args_count(N),
+		writeln(N).
+		/*get_time(T3),
 		generate_argument_relations,
-		generate_dtree_nodes.
+		get_time(T4),
+		RelationsTime is  round((T4 - T3)*1000),
+		writeln(RelationsTime),
+		generate_marked_arguments.*/
+		%generate_dtree_nodes.
+		
 	
 		
 	/***********************************************************************************
@@ -63,9 +76,11 @@
 		
 		Define whether a literal is the complement of another literal.
 	************************************************************************************/
-	complement(pref(X,Y),~pref(X,Y)).
+	complement(pref(X,Y),pref(Y,X)).
+	
+	/*complement(pref(X,Y),~pref(X,Y)).
 	complement(~pref(X,Y),pref(X,Y)).
-	%complement(~Subclaim,SubclaimComp):- complement(Subclaim,SubclaimComp).
+	*/
 	
 	
 	/***********************************************************************************
@@ -79,11 +94,11 @@
 		claim(Arg_Id_B, Claim_B),
 		complement(Claim_A,Claim_B).
 
-	/*in_conflict(Arg_Id_A, Arg_Id_B, SubArgBi):-
+	in_conflict(Arg_Id_A, Arg_Id_B, SubArgBi):-
 		argument(Arg_Id_A, _RulesA, _SubArgsA, ClaimA),
 		argument(Arg_Id_B, _RulesB, SubArgsB, ClaimB),
 		not(complement(ClaimA,ClaimB)),
-		sub_conflict(Arg_Id_A,SubArgsB,SubArgBi).*/
+		sub_conflict(Arg_Id_A,SubArgsB,SubArgBi).
 
 	sub_conflict(Arg_Id_A,SubArgsB,SubConflictArg):-
 		member(SubArgBi, SubArgsB),
@@ -95,12 +110,12 @@
 		
 		Defines whether ArgA is stronger than Argb.
 	************************************************************************************/	
-	stronger(Arg_Id_A,Arg_Id_B):-
+	/*stronger(Arg_Id_A,Arg_Id_B):-
 		rules(Arg_Id_A, Rules_A),
 		rules(Arg_Id_B, Rules_B),
-		forall((member(RA, Rules_A), member(RB,Rules_B)), stronger_rule(RA,RB)),!.
+		forall((member(RA, Rules_A), member(RB,Rules_B)), stronger_rule(RA,RB)),!.*/
 		
-	/*stronger(Arg_Id_A,Arg_Id_B):-
+	stronger(Arg_Id_A,Arg_Id_B):-
 		rules(Arg_Id_A, Rules_A),
 		rules(Arg_Id_B, Rules_B),
 		member(RA, Rules_A),
@@ -109,7 +124,7 @@
 		not((
 			member(RBPrime, Rules_B),
 			stronger_rule(RBPrime,RA)
-		)),!.*/
+		)),!.
 
 	/***********************************************************************************
 		stronger_rule(+RuleA, +RuleB).
@@ -163,47 +178,88 @@
 	% Arguments relation in_conflic, properly_defeats and blocks must be pre-calculated
 	% in order to improve performace.
 	generate_argument_relations:-
-		retractall(d_in_conflict(_,_)),
 		retractall(d_properly_defeats(_,_)),
 		retractall(d_blocks(_,_)),
 		
+		
 		forall((properly_defeats(Arg_Id_A,Arg_Id_B)), (
-			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),
-			assert(d_in_conflict(Arg_Id_B,Arg_Id_A)),
 			assert(d_properly_defeats(Arg_Id_A,Arg_Id_B))
 		)),
 		
 		forall((blocks(Arg_Id_A,Arg_Id_B)), (
-			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),  	% For subarguments blocks are not symetric,
-			%assert(d_in_conflict(Arg_Id_B,Arg_Id_A)),	% but we need to say that they are confliting.
 			assert(d_blocks(Arg_Id_A,Arg_Id_B))
 		)).
 	
 	
 	/***********************************************************************************
-		concordant_with(+Arg_A, +Line).
+		conflict_free(+Arg_A, +Line).
 		
-		An argument A is concordant with an argumentation line L iff A is not in
-		conflict with any argument in L.
+		An argument A is conflict-free w.r.t a set of arguments S iff A is not in
+		conflict with any argument in S. An argument A is not in conflict with other
+		argument B iff they do not defeat each other. 
+		In this case, it is say that A and B are conflict-free
 	************************************************************************************/
-	concordant_with(Arg_A,Arg_List):-
-		not((member(Arg_B,Arg_List), d_in_conflict(Arg_A,Arg_B))).	
+	conflict_free(Arg_A,S):-
+		forall(member(Arg_B,S), conflict_free(Arg_A,Arg_B)).	
 	
+	
+	conflict_free(Arg_A, Arg_B):-
+		not(defeats(Arg_A,Arg_B)),
+		not(defeats(Arg_B,Arg_A)).
+	
+	
+	
+	generate_marked_arguments:-
+		retractall(marked_argument(_,_)),
+		findall(A,(argument(A,_,_,_), not(defeats(_,A)) ), Args),
+		grounded_mark(Args).
+	
+	
+	grounded_mark([]):-
+		%If there is no more undefeated arguments, mark all the remaining (defeated) arguments as D.
+		!, forall((argument(A,_,_,_), not(marked_argument(A,_))), assert(marked_argument(A,'D'))).
+		
+			
+	grounded_mark(UndefeatedArgs):-
+		%All undefeated arguments are marked U.
+		forall(member(A, UndefeatedArgs), assert(marked_argument(A,'U')) ),
+		
+		%Find all the arguments that are defeated by the undefeated arguments and mark it D.
+		findall(B,(
+			argument(B,_,_,_),
+			not(marked_argument(B,_)),
+			marked_argument(A,'U'),
+			defeats(A,B)
+		), DefeatedArgs),
+		list_to_set(DefeatedArgs,Aux),
+		forall(member(Defeated,Aux),assert(marked_argument(Defeated,'D'))),
+				
+		%Find all the arguments that are defeated by the defeated arguments, i.e. the new undefeated args.
+		findall(A,(
+			argument(A,_,_,_),
+			not(marked_argument(A,_)),
+			forall(defeats(B,A), marked_argument(B,'D'))
+		), Args),
+		
+		grounded_mark(Args).
 	
 	/***********************************************************************************
 		acceptable_arg_line(?Arg_Id, ?Line).
 		
 		Is true when Line is an acceptable argumentation line for the argument identified
 		with Arg_Id.
+		Let pros(L) and cons(L) be the arguments in odd and even positions, repectively.
 		An argumentation line L is acceptable iff:
 			- Every argument in L defeats its predecessor,
-			- No argument appears twice in L, and
-			- pros(L) and cons(L) are concordant, where pros(L) are the arguments in
-			odd positions and cons(L) are the arguments in even positions.
+			- There is no repetead argument nor sub-argument in conflict in pros(L),
+			- pros(L) and cons(L) are conflict-free.
 			
-		NOTE: In the way it is defined, Line is exhaustive.
+		NOTE_1: In the way it is implemented, Line must be exhaustive.
 		An argumentation line L is exhaustive when it is not possible to obtain a longer
 		line that remains acceptable.
+		
+		NOTE_2: This way of defining acceptable_arg_line is compatible with Dung's
+		grounded semantics.
 	************************************************************************************/
 	
 	acceptable_arg_line(Arg_Id,[Arg_Id|Line]):-
@@ -211,55 +267,30 @@
 		
 	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line],pro):-
 		defeats(Defeater,E),
-		concordant_with(Defeater,Allies),
-		append(Allies,Enemies,Union),
-		not(repeated(Defeater,Union)),  			% Avoid arguments repetition
-		not(repeated_subarg(Defeater,Union)),		% Avoid internal repetition
+		conflict_free(Defeater,Allies),
+		not(member(Defeater,Allies)),  		% Avoid (sub-)arguments repetition	
 		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line,con).
 	
-	acceptable_arg_line(Allies,[E|Enemies],[],pro):-
+	acceptable_arg_line(Allies,[E|_Enemies],[],pro):-
 		not(( 
 			defeats(Defeater,E),
-			concordant_with(Defeater,Allies),
-			append(Allies,Enemies,Union),
-			not(repeated(Defeater,Union)),  		% Avoid arguments repetition
-			not(repeated_subarg(Defeater,Union))	% Avoid internal repetition
-			
+			conflict_free(Defeater,Allies),
+			not(member(Defeater,Allies))  	% Avoid (sub-)arguments repetition		
 		)).
 		
 	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line],con):-
 		defeats(Defeater,E),
-		concordant_with(Defeater,Allies),
-		append(Allies,Enemies,Union),
-		not(repeated(Defeater,Union)),  		% Avoid arguments repetition
-		not(repeated_subarg(Defeater,Union)),	% Avoid internal repetition
-		acceptable_arg_line([E|Enemies],[Defeater|Allies],Line,pro).
+		conflict_free(Defeater,Allies),
+		in_conflict(Defeater,E,SubArgE),   %Avoid sub-args repetition for pros(L).
+		list_to_set([SubArgE,E],Aux),
+		append(Aux,Enemies,NewEnemies),
+		acceptable_arg_line(NewEnemies,[Defeater|Allies],Line,pro).
 	
-	acceptable_arg_line(Allies,[E|Enemies],[],con):-
+	acceptable_arg_line(Allies,[E|_Enemies],[],con):-
 		not(( 
 			defeats(Defeater,E),
-			concordant_with(Defeater,Allies),
-			append(Allies,Enemies,Union),
-			not(repeated(Defeater,Union)),  		% Avoid arguments repetition
-			not(repeated_subarg(Defeater,Union))	% Avoid internal repetition
-			
+			conflict_free(Defeater,Allies)
 		)).
-	
-	
-	repeated(ArgIdA,Line):-
-		member(ArgIdB, Line),
-		subargument(ArgIdA,ArgIdB),!.
-	
-	repeated_subarg(ArgIdA,Line):-
-		subargs(ArgIdA,SubArgsA),
-		member(Sub,SubArgsA),
-		repeated(Sub,Line),!.
-			
-	subargument(ArgId,ArgId):-!.
-	subargument(ArgIdA,ArgIdB):-
-		ArgIdA \= ArgIdB,
-		subargs(ArgIdB,SubArgs),
-		member(ArgIdA,SubArgs),!.
 		
 	/***********************************************************************************
 		dialectical_tree(?Arg_Id, ?Tree).
@@ -355,7 +386,8 @@
 	************************************************************************************/
 	warranted_conclusion(Claim):-
 		claim(ArgId, Claim),
-		dtree_node(_, null, _, ArgId, 'U'),!.
+		marked_argument(ArgId,'U'),!.
+		%dtree_node(_, null, _, ArgId, 'U'),!.
 	
 	
 	/***********************************************************************************

@@ -292,7 +292,7 @@
 	
 	alternative(a1). 
     alternative(a2). 
-    alternative(a3).
+    %alternative(a3).
     alternative(a4).
 	
 	evidence(a1,cost,bad).    	evidence(a2,cost,reg).     	evidence(a3,cost,vgood).	evidence(a4,cost,bad).
