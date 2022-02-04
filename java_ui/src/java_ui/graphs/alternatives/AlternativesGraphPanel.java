@@ -167,7 +167,7 @@ public class AlternativesGraphPanel extends JPanel {
 	
 	private class AlternativesGraphVertexFontTransformer implements Transformer<AlternativesGraphVertex, Font>{
 		
-		private Font font = new Font("Calibri", Font.BOLD, 16);
+		private Font font = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 		
 		@Override
 		public Font transform(AlternativesGraphVertex vertex) {
@@ -179,7 +179,7 @@ public class AlternativesGraphPanel extends JPanel {
 	
 	private class AlternativesGraphEdgeFontTransformer implements Transformer<AlternativesGraphEdge, Font>{
 		
-		private Font font = new Font("Calibri", Font.BOLD, 16);
+		private Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
 		
 		@Override
 		public Font transform(AlternativesGraphEdge edge) {

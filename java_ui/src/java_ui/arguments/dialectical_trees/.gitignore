@@ -33,3 +33,8 @@
 /DeltaExplanationPanel$DTreeNodeFillPaintTransformer.class
 /ArgumentsGraphPanel$ArgumentFontTransformer.class
 /DeltaExplanationPanel$DTreeNodeFontTransformer.class
+/ArgumentsGraphEdge.class
+/DefeatedEdge.class
+/ArgumentsGraphPanel$ArgumentsGraphEdgeStrokeTransformer.class
+/ArgumentsGraphPanel$ArgumentsGraphEdgeFontTransformer.class
+/ArgumentsGraphPanel$ArgumentsGraphEdgeDrawPaintTransformer.class

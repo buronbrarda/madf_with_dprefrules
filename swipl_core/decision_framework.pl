@@ -6,6 +6,7 @@
 		
 		complement/2,
 		defeats/2,
+		in_conflict/2,
 		rule/2,
 		claim/2,
 		
@@ -21,6 +22,7 @@
 		justification_rules/3,
 		ranking_parent/2,
 		
+		defeat_explanation/3,
 		justification/4
 	]).
 	

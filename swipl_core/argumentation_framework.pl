@@ -3,6 +3,7 @@
 		
 		complement/2,
 		defeats/2,
+		in_conflict/2,
 		claim/2,
 		rule/2,
 		
@@ -10,6 +11,7 @@
 		
 		warranted_conclusion/1,
 		
+		defeat_explanation/3,
 		justification/4
 	]).
 	
@@ -281,6 +283,8 @@
 	node_status(_,'U').
 	
 	
+	
+	
 	/***********************************************************************************
 		warranted(?Claim).
 		
@@ -290,6 +294,19 @@
 		claim(Arg_Id, Claim),
 		dtree_node(_, null, _, Arg_Id, 'U'),!.
 	
+	
+	
+	
+	/***********************************************************************************
+		defeat_explanation(+Arg_IdA, +Arg_IdB, ?Explanation).
+		
+		An Explanation is the set of agents that agree that the Arg_IdA's cpref-rule
+		is more important that the Arg_IdB's cpref-rule.
+		Explanation will be an empty set if none agent agree on that.
+	************************************************************************************/
+	defeat_explanation(Arg_IdA, Arg_IdB, Explanation):-
+		rule(Arg_IdA,Rule_A), rule(Arg_IdB,RuleB),
+		findall(Agent,importance_statement(Agent,(Rule_A > RuleB)), Explanation).
 	
 	/***********************************************************************************
 		justification(?Claim, ?Claim_U_Trees, ?NoClaim_U_Trees, ?BothClaim_D_Trees).

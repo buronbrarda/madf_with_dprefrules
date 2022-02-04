@@ -304,7 +304,7 @@ public class DeltaExplanationPanel extends JPanel {
 	
 	private class DTreeNodeFontTransformer implements Transformer<DTreeNode, Font>{
 		
-		private Font font = new Font("Calibri", Font.BOLD, 16);
+		private Font font = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 		
 		@Override
 		public Font transform(DTreeNode vertex) {

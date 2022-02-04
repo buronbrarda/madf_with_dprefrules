@@ -22,7 +22,6 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-
 import org.apache.commons.collections15.Transformer;
 
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
@@ -37,9 +36,9 @@ import java_ui.graphs.alternatives.lattice.Utils;
 public class ArgumentsGraphPanel extends JPanel {
 	
 	private ArgumentsGraph graph;
-	private ISOMLayout<Argument, DTreeEdge> layout;
-	private VisualizationViewer<Argument, DTreeEdge> vv;
-	private DefaultModalGraphMouse<Argument, DTreeEdge> mouse;
+	private ISOMLayout<Argument, ArgumentsGraphEdge> layout;
+	private VisualizationViewer<Argument, ArgumentsGraphEdge> vv;
+	private DefaultModalGraphMouse<Argument, ArgumentsGraphEdge> mouse;
 	
 	private final Color acceptedArgumentColor = new Color(31, 221, 19);
 	private final Color acceptedSelectedArgumentColor = new Color(17, 117, 10);
@@ -56,14 +55,14 @@ public class ArgumentsGraphPanel extends JPanel {
 	public ArgumentsGraphPanel(){
 		this.graph = new ArgumentsGraph();
 		setLayout(new BorderLayout());
-		this.mouse = new DefaultModalGraphMouse<Argument, DTreeEdge>();
+		this.mouse = new DefaultModalGraphMouse<Argument, ArgumentsGraphEdge>();
 		
 	}
 	
 	public ArgumentsGraphPanel(ArrayList<Argument> arguments){
 		this.graph = new ArgumentsGraph(arguments);
 		setLayout(new BorderLayout());
-		this.mouse = new DefaultModalGraphMouse<Argument, DTreeEdge>();
+		this.mouse = new DefaultModalGraphMouse<Argument, ArgumentsGraphEdge>();
 		
 	}
 
@@ -71,7 +70,7 @@ public class ArgumentsGraphPanel extends JPanel {
 	private void initVisualizerViewer(){
 		this.selectedArgId = "";
 		
-		this.vv = new VisualizationViewer<Argument, DTreeEdge>(this.layout);
+		this.vv = new VisualizationViewer<Argument, ArgumentsGraphEdge>(this.layout);
 		
 		this.vv.addFocusListener(new ArgumentsGraphFocusListener());
 		
@@ -92,11 +91,11 @@ public class ArgumentsGraphPanel extends JPanel {
 		
 		
 		
-		this.vv.getRenderContext().setEdgeLabelTransformer(new Transformer<DTreeEdge, String>(){
+		this.vv.getRenderContext().setEdgeLabelTransformer(new Transformer<ArgumentsGraphEdge, String>(){
 				
 			@Override
-			public String transform(DTreeEdge edge){
-				return "";
+			public String transform(ArgumentsGraphEdge edge){
+				return edge.getExplanation();
 			}
 			
 		});
@@ -118,7 +117,9 @@ public class ArgumentsGraphPanel extends JPanel {
 			
 		});
 		
-		
+		this.vv.getRenderContext().setEdgeFontTransformer(new ArgumentsGraphEdgeFontTransformer());
+		this.vv.getRenderContext().setEdgeStrokeTransformer(new ArgumentsGraphEdgeStrokeTransformer());
+		this.vv.getRenderContext().setEdgeDrawPaintTransformer(new ArgumentsGraphEdgeDrawPaintTransformer());
 		this.vv.getRenderContext().setVertexFillPaintTransformer(new ArgumentFillPaintTransformer());
 		this.vv.getRenderContext().setVertexShapeTransformer(new ArgumentShapeTransformer());
 		this.vv.getRenderContext().setVertexStrokeTransformer(new ArgumentStrokeTransformer());
@@ -166,7 +167,7 @@ public class ArgumentsGraphPanel extends JPanel {
 	public void loadGraph(){
 		this.graph.load();
 		
-		this.layout = new  ISOMLayout<Argument, DTreeEdge>(this.graph.getGraph());
+		this.layout = new  ISOMLayout<Argument, ArgumentsGraphEdge>(this.graph.getGraph());
 		
 		if(this.vv != null){
 			this.remove(this.vv);
@@ -209,6 +210,52 @@ public class ArgumentsGraphPanel extends JPanel {
 				// do nothing
 			}
 		}
+	}
+	
+	private class ArgumentsGraphEdgeStrokeTransformer implements Transformer<ArgumentsGraphEdge,Stroke>{
+
+		@Override
+		public Stroke transform(ArgumentsGraphEdge edge) {
+			Stroke toReturn = null;
+			
+			//If it is a defeat the line must be solid.
+			if(edge.isSuccessful()) {
+				toReturn = new BasicStroke();
+			}
+			//Else, the line must be dashed
+			else {
+				float [] dash = {5.0f};
+				toReturn = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dash, 0.0f);
+			}
+			
+			
+			return toReturn;
+		}
+		
+	}
+	
+	private class ArgumentsGraphEdgeFontTransformer implements Transformer<ArgumentsGraphEdge, Font>{
+		
+		private Font font = new Font(Font.SANS_SERIF , Font.PLAIN, 14);
+		
+		@Override
+		public Font transform(ArgumentsGraphEdge edge) {
+            
+            return font;
+        }
+		
+	}
+	
+	private class ArgumentsGraphEdgeDrawPaintTransformer implements Transformer<ArgumentsGraphEdge, Paint>{
+		
+		private final Color defeated = Color.BLACK;
+		private final Color undefeated = new Color(120,120,120);
+		
+		@Override
+		public Paint transform(ArgumentsGraphEdge edge) {
+			return edge.isSuccessful()? defeated : undefeated;
+		}
+		
 	}
 	
 	private class ArgumentFillPaintTransformer implements Transformer<Argument,Paint>{
@@ -285,7 +332,7 @@ public class ArgumentsGraphPanel extends JPanel {
 	
 	private class ArgumentFontTransformer implements Transformer<Argument, Font>{
 		
-		private Font font = new Font("Calibri", Font.BOLD, 16);
+		private Font font = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 		
 		@Override
 		public Font transform(Argument vertex) {
