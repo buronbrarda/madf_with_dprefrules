@@ -38,3 +38,5 @@
 /ArgumentsGraphPanel$ArgumentsGraphEdgeStrokeTransformer.class
 /ArgumentsGraphPanel$ArgumentsGraphEdgeFontTransformer.class
 /ArgumentsGraphPanel$ArgumentsGraphEdgeDrawPaintTransformer.class
+/ArgumentsGraphPanel$ArgumentsGraphArrowDrawPaintTransformer.class
+/ArgumentsGraphPanel$ArgumentsGraphArrowFillPaintTransformer.class

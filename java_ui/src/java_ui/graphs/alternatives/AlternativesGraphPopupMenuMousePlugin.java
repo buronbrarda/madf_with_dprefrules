@@ -46,8 +46,8 @@ public class AlternativesGraphPopupMenuMousePlugin extends AbstractPopupGraphMou
         		AlternativesGraphVertex v = pickSupport.getVertex(vv.getGraphLayout(), p.getX(), p.getY());
 	        	if(v != null) {
 	            	if(v instanceof AlternativesGraphVertex){
-	            		vertexPopup.setVertex(v);
 	            		vertexPopup.setPicked(vv.getPickedVertexState().getPicked());
+	            		vertexPopup.setVertex(v);
 	            		vertexPopup.show(vv,(int)p.getX(),(int)p.getY());
 	            	}
 	            }

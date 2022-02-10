@@ -24,7 +24,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import org.apache.commons.collections15.Transformer;
 
+import edu.uci.ics.jung.algorithms.layout.DAGLayout;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
@@ -36,7 +38,7 @@ import java_ui.graphs.alternatives.lattice.Utils;
 public class ArgumentsGraphPanel extends JPanel {
 	
 	private ArgumentsGraph graph;
-	private ISOMLayout<Argument, ArgumentsGraphEdge> layout;
+	private Layout<Argument, ArgumentsGraphEdge> layout;
 	private VisualizationViewer<Argument, ArgumentsGraphEdge> vv;
 	private DefaultModalGraphMouse<Argument, ArgumentsGraphEdge> mouse;
 	
@@ -47,6 +49,9 @@ public class ArgumentsGraphPanel extends JPanel {
 	private final Color rejectedSelectedArgumentColor = new Color(195, 9, 9);
 	
 	private final Color selectedArgumentLabelColor = new Color(3, 98, 252);
+	
+	private final Color successfulAttackColor = Color.BLACK;
+	private final Color unsuccessfulAttackColor = new Color(180,180,180);
 			
 	private String selectedArgId;
 	private DeltaExplanationPanel explanationPanel = null;
@@ -71,9 +76,9 @@ public class ArgumentsGraphPanel extends JPanel {
 		this.selectedArgId = "";
 		
 		this.vv = new VisualizationViewer<Argument, ArgumentsGraphEdge>(this.layout);
-		
+	
 		this.vv.addFocusListener(new ArgumentsGraphFocusListener());
-		
+	
 		this.vv.setGraphMouse(this.mouse);
 		
 		
@@ -120,6 +125,8 @@ public class ArgumentsGraphPanel extends JPanel {
 		this.vv.getRenderContext().setEdgeFontTransformer(new ArgumentsGraphEdgeFontTransformer());
 		this.vv.getRenderContext().setEdgeStrokeTransformer(new ArgumentsGraphEdgeStrokeTransformer());
 		this.vv.getRenderContext().setEdgeDrawPaintTransformer(new ArgumentsGraphEdgeDrawPaintTransformer());
+		this.vv.getRenderContext().setArrowDrawPaintTransformer(new ArgumentsGraphArrowDrawPaintTransformer());
+		this.vv.getRenderContext().setArrowFillPaintTransformer(new ArgumentsGraphArrowFillPaintTransformer());
 		this.vv.getRenderContext().setVertexFillPaintTransformer(new ArgumentFillPaintTransformer());
 		this.vv.getRenderContext().setVertexShapeTransformer(new ArgumentShapeTransformer());
 		this.vv.getRenderContext().setVertexStrokeTransformer(new ArgumentStrokeTransformer());
@@ -167,7 +174,13 @@ public class ArgumentsGraphPanel extends JPanel {
 	public void loadGraph(){
 		this.graph.load();
 		
-		this.layout = new  ISOMLayout<Argument, ArgumentsGraphEdge>(this.graph.getGraph());
+		//This check is just because ISOMLayout does not admit a graph with no vertices
+		if(this.graph.getGraph().getVertexCount() > 0) {
+			this.layout = new  ISOMLayout<Argument, ArgumentsGraphEdge>(this.graph.getGraph());
+		}
+		else {
+			this.layout = new DAGLayout<Argument, ArgumentsGraphEdge>(this.graph.getGraph());
+		}
 		
 		if(this.vv != null){
 			this.remove(this.vv);
@@ -248,12 +261,27 @@ public class ArgumentsGraphPanel extends JPanel {
 	
 	private class ArgumentsGraphEdgeDrawPaintTransformer implements Transformer<ArgumentsGraphEdge, Paint>{
 		
-		private final Color defeated = Color.BLACK;
-		private final Color undefeated = new Color(120,120,120);
+		@Override
+		public Paint transform(ArgumentsGraphEdge edge) {
+			return edge.isSuccessful()? successfulAttackColor : unsuccessfulAttackColor;
+		}
+		
+	}
+	
+	private class ArgumentsGraphArrowDrawPaintTransformer implements Transformer<ArgumentsGraphEdge, Paint>{
 		
 		@Override
 		public Paint transform(ArgumentsGraphEdge edge) {
-			return edge.isSuccessful()? defeated : undefeated;
+			return edge.isSuccessful()? successfulAttackColor : unsuccessfulAttackColor;
+		}
+		
+	}
+	
+	private class ArgumentsGraphArrowFillPaintTransformer implements Transformer<ArgumentsGraphEdge, Paint>{
+		
+		@Override
+		public Paint transform(ArgumentsGraphEdge edge) {
+			return edge.isSuccessful()? successfulAttackColor : unsuccessfulAttackColor;
 		}
 		
 	}
