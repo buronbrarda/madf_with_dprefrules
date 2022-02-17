@@ -167,7 +167,7 @@ public class ResultsPanel extends JPanel {
 		gbl_panel.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
-		alternativesGraphButton = new JButton("Explanation graph");
+		alternativesGraphButton = new JButton("Explanatory graph");
 		alternativesGraphButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if(alternativesGraphDialog == null){
