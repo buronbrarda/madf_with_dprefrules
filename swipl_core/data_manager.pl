@@ -18,6 +18,7 @@
 		add_alternative/2,	
 		remove_alternative/1,
 		remove_alternatives/0,
+		criteria_value_pair/2,
 		
 		add_criterion/2,
 		remove_criterion/1,
@@ -266,10 +267,25 @@
 		criterion(C,Values),
 		forall(alternative(D),(
 			random_value(V,Values),
-			assert(evidence(D,C,V))
+			assert_evidence(D,C,V)
 		)).
 		
 	
+	criteria_value_pair(D,[C,V]):-
+		evidence(D,C,V).
+		
+	criteria_value_pair(D,[C,null]):-
+		criterion(C,_),not(evidence(D,C,_)).
+		
+	
+	% 5% probability for generating a null value. 
+	assert_evidence(_,_,_):-
+		random(0.0,1.0,V),
+		V >= 0.95,!.
+	
+	assert_evidence(D,C,V):-
+		assert(evidence(D,C,V)).
+		
 	random_value(V,Domain):-
 		(Domain = number; Domain = -number),!,
 		random(V).
@@ -283,6 +299,7 @@
 		
 	random_value(V,List):-
 		random_member(V,List).
+	
 	
 	
 	%=============== JUST TO DEBUG ==============%

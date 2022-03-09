@@ -29,8 +29,17 @@ public class EvidencePrologLoader implements PrologLoader{
 		return toReturn;
 	}
 	
-	private String getValue(TableModel tm, int row, int column) {
-		return (String) tm.getValueAt(row, column);
+	private String getValue(TableModel tm, int row, int column) throws PrologLoadException {
+		String toReturn = (String) tm.getValueAt(row, column);
+		
+		if(toReturn == null) {	
+			this.err_msg = "There was a problem while loading alternative '"+getAlternative(tm, row)+"'."+"\n"
+					+ "Remember to use 'null' for speciying that an alternative doesn't has a value for a given criterion.";
+			
+			throw new PrologLoadException(getErrorMessage());
+		}
+		
+		return toReturn;
 	}
 	
 	

@@ -43,34 +43,42 @@ public class EvidenceTableModelBuilder implements TableModelBuilder{
 		
 		Query q = new Query("criterion(C,_)");
 		
-		ArrayList<String> colums = new ArrayList<String>();
-		colums.add("alternative");
+		ArrayList<String> columns = new ArrayList<String>();
+		columns.add("alternative");
 		
 		while(q.hasNext()){
 			Map<String, Term> s = q.next();
 			
-			colums.add(s.get("C").toString());
+			columns.add(s.get("C").toString());
 		}
 		
-		DefaultTableModel toReturn = new DefaultTableModel(colums.toArray(), 0);
+		DefaultTableModel toReturn = new DefaultTableModel(columns.toArray(), 0);
 		
-		Query q2 = new Query("alternative(A),findall([Criterion,Value],evidence(A,Criterion,Value),Values)");
+		Query q2 = new Query("alternative(A),findall(Pair,criteria_value_pair(A,Pair),Values)");
 		
 		ArrayList<ArrayList<String>> rows = new ArrayList<ArrayList<String>>();
 		
 		while(q2.hasNext()){
-			ArrayList<String> row = new ArrayList<String>();
+			ArrayList<String> row = new ArrayList<String>(columns.size());
+			//Ensure list's size is correct.
+			for(int i = 0; i<columns.size();i++) {
+				row.add(null);
+			}
 			
 			Map<String, Term> s = q2.next();
 			
-			row.add(s.get("A").toString());
+			row.set(0,s.get("A").toString());
+			
 			
 			Term[] pairList = Util.listToTermArray(s.get("Values"));
 			
 			for(Term pair : pairList){
 				Term[] aux = Util.listToTermArray(pair);
 				
-				row.add(colums.indexOf(aux[0].toString()), aux[1].toString());
+				int c_index = columns.indexOf(aux[0].toString());
+				String value = aux[1].toString();
+				
+				row.set(c_index, value);
 			}
 			
 			rows.add(row);

@@ -45,7 +45,7 @@ public class AlternativesGraphCompoundVertexPopupMenu extends JPopupMenu{
 			}
 		});
 		
-		addEdgesItem = new JMenuItem("Add extra-edges");
+		addEdgesItem = new JMenuItem("Add extra-edge");
 		addEdgesItem.addActionListener(new ActionListener() {
 			
 			@Override
