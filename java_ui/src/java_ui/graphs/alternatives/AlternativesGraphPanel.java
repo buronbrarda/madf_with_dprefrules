@@ -21,6 +21,7 @@ import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
+import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 import java_ui.graphs.alternatives.lattice.JungLatticeLayout;
 import java_ui.graphs.alternatives.lattice.Utils;
 
@@ -30,6 +31,8 @@ public class AlternativesGraphPanel extends JPanel {
 	private JungLatticeLayout<AlternativesGraphVertex, AlternativesGraphEdge> layout;
 	private VisualizationViewer<AlternativesGraphVertex, AlternativesGraphEdge> vv;
 	private DefaultModalGraphMouse<AlternativesGraphVertex, AlternativesGraphEdge> mouse;
+	
+	private final Color selectedEdgeColor = new Color(3, 98, 252);
 	
 	public AlternativesGraphPanel(){
 		this.graph = new AlternativesGraph();
@@ -102,6 +105,12 @@ public class AlternativesGraphPanel extends JPanel {
 		this.vv.getRenderContext().setVertexShapeTransformer(new AlternativesGraphVertexShapeTransformer());
 		this.vv.getRenderContext().setVertexFontTransformer(new AlternativesGraphVertexFontTransformer());
 		this.vv.getRenderContext().setEdgeFontTransformer(new AlternativesGraphEdgeFontTransformer());
+		
+		this.vv.getRenderContext().setEdgeDrawPaintTransformer(new EdgeFullPaintTransformer());
+		this.vv.getRenderContext().setArrowDrawPaintTransformer(new EdgeFullPaintTransformer());
+		this.vv.getRenderContext().setArrowFillPaintTransformer(new EdgeFullPaintTransformer());
+		this.vv.getRenderContext().setEdgeLabelRenderer(new DefaultEdgeLabelRenderer(selectedEdgeColor));
+		
 		
 		this.vv.getRenderContext().setVertexStrokeTransformer(new Transformer<AlternativesGraphVertex, Stroke>() {			
 			
@@ -185,6 +194,15 @@ public class AlternativesGraphPanel extends JPanel {
 		public Font transform(AlternativesGraphEdge edge) {
             return font;
         }
+		
+	}
+	
+	private class EdgeFullPaintTransformer implements Transformer<AlternativesGraphEdge,Paint>{
+
+		@Override
+		public Paint transform(AlternativesGraphEdge edge) {
+			return vv.getRenderContext().getPickedEdgeState().isPicked(edge) ? selectedEdgeColor : Color.BLACK;
+		}
 		
 	}
 }
