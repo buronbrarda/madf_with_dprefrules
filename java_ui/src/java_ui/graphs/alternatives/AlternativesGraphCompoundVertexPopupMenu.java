@@ -93,7 +93,7 @@ public class AlternativesGraphCompoundVertexPopupMenu extends JPopupMenu{
 	
 	
 	private boolean incomparable(AlternativesGraphSimpleVertex v1, AlternativesGraphSimpleVertex v2) {
-		Query q = new Query("incomparable("+v1.getId()+","+v2.getId()+")");
+		Query q = new Query("not(explicitly_preferred("+v1.getId()+","+v2.getId()+")), not(explicitly_preferred("+v2.getId()+","+v1.getId()+"))");
 		
 		boolean rtn = q.hasSolution();
 		q.close();
