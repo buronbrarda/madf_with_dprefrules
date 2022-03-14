@@ -46,9 +46,9 @@
 		generate_equivalent_groups_ranking,
 			
 		get_time(T3),
-			
-		is(Reasoning_Time, round((T2 - T1)*1000)),
-		is(Selection_Time, round((T3 - T2)*1000)),
+		
+		format(atom(Reasoning_Time), '~3f', [(T2 - T1)*1000.0]),
+		format(atom(Selection_Time), '~3f', [(T3 - T2)*1000.0]),
 		
 		args_count(Args_Count).
 		

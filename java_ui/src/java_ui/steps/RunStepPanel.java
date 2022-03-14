@@ -94,8 +94,8 @@ public class RunStepPanel extends StepPanel {
 		for(Map<String,Term> solution : q) {	
 			resultsPanel.setSelectedAlternatives(termArrayToText(Util.listToTermArray(solution.get("Selection"))));
 			resultsPanel.setArgumentsCount(solution.get("Args_Count").toString());
-			resultsPanel.setReasoningTime(solution.get("Reasoning_Time").toString()+" ms");
-			resultsPanel.setSelectionTime(solution.get("Selection_Time").toString()+" ms");
+			resultsPanel.setReasoningTime(solution.get("Reasoning_Time").toString().replace('\'', '\0')+" ms");
+			resultsPanel.setSelectionTime(solution.get("Selection_Time").toString().replace('\'', '\0')+" ms");
 			resultsPanel.enableGraphButtons();
 		}
 
