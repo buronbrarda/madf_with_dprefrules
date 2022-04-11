@@ -132,12 +132,14 @@
 		Premise =.. [Clause,_X,_Y,Criterion],
 		member(Clause, [better,worse,equal,not_better,not_worse]),!,
 		
+		ground(Criterion),							%Check groundness.
 		criterion(Criterion,_),
 		not(member([Criterion,_],Previous_Clauses)). % Check not previous occurrence of a premise evaluating Criterion.
 	
 	
 	clause_conditions(min_dist(_X,_Y,Criterion,Min_V),Previous_Clauses,[Criterion,min_dist,Min_V]):-
-		!,criterion(Criterion,_),									%Check criterion existence.
+		!,ground(Criterion), ground(Min_V),							%Check groundness.
+		criterion(Criterion,_),									%Check criterion existence.
 		number(Min_V), Min_V >= 1,									%Check Min_V correctness.
 		
 		member([Criterion,better],Previous_Clauses),				%Check previous b_premise.
@@ -147,7 +149,8 @@
 	
 	
 	clause_conditions(max_dist(_X,_Y,Criterion,Max_V),Previous_Clauses,[Criterion,max_dist,Max_V]):-
-		!,criterion(Criterion,_),								%Check criterion existence.
+		!, ground(Criterion), ground(Max_V),					%Check groundness.
+		criterion(Criterion,_),									%Check criterion existence.
 		number(Max_V), Max_V >= 1,								%Check Max_V correctness.
 		
 		member([Criterion,worse],Previous_Clauses),				%Check previous w_premise.
@@ -156,7 +159,8 @@
 		
 		
 	clause_conditions(max(_X,Criterion,Max_V),Previous_Clauses,[Criterion,max,Max_V]):-
-		!,criterion(Criterion,Domain),							%Check criterion existence.
+		!,ground(Criterion), ground(Max_V),						%Check groundness.
+		criterion(Criterion,Domain),							%Check criterion existence.
 		legal_value(Max_V,Domain),								%Check Max_V correctness.
 		
 		member([Criterion,_],Previous_Clauses).					%Check previous criterion evaluation.
@@ -164,7 +168,8 @@
 		
 	
 	clause_conditions(min(_X,Criterion,Min_V),Previous_Clauses,[Criterion,min,Min_V]):-
-		!,criterion(Criterion,Domain),							%Check criterion existence.
+		!, ground(Criterion), ground(Min_V),					%Check groundness.
+		criterion(Criterion,Domain),							%Check criterion existence.
 		legal_value(Min_V,Domain),								%Check Max_V correctness.
 		
 		member([Criterion,_],Previous_Clauses).					%Check previous criterion evaluation.
