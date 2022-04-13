@@ -38,8 +38,12 @@
 		criterion(C,Values),
 		greater_value(Vx,Vy,Values),!.
 		
-	relation(_C,worse,_X,_Y).
-		
+	relation(C,worse,X,Y):-
+		evidence(X,C,Vx),
+		evidence(Y,C,Vy),
+		criterion(C,Values),
+		greater_value(Vy,Vx,Values).
+	
 	
 	% ============================================================================================
 	% 		These predicates define how each cpref-rule premises must be interpreted.
@@ -60,9 +64,11 @@
 		not(c_relation(C,worse,X,Y)).
 		
 	max(X,C,V):-
-		evidence(X,C,Vx),
-		criterion(C,Domain),
-		geq_value(V,Vx,Domain).
+		not((
+			evidence(X,C,Vx),
+			criterion(C,Domain),
+			greater_value(Vx,V,Domain)
+		)).
 		
 	min(X,C,V):-
 		evidence(X,C,Vx),
@@ -76,8 +82,28 @@
 	max_dist(X,Y,C,Max_Dist):-
 		evidence(X,C,V), evidence(Y,C,U), criterion(C,Domain),
 		distance(V,U,Domain,Dist), Dist =< Max_Dist.
+	
+	
+	at_least_better_by(X,Y,C,0):-
+		!,equal(X,Y,C).
 		
+	at_least_better_by(X,Y,C,Min_Dist):-
+		better(X,Y,C),min_dist(X,Y,C,Min_Dist).
+	
+	at_most_worse_by(X,Y,C,_):-
+		not_worse(X,Y,C),!.
 		
+	at_most_worse_by(X,Y,C,Max_Dist):-
+		evidence(X,C,V), evidence(Y,C,U), criterion(C,Domain),
+		distance(V,U,Domain,Dist), Dist =< Max_Dist.
+		
+	know(X,C):-
+		evidence(X,C,_).
+		
+	unknown(X,C):-
+		not(evidence(X,C,_)).
+		
+	
 	% ============================================================================================
 	% ============================================================================================
 		
@@ -130,7 +156,7 @@
 	%Check "better", "worse", "equal", "not_better" and "not_worse" clauses conditions.	
 	clause_conditions(Premise,Previous_Clauses,[Criterion,Clause]):-
 		Premise =.. [Clause,_X,_Y,Criterion],
-		member(Clause, [better,worse,equal,not_better,not_worse]),!,
+		member(Clause, [better,worse,equal]),!,
 		
 		ground(Criterion),							%Check groundness.
 		criterion(Criterion,_),
@@ -147,6 +173,14 @@
 		not(member([Criterion,min_dist,_],Previous_Clauses)).		%Check non-duplicate min_distance.
 		
 	
+	clause_conditions(at_least_better_by(_X,_Y,Criterion,Min_V),Previous_Clauses,[Criterion,at_least_better_by,Min_V]):-
+		!,ground(Criterion), ground(Min_V),							%Check groundness.
+		criterion(Criterion,_),										%Check criterion existence.
+		number(Min_V), Min_V >= 0,									%Check Min_V correctness.
+		
+		not(member([Criterion,at_least_better_by,_],Previous_Clauses)),		%Check non-duplicate min_distance.
+		not(member([Criterion,at_most_worse_by,_],Previous_Clauses)).		%Check non-duplicate max_distance.
+	
 	
 	clause_conditions(max_dist(_X,_Y,Criterion,Max_V),Previous_Clauses,[Criterion,max_dist,Max_V]):-
 		!, ground(Criterion), ground(Max_V),					%Check groundness.
@@ -157,22 +191,43 @@
 		
 		not(member([Criterion,max_dist,_],Previous_Clauses)).		%Check non-duplicate max_distance.
 		
+	
+	clause_conditions(at_most_worse_by(_X,_Y,Criterion,Max_V),Previous_Clauses,[Criterion,at_most_worse_by,Max_V]):-
+		!,ground(Criterion), ground(Max_V),							%Check groundness.
+		criterion(Criterion,_),										%Check criterion existence.
+		number(Max_V), Max_V >= 0,									%Check Min_V correctness.
 		
+		not(member([Criterion,at_least_better_by,_],Previous_Clauses)),		%Check non-duplicate min_distance.
+		not(member([Criterion,at_most_worse_by,_],Previous_Clauses)).		%Check non-duplicate max_distance.
+		
+			
 	clause_conditions(max(_X,Criterion,Max_V),Previous_Clauses,[Criterion,max,Max_V]):-
 		!,ground(Criterion), ground(Max_V),						%Check groundness.
 		criterion(Criterion,Domain),							%Check criterion existence.
 		legal_value(Max_V,Domain),								%Check Max_V correctness.
 		
-		member([Criterion,_],Previous_Clauses).					%Check previous criterion evaluation.
+		member([Criterion,_],Previous_Clauses),					%Check previous criterion evaluation.
+		not(member([Criterion,max,_],Previous_Clauses)).		%Check no-duplication.		
 		
+	clause_conditions(known(_Y,Criterion),Previous_Clauses,[Criterion,known,null]):-
+		!,ground(Criterion), 				%Check groundness.
+		criterion(Criterion,_),				%Check criterion existence.
 		
+		member([Criterion,at_most_worse_by,_],Previous_Clauses).	%Check previous criterion evaluation.
 	
 	clause_conditions(min(_X,Criterion,Min_V),Previous_Clauses,[Criterion,min,Min_V]):-
 		!, ground(Criterion), ground(Min_V),					%Check groundness.
 		criterion(Criterion,Domain),							%Check criterion existence.
 		legal_value(Min_V,Domain),								%Check Max_V correctness.
+		not(member([Criterion,min,_],Previous_Clauses)).		%Check no-duplication.
 		
-		member([Criterion,_],Previous_Clauses).					%Check previous criterion evaluation.
+		
+	clause_conditions(unknown(_Y,Criterion),Previous_Clauses,[Criterion,unknown,null]):-
+		!,ground(Criterion), 				%Check groundness.
+		criterion(Criterion,_),				%Check criterion existence.
+		
+		not(member([Criterion,at_most_worse_by,_],Previous_Clauses)),
+		member([Criterion,min,_],Previous_Clauses).	%Check previous criterion evaluation.
 	
 	
 	/***********************************************************************************
@@ -184,9 +239,19 @@
 	************************************************************************************/
 	coherent_cpref_rule(Body ==> pref(X,Y)):-
 		coherent_body(Body, [], [X,Y], Clause_Output),
-		member([_Criterion, better], Clause_Output),!,		%Check whether it has a b_premise.
+		better_check(Clause_Output),						
 		X \== Y.											%Check X and Y are different variables.
 	
+	
+	better_check(Clause_Output):-
+		member([_Criterion, better], Clause_Output),!. 	%Check whether it has a b_premise.
+		
+	better_check(Clause_Output):-
+		member([_Criterion,at_least_better_by,Min_V], Clause_Output), Min_V > 0,!.	%Check whether it has an exigence.
+		
+	better_check(Clause_Output):-
+		member([Criterion,min,_], Clause_Output), member([Criterion,unknown,null], Clause_Output),!. %Check whether it has risk.
+		
 	
 	coherent_body((Premise, Body), Previous_Clauses, [X,Y], [Clause|Clause_Output]):-
 		!,clause_conditions(Premise,Previous_Clauses,Clause),
