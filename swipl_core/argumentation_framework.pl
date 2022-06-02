@@ -20,8 +20,8 @@
 	:-use_module(arg_generator, [argument/3, generate_arguments/0]).
 	
 	:-dynamic d_in_conflict/2.
-	:-dynamic d_properly_defeats/2.
-	:-dynamic d_blocks/2.
+	:-dynamic d_defeats/2.
+	:-dynamic d_stronger/2.
 	:-dynamic d_arg_line/2.
 	:-dynamic dtree_node/5.
 	
@@ -79,64 +79,32 @@
 		rule(Arg_Id_A, RA),
 		rule(Arg_Id_B, RB),
 		importance_statement(AgentA,(RA > RB)),
-		not((
-			importance_statement(AgentB,(RB > RA)),
-			has_priority(AgentB,AgentA)
-		)),!.
+		forall(importance_statement(AgentB,(RB > RA)), has_priority(AgentA,AgentB)),!.
 	
 	
 	/***********************************************************************************
 		defeats(+ArgA, +ArgB).
 		
-		An argument A defeats an argument B, either if A properly defeats, or blocks B.
-		It is defined in term of dynamic facts to improve performance. 
+		An argument A defeats an argument B iff they are in conflict and
+		B is not stronger than A.
 	************************************************************************************/
 	defeats(Arg_Id_A,Arg_Id_B):-
-		d_properly_defeats(Arg_Id_A,Arg_Id_B).
-	
-	defeats(Arg_Id_A,Arg_Id_B):-
-		d_blocks(Arg_Id_A,Arg_Id_B).
-	
-	
-	/***********************************************************************************
-		proper_defeats(+ArgA, +ArgB).
-		
-		An argument A properly defeats an argument B iff they are in conflict and
-		A is stronger than B.
-	************************************************************************************/
-	properly_defeats(Arg_Id_A,Arg_Id_B):-
 		in_conflict(Arg_Id_A,Arg_Id_B),
-		stronger(Arg_Id_A,Arg_Id_B).	
-	
-	
-	/***********************************************************************************
-		blocks(+ArgA, +ArgB).
-		
-		An argument A blocks an argument B iff they are in conflict and A is not
-		stronger than B and vice-versa.
-	************************************************************************************/
-	blocks(Arg_Id_A, Arg_Id_B):-
-		in_conflict(Arg_Id_A,Arg_Id_B),
-		not(stronger(Arg_Id_A, Arg_Id_B)), 
-		not(stronger(Arg_Id_B, Arg_Id_A)).	
+		not(d_stronger(Arg_Id_B,Arg_Id_A)).	
 		
 	
-	% Arguments relation in_conflic, properly_defeats and blocks must be pre-calculated
-	% in order to improve performace.
+	% Defeat and conflict-stronger relation is pre-calculate in order to improve performace.
 	generate_argument_relations:-
-		retractall(d_in_conflict(_,_)),
-		retractall(d_properly_defeats(_,_)),
-		retractall(d_blocks(_,_)),
+		retractall(d_defeats(_,_)),
+		retractall(d_stronger(_,_)),
 		
-		forall((properly_defeats(Arg_Id_A,Arg_Id_B)), (
-			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),
-			assert(d_in_conflict(Arg_Id_B,Arg_Id_A)),
-			assert(d_properly_defeats(Arg_Id_A,Arg_Id_B))
-		)),
+		forall((
+			in_conflict(Arg_Id_A,Arg_Id_B),
+			stronger(Arg_Id_A,Arg_Id_B)	
+		), assert(d_stronger(Arg_Id_A,Arg_Id_B))),
 		
-		forall((blocks(Arg_Id_A,Arg_Id_B)), (
-			assert(d_in_conflict(Arg_Id_A,Arg_Id_B)),  % Just in one direction cause block is symmetric
-			assert(d_blocks(Arg_Id_A,Arg_Id_B))
+		forall((defeats(Arg_Id_A,Arg_Id_B)), (
+			assert(d_defeats(Arg_Id_A,Arg_Id_B))
 		)).
 	
 	
@@ -146,8 +114,40 @@
 		An argument A is concordant with an argumentation line L iff A is not in
 		conflict with any argument in L.
 	************************************************************************************/
-	concordant_with(Arg_A,Arg_List):-
-		not((member(Arg_B,Arg_List), d_in_conflict(Arg_A,Arg_B))).	
+	/*concordant_with(Arg_A,Arg_List):-
+		not((member(Arg_B,Arg_List), in_conflict(Arg_A,Arg_B))).	
+	*/
+	
+	
+	/***********************************************************************************
+		acceptable_arg_line(?Arg_Id, ?Line).
+		
+		Is true when Line is an acceptable argumentation line for the argument identified
+		with Arg_Id.
+		An argumentation line L is acceptable iff:
+			- Every argument in L defeats its predecessor, and
+			- No argument appears twice in L.
+			
+		NOTE: In the way it is defined, Line is exhaustive.
+		An argumentation line L is exhaustive when it is not possible to obtain a longer
+		line that remains acceptable.
+	************************************************************************************/
+	
+	acceptable_arg_line(Arg_Id,Inverse_Line):-
+		acceptable_arg_line(Arg_Id,[],Line),
+		reverse(Line,Inverse_Line).
+	
+	acceptable_arg_line(Last_Arg,Line,Aux):-
+		d_defeats(Defeater,Last_Arg),
+		not(member(Defeater,[Last_Arg|Line])),
+		acceptable_arg_line(Defeater,[Last_Arg|Line],Aux).
+		
+	acceptable_arg_line(Last_Arg,Line,[Last_Arg|Line]):-
+		not((
+			d_defeats(Defeater,Last_Arg),
+			not(member(Defeater,[Last_Arg|Line]))
+		)).
+		
 	
 	
 	/***********************************************************************************
@@ -158,7 +158,7 @@
 		An argumentation line L is acceptable iff:
 			- Every argument in L defeats its predecessor,
 			- No argument appears twice in L, and
-			- pros(L) and cons(L) are concordant, where pros(L) are the arguments in
+			-  pros(L) and cons(L) are concordant, where pros(L) are the arguments in
 			odd positions and cons(L) are the arguments in even positions.
 			
 		NOTE: In the way it is defined, Line is exhaustive.
@@ -166,7 +166,7 @@
 		line that remains acceptable.
 	************************************************************************************/
 	
-	acceptable_arg_line(Arg_Id,[Arg_Id|Line]):-
+	/*acceptable_arg_line(Arg_Id,[Arg_Id|Line]):-
 		acceptable_arg_line([],[Arg_Id],Line,con).
 		
 	acceptable_arg_line(Allies,[E|Enemies],[Defeater|Line],pro):-
@@ -194,7 +194,7 @@
 			not(( append(Allies,Enemies,Union), member(Defeater,Union) )),  % Avoid arguments repetition
 			concordant_with(Defeater,Allies)
 		)).
-	
+	*/
 	
 	/***********************************************************************************
 		dialectical_tree(?Arg_Id, ?Tree).
