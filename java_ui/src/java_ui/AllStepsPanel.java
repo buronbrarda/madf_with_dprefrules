@@ -67,15 +67,15 @@ public class AllStepsPanel extends JPanel{
 		
 		
 		step3 = new DefineCprefRulesStepPanel(
-				"3. Define the set of CPref-Rules.",
-				"CPref-Rules",
+				"3. Define the set of preference rules.",
+				"Preference rules",
 				new CPrefRulesTableEditorPanel(),
 				new CPrefRulesPrologLoader()
 		);
 		
 		step4 = new DefineRuleImportanceStepPanel(
-				"4. Define the agent's priority order, and the importance each agent assigns to the CPref-rules.",
-				"Importance Orders",
+				"4. Define the agent's priority order, and the importance each agent assigns to the rules.",
+				"Importance orders",
 				new RuleImportanceTableEditorPanel(),
 				new RuleImportancePrologLoader()
 		);

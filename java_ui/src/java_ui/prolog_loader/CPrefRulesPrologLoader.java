@@ -28,7 +28,7 @@ public class CPrefRulesPrologLoader implements PrologLoader{
 		if(!q.hasSolution()) {
 			
 			this.err_message = "There was a problem while loading rule '"+id+"'."+"\n"
-					+ "Please, check if its syntax is correct and if it is a coherent CPref-Rule.";
+					+ "Please, check if its syntax is correct and if it is coherent.";
 			
 			this.status = PrologLoader.StatusCode.Error;
 			

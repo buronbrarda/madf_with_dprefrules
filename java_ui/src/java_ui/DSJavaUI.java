@@ -101,7 +101,7 @@ public class DSJavaUI{
 		frame.setBounds(100, 100, 1220, 526);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		frame.setTitle("Argumentation-Based Multi-Criteria Decision Support System With Conditional Preferences - (Prototype Version)");
+		frame.setTitle("Multi-agent Argumentation-based Multi-criteria Framework for Decision-making with Defeasible Preferences - (Prototype Version)");
 		
 		Atom filesPath;
 		

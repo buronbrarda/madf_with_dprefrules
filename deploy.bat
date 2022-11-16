@@ -16,14 +16,15 @@ del /q tmp\swipl_core\.project
 
 xcopy app.jar tmp
 xcopy readme.txt tmp
+xcopy launcher.bat tmp
 
 cd .\tmp
 
-tar -cf cpref_decision_system.zip app_lib examples swipl_core app.jar readme.txt
+tar -cf app.zip app_lib examples swipl_core app.jar launcher.bat readme.txt
 
 cd ..
 
-move /y tmp\cpref_decision_system.zip cpref_decision_system.zip
+move /y tmp\app.zip app.zip
 
 rd /s /q .\tmp
 

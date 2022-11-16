@@ -22,10 +22,10 @@ public class DefineCPrefRuleDialog extends JDialog {
 		
 		switch(mode){
 			case NEW:
-				this.setTitle("Define a new CPref-Rule");
+				this.setTitle("Define a new preference rule");
 				break;
 			case EDIT:
-				this.setTitle("Edit the selected CPref-Rule");
+				this.setTitle("Edit the selected preference rule");
 				break;
 			default:
 				break;
