@@ -1,0 +1,4 @@
+id;rule
+r1;better(X,Y,efficacy) ==> pref(X,Y)
+r2;better(X,Y,duration) ==> pref(X,Y)
+r3;better(X,Y,sideEffects) ==> pref(X,Y)

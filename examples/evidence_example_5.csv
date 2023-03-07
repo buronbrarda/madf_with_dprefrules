@@ -1,0 +1,5 @@
+alternative;efficacy;duration;sideEffects
+t1;90;short;mild
+t2;80;mid;none
+t3;95;forever;moderate
+t4;90;mid;mild

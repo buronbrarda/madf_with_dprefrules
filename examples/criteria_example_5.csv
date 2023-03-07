@@ -1,0 +1,4 @@
+criterion;values
+efficacy;between(1,100)
+duration;[forever,long,mid,short]
+sideEffects;[severe,moderate,mild,none]

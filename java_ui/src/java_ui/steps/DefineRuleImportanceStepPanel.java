@@ -12,9 +12,12 @@ import java_ui.table_editor.panel.TableViewer;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import java.awt.GridBagConstraints;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -26,6 +29,8 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 	private JButton stepButton;
 	private JLabel statusLabel;
 	private JLabel statusResultLabel;
+	
+	private JCheckBox democracyCheckBox;
 	
 	private TableEditorPanel tep;
 	private RuleImportancePrologLoader loader;
@@ -63,6 +68,7 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 				new DefineAgentPriorityOrderDialog(me).setVisible(true);
 			}
 		});
+		
 		GridBagConstraints gbc_btnPriorityOrder = new GridBagConstraints();
 		gbc_btnPriorityOrder.anchor = GridBagConstraints.NORTH;
 		gbc_btnPriorityOrder.fill = GridBagConstraints.HORIZONTAL;
@@ -71,14 +77,32 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 		gbc_btnPriorityOrder.gridy = 0;
 		add(btnPriorityOrder, gbc_btnPriorityOrder);
 		
+		
+		JPanel containerStatus = new JPanel();
+		GridBagConstraints gbc_containerStatus = new GridBagConstraints();
+		gbc_containerStatus.anchor = GridBagConstraints.NORTH;
+		gbc_containerStatus.fill = GridBagConstraints.HORIZONTAL;
+		//gbc_containerStatus.insets = new Insets(5, 5, 5, 5);
+		gbc_containerStatus.gridx = 0;
+		gbc_containerStatus.gridy = 1;
+		add(containerStatus, gbc_containerStatus);
+		
+		GridBagLayout gbl_containerStatus = new GridBagLayout();
+		gbl_containerStatus.columnWidths = new int[]{45, 50, 50, 50, 0};
+		//gbl_containerStatus.rowHeights = new int[]{70, 0};
+		gbl_containerStatus.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_containerStatus.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+		containerStatus.setLayout(gbl_containerStatus);
+		
+		
 		this.statusLabel = new JLabel("Status:");
 		GridBagConstraints gbc_statusLabel = new GridBagConstraints();
 		gbc_statusLabel.anchor = GridBagConstraints.NORTH;
 		gbc_statusLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_statusLabel.insets = new Insets(0, 5, 5, 5);
 		gbc_statusLabel.gridx = 0;
-		gbc_statusLabel.gridy = 1;
-		add(statusLabel, gbc_statusLabel);
+		gbc_statusLabel.gridy = 0;
+		containerStatus.add(statusLabel, gbc_statusLabel);
 		
 		this.statusResultLabel = new JLabel("---");
 		GridBagConstraints gbc_statusResultLabel = new GridBagConstraints();
@@ -86,9 +110,24 @@ public class DefineRuleImportanceStepPanel extends StepPanel{
 		gbc_statusResultLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_statusResultLabel.insets = new Insets(0, 5, 5, 5);
 		gbc_statusResultLabel.gridx = 1;
-		gbc_statusResultLabel.gridy = 1;
-		add(statusResultLabel, gbc_statusResultLabel);
+		gbc_statusResultLabel.gridy = 0;
+		containerStatus.add(statusResultLabel, gbc_statusResultLabel);
 		
+		this.democracyCheckBox = new JCheckBox("Enable democratic defeat");
+		GridBagConstraints gbc_democracyCheckBox = new GridBagConstraints();
+		gbc_democracyCheckBox.anchor = GridBagConstraints.NORTH;
+		gbc_democracyCheckBox.fill = GridBagConstraints.HORIZONTAL;
+		gbc_democracyCheckBox.insets = new Insets(0, 5, 5, 5);
+		gbc_democracyCheckBox.gridx = 0;
+		gbc_democracyCheckBox.gridy = 2;
+		add(democracyCheckBox, gbc_democracyCheckBox);
+		
+		this.democracyCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				loader.enableDemocraticDefeat(democracyCheckBox.isSelected());	
+			}
+		});
+	
 		viewButton = new JButton("View importance orders");
 		viewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {

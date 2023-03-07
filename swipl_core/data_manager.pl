@@ -12,6 +12,7 @@
 		has_priority/2,
 		importance_statement/2,
 		evidence/3,
+		agent/1,
 		
 		legal_value/2,
 		
@@ -34,7 +35,14 @@
 		add_importance_statement/2,
 		remove_importance_orders/0,
 		
-		generate_random_evidence/1
+		add_agent/1,
+		remove_agents/0,
+		
+		generate_random_evidence/1,
+		
+		enable_democratic_defeat/0,
+		disable_democratic_defeat/0,
+		democratic_defeat/0
 	]).
 
 	:- dynamic alternative/1.
@@ -43,7 +51,8 @@
 	:- dynamic has_priority/2.
 	:- dynamic cpref_rule/2.
 	:- dynamic evidence/3.
-	
+	:- dynamic agent/1.
+	:- dynamic democratic_defeat/0.
 	
 	:-use_module(cpref_rules_interpreter, [coherent_cpref_rule/1, op(1101, xfx, ==>)]).
 	
@@ -235,6 +244,7 @@
 	************************************************************************************/
 	add_importance_statement(Agent, R1 > R2):-
 		ground(Agent),
+		agent(Agent),
 		ground(R1), cpref_rule(R1,_),
 		ground(R2), cpref_rule(R2,_),
 		assert(importance_statement(Agent,(R1 > R2))).
@@ -246,6 +256,20 @@
 	************************************************************************************/
 	remove_importance_orders:-
 		retractall(importance_statement(_,_)).
+	
+	
+	/***********************************************************************************
+		add_agent(+Ag).
+		
+		Asserts that Ag is an Agent.
+	************************************************************************************/
+	add_agent(Ag):-
+		ground(Ag),
+		not(agent(Ag)),
+		assert(agent(Ag)).
+	
+	remove_agents:-
+		retractall(agent(_)).
 	
 	
 	/***********************************************************************************
@@ -300,6 +324,20 @@
 	random_value(V,List):-
 		random_member(V,List).
 	
+	
+	/***********************************************************************************
+		enable_democratic_defeat / disable_democratic_defeat 
+		
+		Set/Unset the democratic defeat mode. In democratic defeat mode, the defeat is
+		determined using an algorithm that takes into account not only the priority of
+		agents but also the numbers of agents supporting the same importance for the
+		cpref-rules. 
+	************************************************************************************/
+	enable_democratic_defeat:-
+		assert(democratic_defeat).
+		
+	disable_democratic_defeat:-
+		retractall(democratic_defeat).
 	
 	
 	%=============== JUST TO DEBUG ==============%

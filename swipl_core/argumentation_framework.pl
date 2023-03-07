@@ -24,7 +24,8 @@
 	:-dynamic d_stronger/2.
 	:-dynamic d_arg_line/2.
 	:-dynamic dtree_node/5.
-	
+	:-dynamic d_democratic_stronger_rule/2.
+	:-dynamic d_democratic_equivalent_rule/2.
 	
 	%===================================================================================
 	generate_warranted_conclusions:-
@@ -68,13 +69,75 @@
 		claim(Arg_Id_A, Claim_A),
 		claim(Arg_Id_B, Claim_B),
 		complement(Claim_A,Claim_B).
-
+	
+	
+	/***********************************************************************************
+		max_support_group(+R1 > +R2, +Agent, ?Support).
+		
+		True iff Support is the subset of agents from Agents that considers that R1 > R2
+		and there is no other agent in Agent that considers that R2 > R1 and has higher
+		priority than theirs. 
+	************************************************************************************/
+	max_support_group(R1 > R2, Agents, Support):-
+			findall(AgA,(
+				member(AgA,Agents),
+				importance_statement(AgA,(R1 > R2)),
+				not((
+					member(AgB,Agents),
+					importance_statement(AgB,(R2 > R1)),
+					has_priority(AgB,AgA)
+				))
+			),Support),!.
 	
 	/***********************************************************************************
 		stronger(+ArgA, +ArgB).
 		
 		Defines whether ArgA is stronger than Argb.
-	************************************************************************************/	
+	************************************************************************************/
+	
+	
+	democratic_strogest_rule_result(RA,RB,_Visited,_SupportA,_SupportB,0,0,none):-
+		assert(d_democratic_equivalent_rule(RA,RB)),!.
+		
+	democratic_strogest_rule_result(RA,RB,_Visited,_SupportA,_SupportB,LengthA,LengthB,RA):-
+		LengthA > LengthB,
+		assert(d_democratic_stronger_rule(RA,RB)),!.
+		
+	democratic_strogest_rule_result(RA,RB,_Visited,_SupportA,_SupportB,LengthA,LengthB,RB):-
+		LengthB > LengthA,
+		assert(d_democratic_stronger_rule(RB,RA)),!.
+		
+	democratic_strogest_rule_result(RA,RB,Visited,SupportA,SupportB,_,_,Result):-
+		union(SupportA,SupportB,Aux),
+		append(Visited,Aux,NewVisited),
+		democratic_strongest_rule(RA,RB,NewVisited,Result),!.
+	
+	democratic_strogest_rule(RA,RB,_,RA):-
+		d_democratic_strongeer_rule(RA,RB),!.
+		
+	democratic_strogest_rule(RA,RB,_,none):-
+		d_democratic_equivalent_rules(RA,RB),!.
+	
+	democratic_strogest_rule(RA,RB,_,none):-
+		d_democratic_equivalent_rules(RB,RA),!.
+	
+	democratic_strongest_rule(RA,RB,Visited,Result):-
+		findall(Ag,agent(Ag),Agents),
+		subtract(Agents,Visited,S),
+		max_support_group(RA > RB, S, SupportA),
+		max_support_group(RB > RA, S, SupportB),
+		length(SupportA,LA),
+		length(SupportB,LB),
+		democratic_strogest_rule_result(RA,RB,Visited,SupportA,SupportB,LA,LB,Result),!.	
+	
+	
+	stronger(Arg_Id_A,Arg_Id_B):-
+		democratic_defeat,!,
+		rule(Arg_Id_A, RA),
+		rule(Arg_Id_B, RB),
+		democratic_strongest_rule(RA,RB,[],Result), %Result must be a free variable.
+		RA = Result.
+	
 	stronger(Arg_Id_A,Arg_Id_B):-
 		rule(Arg_Id_A, RA),
 		rule(Arg_Id_B, RB),
@@ -95,6 +158,9 @@
 	
 	% Defeat and conflict-stronger relation is pre-calculate in order to improve performace.
 	generate_argument_relations:-
+		retractall(d_democratic_stronger_rule(_,_)),
+		retractall(d_democratic_equivalent_rule(_,_)),
+		
 		retractall(d_defeats(_,_)),
 		retractall(d_stronger(_,_)),
 		

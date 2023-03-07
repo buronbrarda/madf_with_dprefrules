@@ -115,6 +115,17 @@ public class ExamplesLoadPanel extends JPanel {
 			}
 		});
 		
+		JButton loadButton5 = new JButton("5");
+		loadButton5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					loadExample(5);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.insets = new Insets(0, 0, 0, 5);
 		gbc_btnNewButton.gridx = 1;
@@ -134,10 +145,16 @@ public class ExamplesLoadPanel extends JPanel {
 		container.add(loadButton3, gbc_loadButton);
 		
 		GridBagConstraints gbc_btn4 = new GridBagConstraints();
-		gbc_btn4.insets = new Insets(5, 0, 5, 5);
+		gbc_btn4.insets = new Insets(0, 0, 0, 5);
 		gbc_btn4.gridx = 4;
 		gbc_btn4.gridy = 0;
 		container.add(loadButton4, gbc_btn4);
+		
+		GridBagConstraints gbc_btn5 = new GridBagConstraints();
+		gbc_btn5.insets = new Insets(5, 0, 5, 5);
+		gbc_btn5.gridx = 5;
+		gbc_btn5.gridy = 0;
+		container.add(loadButton5, gbc_btn5);
 		
 		JSeparator separator = new JSeparator();
 		add(separator, BorderLayout.SOUTH);

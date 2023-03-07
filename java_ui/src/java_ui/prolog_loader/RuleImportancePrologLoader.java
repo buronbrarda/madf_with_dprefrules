@@ -29,13 +29,31 @@ public class RuleImportancePrologLoader implements PrologLoader{
 	private void setAgentImportanceOrder(String agent, String order) throws PrologLoadException {
 		
 		
+		Query q = new Query("add_agent("+agent+")");
+		
+		if(!q.hasSolution()) {
+			
+			this.err_message = "There was a problem while loading the the agent '"+agent+"'."+"\n"
+					+ "Please, check if it is not duplicated.";
+			
+			this.status = PrologLoader.StatusCode.Error;
+			
+			throw new PrologLoadException(getErrorMessage());
+		}else{
+				
+			this.status = PrologLoader.StatusCode.Ok;
+		}
+		
+		if(q.isOpen()) {q.close();}
+		
+		
 		for(String statement : order.trim().split(",")) {
-			Query q = new Query("add_importance_statement("+agent+",("+statement+"))");
+			q = new Query("add_importance_statement("+agent+",("+statement+"))");
 		
 			if(!q.hasSolution()) {
 				
 				this.err_message = "There was a problem while loading the importace order for agent '"+agent+"', statement: '"+statement+"'."+"\n"
-						+ "Please, check if its syntax is correct and if it is a coherent CPref-Rule.";
+						+ "Please, check if importance statements are comma-separated and follow this format: RuleA > RuleB";
 				
 				this.status = PrologLoader.StatusCode.Error;
 				
@@ -45,6 +63,8 @@ public class RuleImportancePrologLoader implements PrologLoader{
 				this.status = PrologLoader.StatusCode.Ok;
 			}
 		}
+		
+		if(q.isOpen()) {q.close();}
 	}
 	
 	@Override
@@ -53,6 +73,7 @@ public class RuleImportancePrologLoader implements PrologLoader{
 		
 		String agent, order;
 		
+		cleanAgents();
 		cleanImportanceOrders();
 		
 		for(int i = 0; i < tm.getRowCount(); i++) {
@@ -66,6 +87,11 @@ public class RuleImportancePrologLoader implements PrologLoader{
 		this.status = PrologLoader.StatusCode.Ok;
 	}
 
+	
+	private void cleanAgents(){
+		Query q = new Query("remove_agents");
+		q.hasSolution();
+	}
 	
 	private void cleanImportanceOrders(){
 		Query q = new Query("remove_importance_orders");
@@ -104,6 +130,17 @@ public class RuleImportancePrologLoader implements PrologLoader{
 		
 		
 		
+	}
+	
+	public void enableDemocraticDefeat(boolean isEnable) {
+		if(isEnable) {
+			Query q = new Query("enable_democratic_defeat");
+			q.hasSolution(); q.close();
+		}
+		else {
+			Query q = new Query("disable_democratic_defeat");
+			q.hasSolution(); q.close();
+		}
 	}
 	
 	
