@@ -1,4 +1,6 @@
 id;rule
-r1;better(X,Y,efficacy) ==> pref(X,Y)
-r2;better(X,Y,duration) ==> pref(X,Y)
-r3;better(X,Y,sideEffects) ==> pref(X,Y)
+r10;better(X,Y,efi) ==> pref(X,Y)
+r11;better(X,Y,dur) ==> pref(X,Y)
+r12;better(X,Y,sse) ==> pref(X,Y)
+r13;worse(X,Y,efi), min(X,efi,80), max_dist(X,Y,efi,10), better(X,Y,sse), min(X,sse,none) ==> pref(X,Y)
+r14;better(X,Y,efi), min_dist(X,Y,efi,10), worse(X,Y,dur), max_dist(X,Y,dur,1), min(X,dur,long) ==> pref(X,Y)

@@ -1,11 +1,6 @@
 package java_ui.arguments.dialectical_trees;
 
-import java.util.ArrayList;
-import java.util.Map;
-
 import org.jpl7.Query;
-import org.jpl7.Term;
-import org.jpl7.Util;
 
 public class ArgumentsGraphEdge {
 
@@ -13,7 +8,7 @@ public class ArgumentsGraphEdge {
 	private String attacker;
 	private String defender;
 	private boolean successful;
-	private ArrayList<String> explanation;
+	//private ArrayList<String> explanation;
 	
 	public ArgumentsGraphEdge(String attacker, String defender){
 		this.id = this.hashCode();
@@ -22,7 +17,7 @@ public class ArgumentsGraphEdge {
 		this.defender = defender;
 		this.successful = false; //By default it is false
 		
-		this.explanation = new ArrayList<String>();
+		//this.explanation = new ArrayList<String>();
 		
 		//Query to know if it is about a successful attack, or not.
 		//That is, whether the attacker defeat the defender.
@@ -31,7 +26,7 @@ public class ArgumentsGraphEdge {
 			this.successful = true; //If the query has a solution, then it is a successful attack.
 		}
 		
-		
+		/*
 		//Query to obtain the edge explanation
 		q = new Query("defeat_explanation("+attacker+","+defender+",Explanation)");
 	
@@ -43,6 +38,7 @@ public class ArgumentsGraphEdge {
 				this.explanation.add(s);
 			}		
 		}
+		*/
 	}
 	
 	public int getId(){
@@ -62,7 +58,7 @@ public class ArgumentsGraphEdge {
 	}
 	
 	public String getExplanation(){
-		String toReturn = "{";
+		String toReturn = ""; /*"{";
 		
 		if(!this.explanation.isEmpty()){
 			int i;
@@ -75,7 +71,9 @@ public class ArgumentsGraphEdge {
 			toReturn += this.explanation.get(i);
 		}
 		
-		return toReturn +"}";
+		toReturn += "}";*/
+		
+		return toReturn;
 	}
 	
 }

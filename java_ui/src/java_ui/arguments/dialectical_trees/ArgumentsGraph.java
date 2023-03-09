@@ -41,7 +41,7 @@ public class ArgumentsGraph {
 		
 		for(Argument v1 : this.graph.getVertices()) {
 			for(Argument v2 : this.graph.getVertices()) {
-				Query q = new Query("in_conflict("+v1.getId()+","+v2.getId()+")");
+				Query q = new Query("defeats("+v1.getId()+","+v2.getId()+")");
 				if(q.hasNext()) {
 					q.next();
 					this.graph.addEdge(new ArgumentsGraphEdge(v1.getId(),v2.getId()), v1, v2);
