@@ -65,16 +65,14 @@ public class DefineAgentPriorityOrderDialog extends JDialog {
 					Query cleaning_query = new Query("remove_priorities");
 					if (cleaning_query.hasNext()) {cleaning_query.next();}
 					
-					if (statements.length > 1) {
+					if (statements.length > 0) {
 					
 						for (String s : statements) {
 							String [] splited = s.split(">");
-							Compound comp = new Compound(">", new Term[] {Util.textToTerm(splited[0]), Util.textToTerm(splited[1])} );
-							
-							Query q = new Query("add_priority", new Term [] {comp});
-							
-							if(q.hasNext()){
-								q.next();
+							if(splited.length == 2) {
+								Compound comp = new Compound(">", new Term[] {Util.textToTerm(splited[0]), Util.textToTerm(splited[1])} );
+								Query q = new Query("add_priority", new Term [] {comp});
+								if(q.hasNext()){q.next();}
 							}
 						}
 					

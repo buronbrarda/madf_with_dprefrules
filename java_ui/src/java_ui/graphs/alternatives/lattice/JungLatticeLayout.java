@@ -89,7 +89,7 @@ public class JungLatticeLayout<V,E> implements Layout<V,E> {
 					i++;
 				}
 			}
-			setLocation(v, new Point2D.Double(x, starty + (y - starty) / 2));
+			setLocation(v, new Point2D.Double(-x, starty + (y - starty) / 2));
     	}
     	return y;
     }

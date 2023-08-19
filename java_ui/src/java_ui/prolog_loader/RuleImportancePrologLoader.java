@@ -46,21 +46,22 @@ public class RuleImportancePrologLoader implements PrologLoader{
 		
 		if(q.isOpen()) {q.close();}
 		
-		
-		for(String statement : order.trim().split(",")) {
-			q = new Query("add_importance_statement("+agent+",("+statement+"))");
-		
-			if(!q.hasSolution()) {
-				
-				this.err_message = "There was a problem while loading the importace order for agent '"+agent+"', statement: '"+statement+"'."+"\n"
-						+ "Please, check if importance statements are comma-separated and follow this format: RuleA > RuleB";
-				
-				this.status = PrologLoader.StatusCode.Error;
-				
-				throw new PrologLoadException(getErrorMessage());
-			}else{
+		if(order != null) {
+			for(String statement : order.trim().split(",")) {
+				q = new Query("add_importance_statement("+agent+",("+statement+"))");
+			
+				if(!q.hasSolution()) {
 					
-				this.status = PrologLoader.StatusCode.Ok;
+					this.err_message = "There was a problem while loading the importace order for agent '"+agent+"', statement: '"+statement+"'."+"\n"
+							+ "Please, check if importance statements are comma-separated and follow this format: RuleA > RuleB";
+					
+					this.status = PrologLoader.StatusCode.Error;
+					
+					throw new PrologLoadException(getErrorMessage());
+				}else{
+						
+					this.status = PrologLoader.StatusCode.Ok;
+				}
 			}
 		}
 		
