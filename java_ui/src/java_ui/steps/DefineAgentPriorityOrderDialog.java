@@ -65,7 +65,7 @@ public class DefineAgentPriorityOrderDialog extends JDialog {
 					Query cleaning_query = new Query("remove_priorities");
 					if (cleaning_query.hasNext()) {cleaning_query.next();}
 					
-					if (statements.length > 1) {
+					if (statements.length > 0) {
 					
 						for (String s : statements) {
 							String [] splited = s.split(">");
